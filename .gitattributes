@@ -1,0 +1,7 @@
+# The vendored engine is checksummed over raw bytes: a CRLF conversion would
+# be indistinguishable from someone editing a shared engine file. Pin LF.
+* text=auto eol=lf
+*.mjs text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.yml text eol=lf

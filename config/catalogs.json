@@ -1,0 +1,285 @@
+{
+  "schema_version": 2,
+  "manifest": {
+    "id": "com.github.wtfthriller.discovery",
+    "version": "1.0.0",
+    "name": "WTF Thriller Discovery",
+    "description": "Automated thrillers that keep paying out: mysteries, investigations and cat-and-mouse where meaningful new information actually lands and reframes what you understood. Slow procedurals that investigate constantly and reveal nothing are penalised on purpose."
+  },
+  "site": {
+    "title": "WTF Thriller Discovery",
+    "emoji": "🔎",
+    "blurb": "Automated Stremio catalogs for thrillers that keep paying out - investigation and cat-and-mouse where revelations actually land and change what you thought you knew. A procedural that investigates constantly and tells you nothing is not a thriller here."
+  },
+  "catalogs": [
+    {
+      "id": "full-watchlist",
+      "name": "Full Watchlist",
+      "filter": "watch",
+      "sort": "score"
+    },
+    {
+      "id": "past-24h",
+      "name": "🔥 Past 24h Findings",
+      "filter": "past24",
+      "sort": "newest"
+    },
+    {
+      "id": "best-matches",
+      "name": "⭐ Best Matches",
+      "filter": "best",
+      "sort": "score"
+    },
+    {
+      "id": "dna-match",
+      "name": "🧬 DNA Match",
+      "filter": "dna",
+      "sort": "dna_score",
+      "min_score": 50,
+      "dna": {
+        "mode": "baseline_profile",
+        "archetype_bonus_max": 25
+      }
+    },
+    {
+      "id": "investigation-puzzles",
+      "name": "🔎 Investigation & Puzzles",
+      "filter": "dna",
+      "sort": "dna_score",
+      "min_score": 55,
+      "dna": {
+        "mode": "weighted",
+        "gate": {
+          "all_of": [
+            {
+              "dimension": "investigation",
+              "at_or_above": 5
+            },
+            {
+              "dimension": "clue_puzzling",
+              "at_or_above": 5
+            },
+            {
+              "dimension": "revelation_frequency",
+              "at_or_above": 5
+            }
+          ],
+          "any_of": []
+        },
+        "weights": {
+          "clue_puzzling": 14,
+          "investigation": 11,
+          "culprit_hunt": 11,
+          "mystery": 10,
+          "progressive_revelation": 10,
+          "revelation_frequency": 10
+        },
+        "penalties": {
+          "drama_focus": 5,
+          "military_focus": 5
+        }
+      }
+    },
+    {
+      "id": "cat-and-mouse",
+      "name": "🎭 Cat-and-Mouse",
+      "filter": "dna",
+      "sort": "dna_score",
+      "min_score": 55,
+      "dna": {
+        "mode": "weighted",
+        "gate": {
+          "all_of": [
+            {
+              "dimension": "cat_and_mouse",
+              "at_or_above": 6
+            }
+          ],
+          "any_of": []
+        },
+        "weights": {
+          "cat_and_mouse": 14,
+          "psychological_strategy": 12,
+          "deception": 11,
+          "hidden_identity": 9,
+          "suspense": 8,
+          "revelation_frequency": 7
+        },
+        "penalties": {
+          "romance_focus": 5
+        }
+      }
+    },
+    {
+      "id": "conspiracy-moles",
+      "name": "🕸️ Conspiracy & Moles",
+      "filter": "dna",
+      "sort": "dna_score",
+      "min_score": 55,
+      "dna": {
+        "mode": "weighted",
+        "gate": {
+          "all_of": [],
+          "any_of": [
+            {
+              "dimension": "conspiracy",
+              "at_or_above": 5
+            },
+            {
+              "dimension": "mole_inside",
+              "at_or_above": 5
+            }
+          ]
+        },
+        "weights": {
+          "conspiracy": 14,
+          "mole_inside": 12,
+          "corruption": 9,
+          "investigation": 8,
+          "suspense": 8,
+          "revelation_frequency": 8
+        },
+        "penalties": {
+          "military_focus": 6
+        }
+      }
+    },
+    {
+      "id": "reality-evidence-manipulation",
+      "name": "📹 Reality & Evidence Manipulation",
+      "filter": "dna",
+      "sort": "dna_score",
+      "min_score": 55,
+      "dna": {
+        "mode": "weighted",
+        "gate": {
+          "all_of": [],
+          "any_of": [
+            {
+              "dimension": "evidence_manipulation",
+              "at_or_above": 5
+            },
+            {
+              "dimension": "surveillance",
+              "at_or_above": 5
+            },
+            {
+              "dimension": "unreliable_perspective",
+              "at_or_above": 5
+            }
+          ]
+        },
+        "weights": {
+          "evidence_manipulation": 14,
+          "unreliable_perspective": 12,
+          "surveillance": 10,
+          "technology_threat": 8,
+          "mystery": 8,
+          "progressive_revelation": 8
+        },
+        "penalties": {
+          "drama_focus": 4
+        }
+      }
+    },
+    {
+      "id": "high-suspense",
+      "name": "⚡ High Suspense",
+      "filter": "dna",
+      "sort": "dna_score",
+      "min_score": 60,
+      "dna": {
+        "mode": "weighted",
+        "gate": {
+          "all_of": [
+            {
+              "dimension": "suspense",
+              "at_or_above": 7
+            },
+            {
+              "dimension": "revelation_frequency",
+              "at_or_above": 5
+            }
+          ],
+          "any_of": []
+        },
+        "weights": {
+          "suspense": 15,
+          "revelation_frequency": 11,
+          "mystery": 9,
+          "plot_twists": 8,
+          "brutality": 6
+        },
+        "penalties": {
+          "romance_focus": 5,
+          "drama_focus": 4
+        }
+      }
+    },
+    {
+      "id": "action-thrillers",
+      "name": "💣 Action Thrillers",
+      "filter": "dna",
+      "sort": "dna_score",
+      "min_score": 55,
+      "dna": {
+        "mode": "weighted",
+        "gate": {
+          "all_of": [
+            {
+              "dimension": "action_density",
+              "at_or_above": 6
+            },
+            {
+              "dimension": "mystery",
+              "at_or_above": 5
+            }
+          ],
+          "any_of": []
+        },
+        "weights": {
+          "action_density": 13,
+          "suspense": 11,
+          "mystery": 10,
+          "conspiracy": 8,
+          "action_intensity": 7,
+          "revelation_frequency": 7
+        },
+        "penalties": {
+          "military_focus": 6,
+          "drama_focus": 4
+        }
+      }
+    },
+    {
+      "id": "deadly-systems",
+      "name": "🎲 Deadly Systems",
+      "filter": "dna",
+      "sort": "dna_score",
+      "min_score": 55,
+      "dna": {
+        "mode": "weighted",
+        "gate": {
+          "all_of": [
+            {
+              "dimension": "deadly_game",
+              "at_or_above": 6
+            }
+          ],
+          "any_of": []
+        },
+        "weights": {
+          "deadly_game": 15,
+          "suspense": 11,
+          "brutality": 9,
+          "psychological_strategy": 8,
+          "mystery": 7,
+          "revelation_frequency": 7
+        },
+        "penalties": {
+          "romance_focus": 5
+        }
+      }
+    }
+  ]
+}

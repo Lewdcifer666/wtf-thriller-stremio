@@ -1,0 +1,15 @@
+{
+  "name": "wtf-thriller-stremio-automation",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "resolve": "node scripts/resolve-library.mjs",
+    "build": "node scripts/build-site.mjs",
+    "validate": "node scripts/validate.mjs",
+    "test": "node test/run-all.mjs"
+  }
+}

@@ -1,0 +1,1099 @@
+{
+  "schema_version": 3,
+  "profile_name": "WTF Thriller / Revelation-Paced Mystery",
+  "mission": "Find thrillers that keep paying out. Mystery, investigation and suspense are the subject, but this profile exists because a story can contain an enormous amount of investigation and still tell you almost nothing: the measure that matters is how often meaningful new information lands and whether it actually reframes what you understood. A slow procedural is not a thriller merely for being a procedural.",
+  "automation_rules": {
+    "daily_movie_max": 5,
+    "daily_series_max": 3,
+    "minimum_match_score": 62,
+    "best_match_score": 80,
+    "zero_findings_is_valid": true,
+    "never_silently_delete_existing_watchlist_items": true,
+    "dedupe_primary_key": "imdb_id",
+    "dedupe_fallback": "normalized title + year + type",
+    "past_24h_definition": "Only items with added_by=daily-automation and added_at within the last 24 hours. Bootstrap items carry added_by=bootstrap and never appear in this row.",
+    "match_score_definition": "match_score IS the deterministic baseline DNA score: the dna-match row score, post-archetype-bonus, post-guardrail, clamped 0..100. It is COMPUTED, never an invented holistic judgement. The thresholds are on that same scale and were calibrated against THIS profile's own distribution. They are NOT comparable to Fantasy 65/80, Action 60/70, Anime 58/67 or Sci-Fi 82/90.",
+    "calibration_note": "CALIBRATED against this profile's own deterministic score distribution over a 60-title pool that deliberately included SEVERAL Mindhunter-shaped titles - high investigation, low revelation cadence, low forward motion - because a calibration without them would prove nothing about the rule this profile exists for. 16 fell below the DNA row floor, and slow_investigation_without_payoff fired on Mindhunter itself, The Killing, Zero Dark Thirty, Sharp Objects, The Undoing, Under the Silver Lake, Burning and No Country for Old Men. 44 scored: min 50, Q1 62, median 71, Q3 79, max 96. minimum_match_score sits at Q1 (62), immediately above the marginal band that holds the slow procedurals which did not quite trip the guardrail (Broadchurch 57, The Night Of 61), the military-framed Sicario at 61, and the romance-leaning titles. best_match_score sits at 80, just above Q3, capturing the top ~23%. The widest empty band is 84-87, but a threshold there would leave only three titles - too narrow to be a useful Best Matches row - so Q3+1 is the better-supported line. NOTE this distribution is markedly higher-centred than the other profiles (median 71 against Anime 60 and Action 64) because Thriller sits closest to the stated core taste, so a representative pool simply contains more genuine fits. THESE NUMBERS ARE THRILLER-SPECIFIC and are not comparable to Fantasy 65/80, Action 60/70, Anime 58/67 or Sci-Fi 82/90."
+  },
+  "controlled_tags": [
+    "best",
+    "favorite"
+  ],
+  "dna_dimensions": {
+    "registry_version": 1,
+    "count": 30,
+    "scale": {
+      "min": 0,
+      "max": 10,
+      "integer": true,
+      "unknown": null
+    },
+    "principles": {
+      "descriptive_only": "A DNA value describes how strongly a property exists in a TITLE. It never states whether that property is desirable. Desirability lives only in dna_baseline and dna_guardrails.",
+      "unknown_is_not_zero": "Missing or null means UNKNOWN, never 'definitely absent'. Never substitute 0.",
+      "unknown_never_satisfies": "A threshold comparison against an unknown value is false in both directions.",
+      "unknown_is_not_safe": "Unknown must not be read as 'passes the guardrail'. An item is not DNA-score-eligible unless every dimension referenced anywhere in dna_guardrails is known - which for this profile specifically includes revelation_frequency and progressive_revelation, because an unmeasured revelation cadence is exactly how a slow procedural would slip through.",
+      "independent_dimensions": "THE SEPARATION THIS PROFILE EXISTS FOR. investigation is how much procedural and evidence work the story CONTAINS. revelation_frequency is how often meaningful new information actually LANDS. progressive_revelation is whether that information CHANGES what the viewer understood. pace_speed is overall forward motion. mystery is how much is unresolved. suspense is sustained tension. These are six different measurements and a title can score 9 on investigation while scoring 3 on revelation_frequency, 3 on progressive_revelation and 3 on pace_speed - a procedural that investigates constantly and tells you almost nothing. High investigation must NEVER on its own produce a strong result. Note also that plot_twists and progressive_revelation are distinct: a film built around one enormous final reversal can be high on twists and only moderate on progressive revelation, because nothing was being rebuilt along the way. Finally, visual_quality (craft) and retro_visual_style (era aesthetic) are independent, and RELEASE YEAR IS NEVER AN INPUT to either."
+    },
+    "tag_registry": [
+      "serial_killer",
+      "police_procedural",
+      "espionage",
+      "heist",
+      "kidnapping",
+      "courtroom",
+      "hacker",
+      "deepfake",
+      "witness",
+      "prison",
+      "small_town",
+      "urban_night",
+      "cold_case",
+      "undercover",
+      "stalker",
+      "home_invasion",
+      "survival_game",
+      "journalism",
+      "cult",
+      "amnesia"
+    ],
+    "tag_registry_note": "Controlled descriptive DNA tags. CLOSED vocabulary: item.dna_tags may contain only these values.",
+    "dimensions": [
+      {
+        "id": "mystery",
+        "label": "Mystery",
+        "direction": "absent_to_dominant",
+        "rubric": {
+          "0": "nothing withheld",
+          "5": "substantial mystery thread",
+          "10": "the whole structure is a mystery"
+        }
+      },
+      {
+        "id": "investigation",
+        "label": "Investigation",
+        "direction": "absent_to_dominant",
+        "rubric": {
+          "0": "none",
+          "3": "a question is asked but never worked",
+          "5": "evidence-gathering is a real thread",
+          "8": "procedural inquiry drives the plot",
+          "10": "determining what happened IS the story"
+        }
+      },
+      {
+        "id": "clue_puzzling",
+        "label": "Clue Puzzling",
+        "direction": "absent_to_dominant",
+        "rubric": {
+          "0": "nothing to piece together",
+          "5": "real clues the viewer can assemble",
+          "10": "assembling the evidence IS the viewing experience"
+        }
+      },
+      {
+        "id": "culprit_hunt",
+        "label": "Culprit Hunt",
+        "direction": "absent_to_dominant",
+        "rubric": {
+          "0": "no one is being sought",
+          "5": "identifying or catching someone genuinely matters",
+          "10": "the hunt for a specific culprit is the spine of the story"
+        }
+      },
+      {
+        "id": "progressive_revelation",
+        "label": "Progressive Revelation",
+        "direction": "absent_to_dominant",
+        "rubric": {
+          "0": "what is learned never changes the picture",
+          "3": "information arrives but rarely reframes anything",
+          "5": "revelations periodically reframe understanding",
+          "8": "understanding is repeatedly and substantially rebuilt",
+          "10": "a continuous cadence of answers that each open new questions"
+        }
+      },
+      {
+        "id": "revelation_frequency",
+        "label": "Revelation Frequency",
+        "direction": "absent_to_dominant",
+        "rubric": {
+          "0": "almost nothing new is learned across the runtime",
+          "3": "long stretches pass with no meaningful new information",
+          "5": "a meaningful new piece lands regularly",
+          "8": "new information arrives constantly",
+          "10": "near-constant meaningful new information"
+        }
+      },
+      {
+        "id": "plot_twists",
+        "label": "Plot Twists",
+        "direction": "absent_to_dominant",
+        "rubric": {
+          "0": "none",
+          "5": "one or two real reversals",
+          "10": "reversals are the primary structural device"
+        }
+      },
+      {
+        "id": "psychological_strategy",
+        "label": "Psychological Strategy",
+        "direction": "absent_to_dominant",
+        "rubric": {
+          "0": "no one out-thinks anyone",
+          "5": "real plans and counter-plans",
+          "10": "adversarial out-thinking is the engine"
+        }
+      },
+      {
+        "id": "cat_and_mouse",
+        "label": "Cat and Mouse",
+        "direction": "absent_to_dominant",
+        "rubric": {
+          "0": "none",
+          "5": "a real pursuer/pursued dynamic",
+          "10": "both sides continuously adapt to each other"
+        }
+      },
+      {
+        "id": "deception",
+        "label": "Deception",
+        "direction": "absent_to_dominant",
+        "rubric": {
+          "0": "none",
+          "5": "concealment or lying is a real mechanic",
+          "10": "sustained deception is the operating mode"
+        }
+      },
+      {
+        "id": "hidden_identity",
+        "label": "Hidden Identity",
+        "direction": "absent_to_dominant",
+        "rubric": {
+          "0": "everyone is who they appear to be",
+          "5": "a concealed identity genuinely matters",
+          "10": "living behind a false identity IS the premise"
+        }
+      },
+      {
+        "id": "unreliable_perspective",
+        "label": "Unreliable Perspective",
+        "direction": "absent_to_dominant",
+        "rubric": {
+          "0": "the point of view can be trusted",
+          "5": "the narration or viewpoint is meaningfully in doubt",
+          "10": "the viewer cannot trust what they are shown at all"
+        }
+      },
+      {
+        "id": "conspiracy",
+        "label": "Conspiracy",
+        "direction": "absent_to_dominant",
+        "rubric": {
+          "0": "none",
+          "5": "a real hidden agenda",
+          "10": "the conspiracy is the plot"
+        }
+      },
+      {
+        "id": "mole_inside",
+        "label": "Mole / Inside Threat",
+        "direction": "absent_to_dominant",
+        "rubric": {
+          "0": "no infiltration or hidden allegiance",
+          "5": "an insider threat genuinely matters",
+          "10": "identifying the insider IS the story"
+        }
+      },
+      {
+        "id": "corruption",
+        "label": "Corruption",
+        "direction": "absent_to_dominant",
+        "rubric": {
+          "0": "institutions are clean",
+          "5": "institutional rot is a real element",
+          "10": "systemic corruption is the subject"
+        }
+      },
+      {
+        "id": "surveillance",
+        "label": "Surveillance",
+        "direction": "absent_to_dominant",
+        "rubric": {
+          "0": "none",
+          "5": "watching, tracking or monitoring is a real mechanic",
+          "10": "the apparatus of surveillance IS the subject"
+        }
+      },
+      {
+        "id": "evidence_manipulation",
+        "label": "Evidence Manipulation",
+        "direction": "absent_to_dominant",
+        "rubric": {
+          "0": "evidence is what it appears to be",
+          "5": "falsified or altered evidence genuinely matters",
+          "10": "whether any evidence can be trusted IS the premise"
+        }
+      },
+      {
+        "id": "technology_threat",
+        "label": "Technology Threat",
+        "direction": "absent_to_dominant",
+        "rubric": {
+          "0": "no technological menace",
+          "5": "technology is a real source of threat or leverage",
+          "10": "the technology itself is the antagonist"
+        }
+      },
+      {
+        "id": "suspense",
+        "label": "Suspense",
+        "direction": "absent_to_dominant",
+        "rubric": {
+          "0": "none",
+          "3": "occasional tension",
+          "5": "recurring tension",
+          "8": "sustained tension",
+          "10": "sustained throughout"
+        }
+      },
+      {
+        "id": "action_density",
+        "label": "Action Density",
+        "direction": "absent_to_dominant",
+        "rubric": {
+          "0": "essentially no action across the runtime",
+          "3": "a few isolated action scenes in an otherwise low-action runtime",
+          "5": "action recurs regularly, roughly a third of the runtime",
+          "8": "action occupies most of the runtime",
+          "10": "near-continuous action"
+        }
+      },
+      {
+        "id": "action_intensity",
+        "label": "Action Intensity",
+        "direction": "absent_to_dominant",
+        "rubric": {
+          "0": "none",
+          "5": "ordinary force and stakes when action occurs",
+          "10": "peak sequences are extreme in force, scale and stakes"
+        }
+      },
+      {
+        "id": "brutality",
+        "label": "Brutality",
+        "direction": "absent_to_dominant",
+        "rubric": {
+          "0": "none",
+          "5": "the world is meaningfully harsh",
+          "10": "cruelty and irreversible consequence define the world"
+        }
+      },
+      {
+        "id": "deadly_game",
+        "label": "Deadly Game",
+        "direction": "absent_to_dominant",
+        "rubric": {
+          "0": "none",
+          "5": "an organised lethal game or trial matters",
+          "10": "surviving a rule-bound lethal system is the premise"
+        }
+      },
+      {
+        "id": "weirdness",
+        "label": "Weirdness",
+        "direction": "absent_to_dominant",
+        "rubric": {
+          "0": "mundane",
+          "5": "noticeably strange",
+          "10": "sustained, disorienting strangeness"
+        }
+      },
+      {
+        "id": "military_focus",
+        "label": "Military Focus",
+        "direction": "absent_to_dominant",
+        "rubric": {
+          "0": "none",
+          "5": "major military component",
+          "10": "military institutions, operations, command or combat framing dominates"
+        }
+      },
+      {
+        "id": "romance_focus",
+        "label": "Romance Focus",
+        "direction": "absent_to_dominant",
+        "rubric": {
+          "0": "none",
+          "5": "a real romance thread",
+          "10": "romance is the primary structural driver"
+        }
+      },
+      {
+        "id": "drama_focus",
+        "label": "Drama Focus",
+        "direction": "absent_to_dominant",
+        "rubric": {
+          "0": "none",
+          "5": "real interpersonal drama",
+          "10": "interpersonal drama is the primary mode"
+        }
+      },
+      {
+        "id": "visual_quality",
+        "label": "Visual Quality",
+        "direction": "absent_to_dominant",
+        "rubric": {
+          "0": "crude or careless craft",
+          "3": "visibly cheap or inconsistent",
+          "5": "competent, unremarkable craft",
+          "8": "polished and confident",
+          "10": "exceptional craft - judged on its own presentation, never on release year"
+        }
+      },
+      {
+        "id": "retro_visual_style",
+        "label": "Retro Visual Style",
+        "direction": "absent_to_dominant",
+        "rubric": {
+          "0": "strongly contemporary visual language",
+          "3": "modern with occasional classical flourishes",
+          "5": "mixed or classic presentation",
+          "8": "clearly of an earlier visual era",
+          "10": "strongly retro, legacy or old-school aesthetic - judged from colour grading, lensing, editing rhythm, effects technique and design language, NEVER from the release date"
+        }
+      },
+      {
+        "id": "pace_speed",
+        "label": "Pace (speed)",
+        "direction": "slow_to_fast",
+        "rubric": {
+          "0": "very slow / contemplative",
+          "3": "deliberate",
+          "5": "moderate / steady",
+          "8": "brisk",
+          "10": "relentless / extremely fast"
+        }
+      }
+    ]
+  },
+  "dna_baseline": {
+    "description": "The desired CONTENT universe expressed on the DNA scale. Stable baseline. Accumulated user feedback is NEVER merged into this section.",
+    "scale_note": "Weights are -40..40 and commensurate only within this profile. investigation at 18 sits deliberately BELOW mystery at 20 and only just above revelation_frequency at 17 and progressive_revelation at 18: the profile buys the payoff, not the procedure. A shared dimension id carries no shared weight.",
+    "weights": {
+      "mystery": 20,
+      "investigation": 18,
+      "progressive_revelation": 18,
+      "revelation_frequency": 17,
+      "suspense": 17,
+      "clue_puzzling": 16,
+      "cat_and_mouse": 15,
+      "psychological_strategy": 15,
+      "culprit_hunt": 14,
+      "plot_twists": 14,
+      "deception": 14,
+      "conspiracy": 14,
+      "evidence_manipulation": 13,
+      "mole_inside": 12,
+      "unreliable_perspective": 12,
+      "hidden_identity": 11,
+      "deadly_game": 11,
+      "surveillance": 10,
+      "visual_quality": 10,
+      "weirdness": 9,
+      "action_density": 9,
+      "corruption": 8,
+      "technology_threat": 8,
+      "brutality": 7,
+      "action_intensity": 6,
+      "drama_focus": -8,
+      "retro_visual_style": -10,
+      "romance_focus": -10,
+      "military_focus": -14
+    },
+    "unweighted": [
+      "pace_speed"
+    ],
+    "unweighted_note": "pace_speed is the sole unweighted dimension. Speed is not itself desirable here - a slow film that keeps revealing is wanted and a fast one that reveals nothing is not - so it carries no linear weight and is used only inside the slow_investigation_without_payoff combination. weights and unweighted are disjoint and their union is exactly the 30 registry ids.",
+    "completeness_defaults": {
+      "min_known_dimensions": 22,
+      "min_confidence": 0.6,
+      "required_known_dimensions": [
+        "investigation",
+        "revelation_frequency",
+        "pace_speed",
+        "progressive_revelation",
+        "suspense",
+        "military_focus",
+        "mystery",
+        "romance_focus",
+        "drama_focus",
+        "visual_quality",
+        "retro_visual_style"
+      ],
+      "note": "An item must satisfy ALL THREE conditions to be DNA-score-eligible. required_known_dimensions contains every dimension referenced anywhere in dna_guardrails - critically revelation_frequency and progressive_revelation, so a slow procedural can never dodge the payoff rule by leaving its cadence unmeasured. NOTE that min_known_dimensions is NOT the binding constraint for the DNA Match row: requiredFor() independently demands every weighted dimension, so a title reaching DNA Match needs all 29 weighted values. Lowering min_known_dimensions would relieve nothing that binds - research fewer titles instead."
+    },
+    "archetypes": [
+      {
+        "id": "psychological_cat_and_mouse",
+        "label": "Psychological Cat-and-Mouse",
+        "weight": 1,
+        "requires_mode": "all",
+        "requires": [
+          {
+            "dimension": "cat_and_mouse",
+            "at_or_above": 6
+          }
+        ],
+        "emphasis": {
+          "psychological_strategy": 10,
+          "cat_and_mouse": 10,
+          "deception": 9,
+          "hidden_identity": 8,
+          "suspense": 8,
+          "revelation_frequency": 8
+        },
+        "penalise": {
+          "drama_focus": 3
+        }
+      },
+      {
+        "id": "investigation_puzzle",
+        "label": "Investigation / Puzzle",
+        "weight": 1,
+        "requires_mode": "all",
+        "requires": [
+          {
+            "dimension": "investigation",
+            "at_or_above": 6
+          },
+          {
+            "dimension": "clue_puzzling",
+            "at_or_above": 5
+          }
+        ],
+        "emphasis": {
+          "investigation": 9,
+          "clue_puzzling": 10,
+          "culprit_hunt": 9,
+          "mystery": 9,
+          "progressive_revelation": 9,
+          "revelation_frequency": 9
+        },
+        "penalise": {
+          "drama_focus": 3
+        }
+      },
+      {
+        "id": "conspiracy_thriller",
+        "label": "Conspiracy Thriller",
+        "weight": 1,
+        "requires_mode": "any",
+        "requires": [
+          {
+            "dimension": "conspiracy",
+            "at_or_above": 6
+          },
+          {
+            "dimension": "mole_inside",
+            "at_or_above": 6
+          }
+        ],
+        "emphasis": {
+          "conspiracy": 10,
+          "mole_inside": 9,
+          "corruption": 8,
+          "investigation": 8,
+          "suspense": 8,
+          "revelation_frequency": 8
+        },
+        "penalise": {
+          "military_focus": 4
+        }
+      },
+      {
+        "id": "information_reality_thriller",
+        "label": "Information / Reality Thriller",
+        "weight": 1,
+        "requires_mode": "any",
+        "requires": [
+          {
+            "dimension": "evidence_manipulation",
+            "at_or_above": 6
+          },
+          {
+            "dimension": "unreliable_perspective",
+            "at_or_above": 6
+          }
+        ],
+        "emphasis": {
+          "evidence_manipulation": 10,
+          "surveillance": 8,
+          "technology_threat": 7,
+          "unreliable_perspective": 9,
+          "mystery": 9,
+          "progressive_revelation": 9,
+          "revelation_frequency": 8
+        },
+        "penalise": {
+          "drama_focus": 3
+        }
+      },
+      {
+        "id": "action_thriller",
+        "label": "Action Thriller",
+        "weight": 1,
+        "requires_mode": "all",
+        "requires": [
+          {
+            "dimension": "action_density",
+            "at_or_above": 6
+          },
+          {
+            "dimension": "mystery",
+            "at_or_above": 5
+          }
+        ],
+        "emphasis": {
+          "action_density": 10,
+          "suspense": 9,
+          "mystery": 8,
+          "investigation": 7,
+          "revelation_frequency": 7
+        },
+        "penalise": {
+          "military_focus": 4
+        }
+      },
+      {
+        "id": "deadly_system_thriller",
+        "label": "Deadly-System Thriller",
+        "weight": 1,
+        "requires_mode": "all",
+        "requires": [
+          {
+            "dimension": "deadly_game",
+            "at_or_above": 6
+          }
+        ],
+        "emphasis": {
+          "deadly_game": 10,
+          "suspense": 9,
+          "psychological_strategy": 8,
+          "brutality": 8,
+          "mystery": 8,
+          "revelation_frequency": 7
+        },
+        "penalise": {
+          "romance_focus": 3
+        }
+      }
+    ],
+    "archetype_note": "Best-matching archetype only, never an average. EVERY archetype emphasises revelation_frequency at 7 or more, by construction. Archetypes describe different SHAPES of thriller and must never become a route by which a slow, low-payoff investigation collects a large bonus - which is precisely what an investigation-flavoured archetype without a revelation requirement would do."
+  },
+  "dna_guardrails": {
+    "description": "Policy applied to descriptive DNA measurements. Not learnable away by ordinary feedback.",
+    "evaluation_note": "A condition whose dimension is unknown/null evaluates FALSE. This profile has NO hard exclusions; every negative context is a contextual combination penalty.",
+    "hard_exclusion": [],
+    "combination": [
+      {
+        "id": "slow_investigation_without_payoff",
+        "penalty": -35,
+        "all_of": [
+          {
+            "dimension": "investigation",
+            "at_or_above": 5
+          },
+          {
+            "dimension": "revelation_frequency",
+            "at_or_below": 4
+          },
+          {
+            "dimension": "pace_speed",
+            "at_or_below": 4
+          },
+          {
+            "dimension": "progressive_revelation",
+            "at_or_below": 4
+          }
+        ],
+        "any_of": [],
+        "note": "THE defining rule of this addon. A procedural can contain a great deal of investigation and still deliver almost nothing: long stretches with no meaningful new information, no reframing of what is understood, and no forward motion. Investigation is the subject, not the payoff. This fires only when the investigation is present AND the cadence, the reframing and the pace are all absent - an eventful investigation is exactly what the profile wants."
+      },
+      {
+        "id": "low_revelation_thriller",
+        "penalty": -28,
+        "all_of": [
+          {
+            "dimension": "revelation_frequency",
+            "at_or_below": 3
+          },
+          {
+            "dimension": "suspense",
+            "at_or_below": 4
+          }
+        ],
+        "any_of": [],
+        "note": "Nothing is being revealed and nothing is being sustained. Catches the low-payoff case even where there is no formal investigation to trip the rule above."
+      },
+      {
+        "id": "military_first_thriller",
+        "penalty": -30,
+        "all_of": [
+          {
+            "dimension": "military_focus",
+            "at_or_above": 6
+          },
+          {
+            "dimension": "mystery",
+            "at_or_below": 4
+          },
+          {
+            "dimension": "investigation",
+            "at_or_below": 4
+          }
+        ],
+        "any_of": [],
+        "note": "Operations-first military material. Military framing is NOT penalised on its own: a military thriller with a real mystery or a real investigation is wanted."
+      },
+      {
+        "id": "romance_drama_dominant",
+        "penalty": -26,
+        "all_of": [
+          {
+            "dimension": "romance_focus",
+            "at_or_above": 6
+          },
+          {
+            "dimension": "drama_focus",
+            "at_or_above": 6
+          },
+          {
+            "dimension": "suspense",
+            "at_or_below": 5
+          }
+        ],
+        "any_of": [],
+        "note": "A relationship drama wearing thriller clothing. Sustained suspense makes it moot."
+      },
+      {
+        "id": "cheap_presentation",
+        "penalty": -22,
+        "all_of": [
+          {
+            "dimension": "visual_quality",
+            "at_or_below": 3
+          }
+        ],
+        "any_of": [],
+        "note": "CRAFT, not age. retro_visual_style is deliberately absent from every guardrail here: an old-school look softens ranking only through its linear weight and must never exclude. A high-craft film that simply looks of an earlier era is not cheap."
+      }
+    ],
+    "not_expressible_in_dna": {
+      "documentation_only": true,
+      "consumer_rule": "NO CONSUMER MAY READ, EVALUATE OR SCORE THIS FIELD. It carries zero runtime semantics.",
+      "entries": [
+        {
+          "signal": "Investigation as a proxy for quality",
+          "reason": "Explicitly rejected. investigation measures how much inquiry work exists, never whether it pays off. revelation_frequency and progressive_revelation carry the payoff, and the slow_investigation_without_payoff guardrail exists because conflating them produced a concrete disappointment."
+        },
+        {
+          "signal": "Release year / age of the title",
+          "reason": "Never a preference. The objection is presentation style, measured directly by retro_visual_style, which is weight-only and referenced by no guardrail."
+        }
+      ]
+    }
+  },
+  "execution_preferences": {
+    "description": "Baseline POLICY for how execution evidence would be applied if personalization were enabled. Policy only, and INERT in MG-6.",
+    "content_vs_execution": {
+      "content_fit": 0.7,
+      "execution_fit": 0.3
+    },
+    "evidence_ladder": {
+      "weak": 1,
+      "emerging": 2,
+      "meaningful": 3
+    },
+    "rules": [
+      "Personalization is DISABLED for this profile until the cross-profile feedback v3 schema is frozen.",
+      "When enabled, a feedback event may be consumed only if its imdb_id is already in THIS repository's own public identity set.",
+      "Execution feedback never changes topic or DNA eligibility.",
+      "A pacing complaint is execution evidence about one title and never a general rejection of slower work.",
+      "A single title never establishes a generalised content aversion.",
+      "The stable baseline remains dominant while feedback history is small."
+    ]
+  },
+  "baseline_evidence": {
+    "schema_version": 1,
+    "description": "Audit trail for how the weights above were derived. NOT read at runtime: the weights, archetypes and guardrails ARE the encoding of this evidence. EVERY ENTRY IS UNWATCHED. Watched status requires explicit confirmation that the user actually watched the public title identity, recorded in watched_confirmation, and the project record supplies structural taste signals rather than viewing confirmation. Squid Game is the documented partial-exposure case: substantial prior viewing but an unseen final season, and one Stremio identity per series means excluding it would hide exactly what is still wanted.",
+    "evidence_weights": {
+      "watched_favorite": {
+        "direction": "positive",
+        "magnitude": 1
+      },
+      "watched_love": {
+        "direction": "positive",
+        "magnitude": 0.85
+      },
+      "watched_like": {
+        "direction": "positive",
+        "magnitude": 0.6
+      },
+      "watched_mixed": {
+        "direction": "mixed",
+        "magnitude": 0
+      },
+      "watched_dislike": {
+        "direction": "negative",
+        "magnitude": 0.6
+      },
+      "trailer_interest": {
+        "direction": "positive",
+        "magnitude": 0.25
+      },
+      "trailer_aversion": {
+        "direction": "negative",
+        "magnitude": 0.25
+      }
+    },
+    "items": [
+      {
+        "title": "The Night Agent",
+        "type": "series",
+        "year": 2023,
+        "imdb_id": "tt13918776",
+        "scope": "title",
+        "evidence_type": "unwatched",
+        "evidence_class": "trailer_interest",
+        "reaction": "interested",
+        "recommendable": true,
+        "notes": [
+          "conspiracy with a mole and a hidden agenda",
+          "investigation with real forward momentum",
+          "suspense and action",
+          "anchor for conspiracy_thriller and action_thriller",
+          "structural taste anchor: it shaped the weights and archetypes, which is NOT evidence it was watched"
+        ]
+      },
+      {
+        "title": "The Capture",
+        "type": "series",
+        "year": 2019,
+        "imdb_id": "tt8201186",
+        "scope": "title",
+        "evidence_type": "unwatched",
+        "evidence_class": "trailer_interest",
+        "reaction": "interested",
+        "recommendable": true,
+        "notes": [
+          "manipulated video evidence and deepfakes",
+          "surveillance and misinformation",
+          "sustained uncertainty about whether what is shown can be trusted",
+          "conspiracy, mystery, suspense and action",
+          "the primary anchor for information_reality_thriller",
+          "structural taste anchor: it shaped the weights and archetypes, which is NOT evidence it was watched"
+        ]
+      },
+      {
+        "title": "Squid Game",
+        "type": "series",
+        "year": 2021,
+        "imdb_id": "tt10919420",
+        "scope": "title",
+        "evidence_type": "unwatched",
+        "evidence_class": "trailer_interest",
+        "reaction": "interested",
+        "recommendable": true,
+        "notes": [
+          "deadly rule-bound system with real stakes",
+          "brutality, suspense and psychological pressure",
+          "PARTIAL EXPOSURE: substantial prior viewing, but the final season has NOT been seen",
+          "Stremio carries ONE public identity for a whole series, so marking this watched would hide the unseen final season",
+          "therefore deliberately kept unwatched and recommendable under the MG-4.1 partial-series rule",
+          "anchor for deadly_system_thriller",
+          "structural taste anchor: it shaped the weights and archetypes, which is NOT evidence it was watched"
+        ]
+      },
+      {
+        "title": "Mr. Robot",
+        "type": "series",
+        "year": 2015,
+        "imdb_id": "tt4158110",
+        "scope": "title",
+        "evidence_type": "unwatched",
+        "evidence_class": "trailer_interest",
+        "reaction": "interested",
+        "recommendable": true,
+        "notes": [
+          "conspiracy and hidden motives",
+          "psychological, with a genuinely unreliable perspective",
+          "hacking and technology as leverage",
+          "anchor for information_reality_thriller",
+          "structural taste anchor: it shaped the weights and archetypes, which is NOT evidence it was watched"
+        ]
+      },
+      {
+        "title": "Mindhunter",
+        "type": "series",
+        "year": 2017,
+        "imdb_id": "tt5290382",
+        "scope": "title",
+        "evidence_type": "unwatched",
+        "evidence_class": "trailer_aversion",
+        "reaction": "unappealing",
+        "recommendable": true,
+        "notes": [
+          "THE KEY NEGATIVE STRUCTURAL ANCHOR for this whole profile",
+          "the investigation itself is genuinely interesting",
+          "but it is slow, with long stretches where little happens and few meaningful revelations land",
+          "this is the concrete disappointment that slow_investigation_without_payoff exists to prevent",
+          "it demonstrates that investigation alone is NOT payoff",
+          "structural taste anchor: it shaped the weights and archetypes, which is NOT evidence it was watched"
+        ]
+      },
+      {
+        "title": "Se7en",
+        "type": "movie",
+        "year": 1995,
+        "imdb_id": "tt0114369",
+        "scope": "title",
+        "evidence_type": "unwatched",
+        "evidence_class": "trailer_interest",
+        "reaction": "interested",
+        "recommendable": true,
+        "notes": [
+          "bizarre, ritualised cases",
+          "working them out and catching the culprit",
+          "structural taste anchor: it shaped the weights and archetypes, which is NOT evidence it was watched"
+        ]
+      },
+      {
+        "title": "Prisoners",
+        "type": "movie",
+        "year": 2013,
+        "imdb_id": "tt1392214",
+        "scope": "title",
+        "evidence_type": "unwatched",
+        "evidence_class": "trailer_interest",
+        "reaction": "interested",
+        "recommendable": true,
+        "notes": [
+          "investigation and culprit hunt",
+          "sustained suspense and mystery",
+          "structural taste anchor: it shaped the weights and archetypes, which is NOT evidence it was watched"
+        ]
+      },
+      {
+        "title": "Shutter Island",
+        "type": "movie",
+        "year": 2010,
+        "imdb_id": "tt1130884",
+        "scope": "title",
+        "evidence_type": "unwatched",
+        "evidence_class": "trailer_interest",
+        "reaction": "interested",
+        "recommendable": true,
+        "notes": [
+          "mystery with real reality uncertainty",
+          "twists and an unreliable perspective",
+          "structural taste anchor: it shaped the weights and archetypes, which is NOT evidence it was watched"
+        ]
+      },
+      {
+        "title": "Gone Girl",
+        "type": "movie",
+        "year": 2014,
+        "imdb_id": "tt2267998",
+        "scope": "title",
+        "evidence_type": "unwatched",
+        "evidence_class": "trailer_interest",
+        "reaction": "interested",
+        "recommendable": true,
+        "notes": [
+          "deception and psychological strategy",
+          "hidden motives",
+          "figuring out what actually happened",
+          "structural taste anchor: it shaped the weights and archetypes, which is NOT evidence it was watched"
+        ]
+      },
+      {
+        "title": "Zodiac",
+        "type": "movie",
+        "year": 2007,
+        "imdb_id": "tt0443706",
+        "scope": "title",
+        "evidence_type": "unwatched",
+        "evidence_class": "trailer_interest",
+        "reaction": "interested",
+        "recommendable": true,
+        "notes": [
+          "puzzles, ciphers and clues",
+          "a long culprit hunt",
+          "structural taste anchor: it shaped the weights and archetypes, which is NOT evidence it was watched"
+        ]
+      },
+      {
+        "title": "Nightcrawler",
+        "type": "movie",
+        "year": 2014,
+        "imdb_id": "tt2872718",
+        "scope": "title",
+        "evidence_type": "unwatched",
+        "evidence_class": "trailer_interest",
+        "reaction": "interested",
+        "recommendable": true,
+        "notes": [
+          "dark psychological material",
+          "structural taste anchor: it shaped the weights and archetypes, which is NOT evidence it was watched"
+        ]
+      },
+      {
+        "title": "The Invisible Man",
+        "type": "movie",
+        "year": 2020,
+        "imdb_id": "tt1051906",
+        "scope": "title",
+        "evidence_type": "unwatched",
+        "evidence_class": "trailer_interest",
+        "reaction": "interested",
+        "recommendable": true,
+        "notes": [
+          "mystery and suspense with action",
+          "sustained uncertainty about what is real",
+          "structural taste anchor: it shaped the weights and archetypes, which is NOT evidence it was watched"
+        ]
+      },
+      {
+        "title": "Searching",
+        "type": "movie",
+        "year": 2018,
+        "imdb_id": "tt7668870",
+        "scope": "title",
+        "evidence_type": "unwatched",
+        "evidence_class": "trailer_interest",
+        "reaction": "interested",
+        "recommendable": true,
+        "notes": [
+          "investigation assembled from digital evidence",
+          "clue discovery as the viewing experience",
+          "structural taste anchor: it shaped the weights and archetypes, which is NOT evidence it was watched"
+        ]
+      },
+      {
+        "title": "Dexter",
+        "type": "series",
+        "year": 2006,
+        "imdb_id": "tt0773262",
+        "scope": "title",
+        "evidence_type": "unwatched",
+        "evidence_class": "trailer_interest",
+        "reaction": "interested",
+        "recommendable": true,
+        "notes": [
+          "extremely strong structural interest",
+          "a protagonist hiding in plain sight",
+          "investigators working to solve the crimes he commits",
+          "the same duality that makes Death Note compelling",
+          "anchor for psychological_cat_and_mouse",
+          "structural taste anchor: it shaped the weights and archetypes, which is NOT evidence it was watched"
+        ]
+      },
+      {
+        "title": "You",
+        "type": "series",
+        "year": 2018,
+        "imdb_id": "tt7335184",
+        "scope": "title",
+        "evidence_type": "unwatched",
+        "evidence_class": "trailer_interest",
+        "reaction": "interested",
+        "recommendable": true,
+        "notes": [
+          "hidden protagonist and sustained deception",
+          "psychological tension",
+          "structural taste anchor: it shaped the weights and archetypes, which is NOT evidence it was watched"
+        ]
+      },
+      {
+        "title": "True Detective",
+        "type": "series",
+        "year": 2014,
+        "imdb_id": "tt2356777",
+        "scope": "title",
+        "evidence_type": "unwatched",
+        "evidence_class": "trailer_interest",
+        "reaction": "interested",
+        "recommendable": true,
+        "notes": [
+          "bizarre cases and real investigation",
+          "the first season specifically is the reference point",
+          "structural taste anchor: it shaped the weights and archetypes, which is NOT evidence it was watched"
+        ]
+      },
+      {
+        "title": "Bodyguard",
+        "type": "series",
+        "year": 2018,
+        "imdb_id": "tt7493974",
+        "scope": "title",
+        "evidence_type": "unwatched",
+        "evidence_class": "trailer_interest",
+        "reaction": "interested",
+        "recommendable": true,
+        "notes": [
+          "action with conspiracy and mystery",
+          "structural taste anchor: it shaped the weights and archetypes, which is NOT evidence it was watched"
+        ]
+      },
+      {
+        "title": "Black Bird",
+        "type": "series",
+        "year": 2022,
+        "imdb_id": "tt4301160",
+        "scope": "title",
+        "evidence_type": "unwatched",
+        "evidence_class": "trailer_interest",
+        "reaction": "interested",
+        "recommendable": true,
+        "notes": [
+          "deception and psychological strategy",
+          "twists and sustained uncertainty",
+          "structural taste anchor: it shaped the weights and archetypes, which is NOT evidence it was watched"
+        ]
+      },
+      {
+        "title": "The Silence of the Lambs",
+        "type": "movie",
+        "year": 1991,
+        "imdb_id": "tt0102926",
+        "scope": "title",
+        "evidence_type": "unwatched",
+        "evidence_class": "trailer_aversion",
+        "reaction": "unappealing",
+        "recommendable": true,
+        "notes": [
+          "the craft is high and that is measured separately",
+          "the aversion is that the PRESENTATION reads as of an earlier era",
+          "this is retro_visual_style, NEVER the release year",
+          "structural taste anchor: it shaped the weights and archetypes, which is NOT evidence it was watched"
+        ]
+      },
+      {
+        "title": "Sicario",
+        "type": "movie",
+        "year": 2015,
+        "imdb_id": "tt3397884",
+        "scope": "title",
+        "evidence_type": "unwatched",
+        "evidence_class": "trailer_aversion",
+        "reaction": "unappealing",
+        "recommendable": true,
+        "notes": [
+          "military and operations framing is the negative",
+          "structural taste anchor: it shaped the weights and archetypes, which is NOT evidence it was watched"
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "template_revision": "d57bb229b15b426e",
+  "generated_from": "wtf-addon-template",
+  "note": "Vendored engine files. Edit the template and regenerate; never edit these in place.",
+  "files": {
+    "scripts/dna-score.mjs": "53802d87493b5ea174914c8529be782db6d15126b2edb06e71ca1435c910e56c",
+    "scripts/identity.mjs": "e9e7e2335ab562e1470d5e4b8157633055af4ac5670fc9cb4f7f89cea502eeb4",
+    "scripts/sort.mjs": "5ae5e53d1f33ee53fb41610e2515597315fa5949c13a106ab8d5c772d7f856ac",
+    "scripts/personalized-scores.mjs": "76159b383acf1b252716961508b866390c0e992ba7b37c476f5f8628696d0da0",
+    "scripts/validate-profile.mjs": "39dca788cbd2e5041dc5cede12967e2b7456accf322e89c2277a48c39d7d5f75",
+    "scripts/validate.mjs": "199bb3b3f26fbbe7b4764462a0303c6c8abddd63a491e5d2acedc83bcf47b839",
+    "scripts/build-site.mjs": "0d3f38a9a52ca5b9b0263b6b7631bbe96b43ed0589627860f502a4d7952c6311",
+    "scripts/cinemeta.mjs": "7d38f8c90c729ada3835d31c5f0270a91d6da93080526e743b8911c00d9aa8b5",
+    "scripts/resolve-library.mjs": "901b2991c6e8d946ae51c79fc9c1291c3957dfac833324aac5efc1c303f918d4",
+    "test/safe-fixture.mjs": "26bfb5a531dac11e8e8ac78593ce6349c86e1e5fae60579c9447b22373e9d961",
+    "test/run-all.mjs": "b4bab63fae794bd6d72dbd7c437204bde15670ea39f037233508a968601553a3",
+    "test/engine-checksum.test.mjs": "b1dec1b596b9f6916111eead2a9233ae57cc252f4b37fe7b4438cef40e17831e",
+    "test/engine-invariants.test.mjs": "bd898f96dea684bfe9371637fbdc91813688706a00f8c2bc654028b9a9500e9b",
+    "test/baseline-evidence.test.mjs": "2d7e553679b78d51717c73a8e5c99b0b18f88b249aa15a68a39651e4957ebc9d",
+    "test/no-production-mutation.test.mjs": "0aed500b006441ff78423312eb18f271fe514456b1a492c53008782a05c1d9a3"
+  }
+}
