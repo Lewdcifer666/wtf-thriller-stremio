@@ -36,13 +36,34 @@ const evidence = profile.baseline_evidence;
 console.log("Baseline evidence");
 console.log("");
 
+// THE BLOCK IS OPTIONAL, AND THIS TEST MUST AGREE WITH THE VALIDATOR.
+//
+// validate-profile.mjs states it outright - `if (section === undefined) return;
+// // optional` - so a profile may legitimately carry no baseline_evidence at
+// all. The real case is a mature addon that predates the block and encodes
+// its derivation in reference_titles instead.
+//
+// This test previously hard-failed on absence, which contradicted the validator
+// and made the canonical suite unhostable for such a repo. The generic
+// invariant is not "the block exists" - it is "IF the block exists it obeys
+// every rule below, and if it does not, the profile is still valid".
+//
+// Whether a given PRODUCT must carry the block is genre-owned policy, asserted
+// by that repo's own profile test, not a generic engine invariant.
+if (!evidence) {
+  const errs = validateProfile(profile).filter(e => String(e).includes("baseline_evidence"));
+  check("T6-0", "a profile carrying no baseline_evidence block is still valid",
+    errs.length === 0, errs.join("; "));
+  console.log("");
+  console.log("  --   baseline_evidence is absent from this profile; the block-specific");
+  console.log("       assertions below are not applicable and are skipped.");
+  console.log("");
+  console.log(`${passed} passed, ${failed} failed`);
+  process.exit(failed ? 1 : 0);
+}
+
 check("T6-0", "the profile carries a baseline_evidence block", !!evidence,
   "without it there is no auditable derivation for the weights");
-
-if (!evidence) {
-  console.error("\n1 failed");
-  process.exit(1);
-}
 
 // ---------------------------------------------------------------------------
 // T6 - the weight model

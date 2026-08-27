@@ -1,5 +1,5 @@
 {
-  "template_revision": "d57bb229b15b426e",
+  "template_revision": "46ef6ba75aa28ccc",
   "generated_from": "wtf-addon-template",
   "note": "Vendored engine files. Edit the template and regenerate; never edit these in place.",
   "files": {
@@ -16,7 +16,7 @@
     "test/run-all.mjs": "b4bab63fae794bd6d72dbd7c437204bde15670ea39f037233508a968601553a3",
     "test/engine-checksum.test.mjs": "b1dec1b596b9f6916111eead2a9233ae57cc252f4b37fe7b4438cef40e17831e",
     "test/engine-invariants.test.mjs": "bd898f96dea684bfe9371637fbdc91813688706a00f8c2bc654028b9a9500e9b",
-    "test/baseline-evidence.test.mjs": "2d7e553679b78d51717c73a8e5c99b0b18f88b249aa15a68a39651e4957ebc9d",
+    "test/baseline-evidence.test.mjs": "7f7364e3ce0ab1d4967f90786ef6df15d09895dea8833562cf3678dbb336cfb8",
     "test/no-production-mutation.test.mjs": "0aed500b006441ff78423312eb18f271fe514456b1a492c53008782a05c1d9a3"
   }
 }
