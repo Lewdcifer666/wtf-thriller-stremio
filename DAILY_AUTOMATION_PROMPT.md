@@ -59,9 +59,114 @@ PHASE A - READ STATE (once, reuse all run)
    baseline_evidence is unwatched and fully recommendable, including the
    structural anchors. Do NOT "helpfully" treat an anchor as watched.
 
-5. PERSONALIZATION IS DISABLED. Do not read any private feedback
-   repository. Do not create, modify or reference
-   data/personalized-scores.json.
+5. PERSONALIZATION IS PRESENTLY DORMANT.
+
+   Do NOT read any private feedback repository, and do NOT create,
+   modify or reference data/personalized-scores.json, unless this
+   repository already contains that file. Until it does, this addon
+   discovers on its static baseline profile exactly as before, and a
+   run that finds no such file must behave as it always has.
+
+   The absence of the file IS the switch. There is no flag to set and
+   nothing to toggle here: personalization begins the first time a run
+   is explicitly told to produce that file, and reverting is deleting
+   it. The contract below is what to do THEN, recorded now so that the
+   rules are frozen before any evidence exists to bend them.
+
+   ---- WHEN PERSONALIZATION IS ENABLED FOR THIS ADDON ----
+
+   Resolve feedback history FIRST and GLOBALLY: parse every event,
+   build the feedback_id map, resolve supersedes, find effective tips,
+   apply retraction boundaries, and keep unsupported-schema events in
+   the graph as opaque. Only then interpret anything. profile_context
+   NEVER decides topology.
+
+   Supported schemas are 1, 2 and 3. A schema-3 event carries
+   profile_context, one of scifi, fantasy, action, anime, thriller, or
+   null. null means provenance was not provable and is a real value.
+   v1 and v2 events have no context and use the ownership fallback.
+
+   ATTRIBUTABLE TO THIS ADDON means: profile_context is thriller, OR
+   profile_context is null AND the event's imdb_id is already in this
+   repository's own public identity set (data/library.json plus every
+   data/discoveries/*.json). A context naming another profile is NOT
+   attributable here. Membership alone is never provenance.
+
+   Signals travel different distances. Do not gate a whole event:
+
+     EXECUTION aspects - acting, characters, dialogue, pacing, visuals,
+     effects, ending_payoff, sound_music, originality - are UNIVERSAL.
+     They judge craft, not subject, so they feed execution_fit whatever
+     the context says and whether or not this addon owns the title.
+
+     THE NUMERIC RATING anchoring execution_fit is PROFILE-SCOPED: use
+     it only when the event is attributable here. One profile's average
+     satisfaction must never move another's anchor.
+
+     TONE aspects are PROFILE-SCOPED and map, for this profile:
+       suspense -> suspense
+       horror -> NONE
+       action -> action_intensity
+       humor -> NONE
+       survival_chase -> NONE
+       military_focus -> military_focus
+     setting_atmosphere and emotion map to NONE. Never invent an
+     equivalent, and tone never becomes a hard exclusion.
+
+     UNIVERSAL CONCEPT aspects may cross profile_context, because the
+     user named a property that means the same thing here. Map only:
+       mystery -> mystery
+       world_rules -> NONE. clue_puzzling is evidence work, not a world's rule set,
+         and mapping them would let a world-rules vote move a revelation dimension
+       conspiracy -> conspiracy
+       creature_threat -> NONE
+       concept_escalation -> NONE
+       weirdness -> weirdness
+     premise_concept is not a direct mapping; see premise_interest.
+
+     THE SCI-FI-SPECIFIC CONCEPT aspects - science_biology,
+     alien_unknown, scientific_investigation, reality_time_anomaly,
+     mind_consciousness, experiments - have NO approved mapping in this
+     profile and contribute nothing. Do not approximate them.
+
+     premise_interest and legacy more_like_this need this profile's OWN
+     DNA for the source title: use them only when the event is
+     attributable here AND imdb_id is valid AND that title is in this
+     repository's identity set. Never project another profile's DNA.
+     premise_interest is +/-1.00, more_like_this +/-0.50, maybe is 0.
+
+     DNF reasons are PROFILE-SCOPED title-level evidence, never a topic
+     rejection and never a blacklist. Explicit execution aspects on the
+     same event still count universally.
+
+     FREE TEXT is PROFILE-SCOPED and qualitative only. Structured
+     fields always win. Never expose it.
+
+   A null imdb_id contributes ZERO preference learning. An unsupported
+   tip stays opaque. A retracted tip contributes nothing.
+
+   CONTENT-PROJECTABLE dimensions for premise/source-DNA projection are
+   exactly: mystery, investigation, clue_puzzling, culprit_hunt, plot_twists, psychological_strategy, cat_and_mouse, deception, hidden_identity, unreliable_perspective, conspiracy, mole_inside, corruption, surveillance, evidence_manipulation, technology_threat, deadly_game, weirdness.
+
+   FORBIDDEN from any feedback projection: progressive_revelation, revelation_frequency, suspense, action_density, action_intensity, brutality, military_focus, romance_focus, drama_focus, visual_quality, retro_visual_style, pace_speed.
+
+   Evidence ladder, unchanged: 1 independent title -> 0.30, 2 -> 0.60,
+   3+ -> 1.00. Concept votes +/-0.60, tone +/-0.30. Clamp one source
+   title's total contribution to any one dimension to +/-1. MAX_SHIFT
+   6 / 12 / 20 on one / two / three-plus contributing titles.
+
+   STATIC POLICY IS NEVER LEARNED AWAY. Feedback adjusts personalized
+   fit and nothing else. It may never weaken, rewrite or neutralise slow_investigation_without_payoff, low_revelation_thriller, military_first_thriller, romance_drama_dominant and cheap_presentation. progressive_revelation and revelation_frequency are NON-PROJECTABLE precisely so the revelation-cadence safeguards can never be learned away.
+   Personalization never overrides a hard exclusion.
+
+   The public file stays EXACTLY this closed schema and nothing else:
+   schema_version, generated_at, and items keyed by IMDb id carrying
+   only dna_match and execution_fit as integers 0..100. No rating, no
+   aspects, no profile_context, no free text, no evidence counts, no
+   feedback ids. If personalization is enabled and current usable
+   active evidence resolves to ZERO, write a fresh valid snapshot with
+   an empty items object rather than leaving a stale one in place - a
+   retraction must revoke its derived preference on the next run.
 
 =====================================================================
 PHASE B - RESEARCH (time-boxed)
