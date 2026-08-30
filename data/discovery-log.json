@@ -1,4 +1,28 @@
 {
   "schema_version": 1,
-  "runs": []
+  "runs": [
+    {
+      "run_id": "2026-08-30-a1",
+      "timestamp": "2026-08-30T07:00:30Z",
+      "searched": 2,
+      "accepted": 2,
+      "rejected": 0,
+      "duplicates": 0,
+      "accepted_items": [
+        {
+          "imdb_id": "tt30988739",
+          "type": "movie",
+          "title": "Black Bag",
+          "match_score": 78
+        },
+        {
+          "imdb_id": "tt32149847",
+          "type": "movie",
+          "title": "Drop",
+          "match_score": 79
+        }
+      ],
+      "rejection_summary": "Both researched candidates cleared the Thriller profile's 62-point minimum after explicit revelation-cadence research. Black Bag qualified through a sustained mole hunt with repeated suspicion shifts; Drop qualified through frequent new information, suspect narrowing, technology-driven surveillance and a brisk contained cat-and-mouse structure. No duplicates or rejection cases were encountered."
+    }
+  ]
 }
