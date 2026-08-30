@@ -23,6 +23,19 @@
         }
       ],
       "rejection_summary": "Both researched candidates cleared the Thriller profile's 62-point minimum after explicit revelation-cadence research. Black Bag qualified through a sustained mole hunt with repeated suspicion shifts; Drop qualified through frequent new information, suspect narrowing, technology-driven surveillance and a brisk contained cat-and-mouse structure. No duplicates or rejection cases were encountered."
+    },
+    {
+      "run_id": "2026-08-30-t1",
+      "timestamp": "2026-08-30T07:49:14Z",
+      "searched": 3,
+      "accepted": 2,
+      "rejected": 1,
+      "duplicates": 0,
+      "accepted_items": [
+        "tt18347622",
+        "tt13274016"
+      ],
+      "rejection_summary": "Researched three candidates against the static baseline profile. Two accepted: Bodies (85), a four-timeline murder investigation whose revelations keep recontextualising each other, and Reptile (75), strong on evidence work and institutional corruption though it sags in the middle. The Fall was rejected: it names its killer in the first hour and replaces mystery with a slow pursuit, firing slow_investigation_without_payoff - the guardrail written for exactly this shape - and it does not clear the DNA Match floor. Values were revised down where reviews contradicted the premise. Personalization is dormant: no personalized-scores.json exists and none was created. Zero duplicates against the identity set."
     }
   ]
 }
