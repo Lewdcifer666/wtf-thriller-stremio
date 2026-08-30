@@ -335,7 +335,13 @@ check("AL2", "no accepted item is below the calibrated threshold",
 if (fs.existsSync(path.join(root, "site", "catalog"))) {
   const p24 = ["movie","series"].map(t => path.join(root, "site", "catalog", t, `past-24h-${t}.json`))
     .filter(f => fs.existsSync(f)).flatMap(f => JSON.parse(fs.readFileSync(f, "utf8")).metas);
-  check("AM1", "Past 24h contains no bootstrap item", p24.length === 0, `${p24.length} leaked`);
+  // No BOOTSTRAP title may appear here. The row is NOT required to be empty:
+  // once a real daily run lands, its discoveries belong in it, and asserting
+  // emptiness would fail on exactly the behaviour the row exists to produce.
+  const bootstrapIds = new Set(sourceItems.filter(i => i.added_by === "bootstrap").map(i => i.imdb_id));
+  const leaked = p24.filter(m => bootstrapIds.has(String(m.id).split(":")[0]));
+  check("AM1", "Past 24h contains no bootstrap item", leaked.length === 0,
+    `${leaked.map(m => m.name).join(", ")} leaked`);
 }
 {
   const dup = runValidateWith([item(GOOD, { imdb_id: "tt5555555", title: "A" }), item(GOOD, { imdb_id: "tt5555555", title: "B" })]);
