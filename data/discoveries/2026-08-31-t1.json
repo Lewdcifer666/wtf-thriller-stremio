@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "run_id": "2026-08-31-t1",
+  "timestamp": "2026-08-31T07:22:51Z",
+  "items": [
+    {
+      "imdb_id": "tt9169516",
+      "type": "series",
+      "title": "Run Away",
+      "year": 2026,
+      "status": "watch",
+      "match_score": 82,
+      "reason": "A father's search for his missing daughter keeps opening into murder, cult ties, family secrets and new suspect pictures, with a dense run of revelations rather than a procedural that withholds its answers.",
+      "tags": [],
+      "added_at": "2026-08-31T07:22:51Z",
+      "added_by": "daily-automation",
+      "discovery_run_id": "2026-08-31-t1",
+      "source": "https://www.imdb.com/title/tt9169516/ ; https://www.metacritic.com/tv/run-away/critic-reviews/ ; https://www.netflix.com/tudum/articles/run-away-ending-explained ; https://people.com/run-away-ending-explained-11879330",
+      "dna": {
+        "mystery": 9,
+        "investigation": 8,
+        "clue_puzzling": 7,
+        "culprit_hunt": 8,
+        "progressive_revelation": 8,
+        "revelation_frequency": 8,
+        "plot_twists": 9,
+        "psychological_strategy": 7,
+        "cat_and_mouse": 6,
+        "deception": 9,
+        "hidden_identity": 7,
+        "unreliable_perspective": 5,
+        "conspiracy": 8,
+        "mole_inside": 4,
+        "corruption": 6,
+        "surveillance": 4,
+        "evidence_manipulation": 6,
+        "technology_threat": 2,
+        "suspense": 8,
+        "action_density": 3,
+        "action_intensity": 5,
+        "brutality": 7,
+        "deadly_game": 0,
+        "weirdness": 4,
+        "military_focus": 0,
+        "romance_focus": 3,
+        "drama_focus": 7,
+        "visual_quality": 8,
+        "retro_visual_style": 1,
+        "pace_speed": 7
+      },
+      "dna_confidence": 0.84,
+      "dna_tags": [
+        "cult"
+      ]
+    }
+  ]
+}

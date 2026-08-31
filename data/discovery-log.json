@@ -36,6 +36,23 @@
         "tt13274016"
       ],
       "rejection_summary": "Researched three candidates against the static baseline profile. Two accepted: Bodies (85), a four-timeline murder investigation whose revelations keep recontextualising each other, and Reptile (75), strong on evidence work and institutional corruption though it sags in the middle. The Fall was rejected: it names its killer in the first hour and replaces mystery with a slow pursuit, firing slow_investigation_without_payoff - the guardrail written for exactly this shape - and it does not clear the DNA Match floor. Values were revised down where reviews contradicted the premise. Personalization is dormant: no personalized-scores.json exists and none was created. Zero duplicates against the identity set."
+    },
+    {
+      "run_id": "2026-08-31-t1",
+      "timestamp": "2026-08-31T07:22:51Z",
+      "searched": 2,
+      "accepted": 1,
+      "rejected": 1,
+      "duplicates": 0,
+      "accepted_items": [
+        {
+          "imdb_id": "tt9169516",
+          "type": "series",
+          "title": "Run Away",
+          "match_score": 82
+        }
+      ],
+      "rejection_summary": "Run Away was accepted at 82 after explicit whole-series revelation-cadence research: reviews describe shocking revelations, complex lies, taut pacing and a dense twist structure, and ending coverage confirms multiple discoveries that repeatedly reframe the family and murder mystery. 56 Days was rejected at a computed 59: it has real twists and uncertainty, but critics repeatedly describe the mystery as snoozy/overlong and the romance-drama component is dominant enough that the baseline DNA score remains below the Thriller minimum of 62. Personalization remains dormant because data/personalized-scores.json is absent. No duplicates were found in the fresh final identity checks."
     }
   ]
 }
