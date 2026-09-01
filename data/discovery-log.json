@@ -53,6 +53,23 @@
         }
       ],
       "rejection_summary": "Run Away was accepted at 82 after explicit whole-series revelation-cadence research: reviews describe shocking revelations, complex lies, taut pacing and a dense twist structure, and ending coverage confirms multiple discoveries that repeatedly reframe the family and murder mystery. 56 Days was rejected at a computed 59: it has real twists and uncertainty, but critics repeatedly describe the mystery as snoozy/overlong and the romance-drama component is dominant enough that the baseline DNA score remains below the Thriller minimum of 62. Personalization remains dormant because data/personalized-scores.json is absent. No duplicates were found in the fresh final identity checks."
+    },
+    {
+      "run_id": "2026-09-01-t1",
+      "timestamp": "2026-09-01T07:00:05Z",
+      "searched": 1,
+      "accepted": 1,
+      "rejected": 0,
+      "duplicates": 0,
+      "accepted_items": [
+        {
+          "imdb_id": "tt33035373",
+          "type": "series",
+          "title": "His & Hers",
+          "match_score": 78
+        }
+      ],
+      "rejection_summary": "His & Hers was accepted at 78 after explicit whole-season revelation-cadence research. Across six episodes the murder investigation repeatedly changes the suspect picture through new murders, identity revelations, planted evidence and back-half reversals; reviews describe the run as tight and twisty while also noting that some major reveals are withheld late, so progressive_revelation and revelation_frequency were kept at 7 rather than inflated. Personalization remains dormant because data/personalized-scores.json is absent. No duplicates were found in the fresh final identity check."
     }
   ]
 }

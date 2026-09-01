@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "run_id": "2026-09-01-t1",
+  "timestamp": "2026-09-01T07:00:05Z",
+  "items": [
+    {
+      "imdb_id": "tt33035373",
+      "type": "series",
+      "title": "His & Hers",
+      "year": 2026,
+      "status": "watch",
+      "match_score": 78,
+      "reason": "A six-episode murder mystery built on mutual suspicion, false identities and repeated reversals, with meaningful new information landing throughout rather than only in the final reveal.",
+      "tags": [],
+      "added_at": "2026-09-01T07:00:05Z",
+      "added_by": "daily-automation",
+      "discovery_run_id": "2026-09-01-t1",
+      "source": "https://www.imdb.com/title/tt33035373/ ; https://www.metacritic.com/tv/his-hers-2026/critic-reviews/ ; https://www.netflix.com/tudum/articles/his-hers-episode-6-recap-ending-explained ; https://www.rottentomatoes.com/tv/his_and_hers/s01",
+      "dna": {
+        "mystery": 9,
+        "investigation": 8,
+        "clue_puzzling": 7,
+        "culprit_hunt": 9,
+        "progressive_revelation": 7,
+        "revelation_frequency": 7,
+        "plot_twists": 9,
+        "psychological_strategy": 6,
+        "cat_and_mouse": 6,
+        "deception": 9,
+        "hidden_identity": 8,
+        "unreliable_perspective": 6,
+        "conspiracy": 4,
+        "mole_inside": 1,
+        "corruption": 3,
+        "surveillance": 4,
+        "evidence_manipulation": 7,
+        "technology_threat": 2,
+        "suspense": 8,
+        "action_density": 3,
+        "action_intensity": 5,
+        "brutality": 8,
+        "deadly_game": 0,
+        "weirdness": 3,
+        "military_focus": 0,
+        "romance_focus": 4,
+        "drama_focus": 7,
+        "visual_quality": 8,
+        "retro_visual_style": 1,
+        "pace_speed": 6
+      },
+      "dna_confidence": 0.82,
+      "dna_tags": [
+        "serial_killer",
+        "small_town"
+      ]
+    }
+  ]
+}
