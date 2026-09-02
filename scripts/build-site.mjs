@@ -163,15 +163,47 @@ function writeJson(file, value) {
   fs.writeFileSync(file, JSON.stringify(value, null, 2) + "\n", "utf8");
 }
 
+// Presentation copy belongs to the addon, not to the builder. config.site is
+// optional; without it the page falls back to the manifest's own name and
+// description, so a repo can never end up branded as a different addon.
+const site = config.site || {};
+
+// STREMIO APPENDS THE MEDIA TYPE ITSELF.
+//
+// A catalog entry's `type` is already rendered by the client as " - Movie" or
+// " - Series", so putting "Movies" / "Series" in the NAME as well produced a
+// visible duplication:
+//
+//     "Full Watchlist • Movies"  ->  "Full Watchlist • Movies - Movie"
+//
+// The name therefore carries the GENRE instead. That is the part the client
+// cannot derive on its own, and it is what actually distinguishes one WTF
+// addon's rows from another's when several are installed side by side:
+//
+//     "🧬 DNA Match • Mystery"   ->  "🧬 DNA Match • Mystery - Movie"
+//     "⚡ High Suspense • Thriller" -> "⚡ High Suspense • Thriller - Series"
+//
+// site.genre is genre-owned presentation copy and stays OPTIONAL. Without it
+// the row is simply "🧬 DNA Match - Movie" - still correct, still never
+// duplicated. The builder must never invent a genre label of its own, because
+// guessing one from the manifest name would brand a repo with a word its own
+// config never chose.
+//
+// NOTE this affects the DISPLAY NAME ONLY. The catalog id stays `${def.id}-${type}`,
+// so endpoints, sorting, filtering and every stored score are untouched.
+const genre = typeof site.genre === "string" ? site.genre.trim() : "";
+const rowName = def => genre ? `${def.name} • ${genre}` : def.name;
+
 const manifestCatalogs = [];
 for (const type of ["movie", "series"]) {
   for (const def of config.catalogs) {
     const id = `${def.id}-${type}`;
-    const labelType = type === "movie" ? "Movies" : "Series";
-    manifestCatalogs.push({ type, id, name: `${def.name} • ${labelType}` });
+    manifestCatalogs.push({ type, id, name: rowName(def) });
     const selected = sortItems(def, watch.filter(x => x.type === type && matches(def, x)), dnaScoreFor);
     writeJson(path.join(out, "catalog", type, `${id}.json`), { metas: selected.map(item => meta(item, def)) });
-    console.log(`${labelType}: ${def.name} -> ${selected.length}`);
+    // Build log only, never user-facing: the type label here is for whoever is
+    // reading the CI output.
+    console.log(`${type === "movie" ? "Movies" : "Series"}: ${def.name} -> ${selected.length}`);
   }
 }
 
@@ -188,10 +220,7 @@ const manifest = {
 writeJson(path.join(out, "manifest.json"), manifest);
 fs.writeFileSync(path.join(out, ".nojekyll"), "", "utf8");
 
-// Presentation copy belongs to the addon, not to the builder. config.site is
-// optional; without it the page falls back to the manifest's own name and
-// description, so a repo can never end up branded as a different addon.
-const site = config.site || {};
+// site was resolved above, where the catalog row names are built.
 const pageTitle = site.title || config.manifest.name;
 const pageEmoji = site.emoji || "";
 const pageHeading = `${pageEmoji ? pageEmoji + " " : ""}${pageTitle}`;

@@ -9,6 +9,7 @@
   "site": {
     "title": "WTF Thriller Discovery",
     "emoji": "🔎",
+    "genre": "Thriller",
     "blurb": "Automated Stremio catalogs for thrillers that keep paying out - investigation and cat-and-mouse where revelations actually land and change what you thought you knew. A procedural that investigates constantly and tells you nothing is not a thriller here."
   },
   "catalogs": [
