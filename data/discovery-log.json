@@ -70,6 +70,29 @@
         }
       ],
       "rejection_summary": "His & Hers was accepted at 78 after explicit whole-season revelation-cadence research. Across six episodes the murder investigation repeatedly changes the suspect picture through new murders, identity revelations, planted evidence and back-half reversals; reviews describe the run as tight and twisty while also noting that some major reveals are withheld late, so progressive_revelation and revelation_frequency were kept at 7 rather than inflated. Personalization remains dormant because data/personalized-scores.json is absent. No duplicates were found in the fresh final identity check."
+    },
+    {
+      "run_id": "2026-09-02-t1",
+      "timestamp": "2026-09-02T07:01:36Z",
+      "searched": 2,
+      "accepted": 2,
+      "rejected": 0,
+      "duplicates": 0,
+      "accepted_items": [
+        {
+          "imdb_id": "tt35149250",
+          "type": "series",
+          "title": "The Art of Sarah",
+          "match_score": 89
+        },
+        {
+          "imdb_id": "tt36996011",
+          "type": "series",
+          "title": "Mousetrap",
+          "match_score": 88
+        }
+      ],
+      "rejection_summary": "Two series candidates were researched against the static Thriller profile and both cleared the 62-point minimum after explicit whole-season revelation-cadence research. The Art of Sarah scored 89: its eight-episode murder/identity inquiry introduces new aliases, contradictory histories and identity reversals across the run, with episode-level sources showing repeated reframing rather than one withheld ending twist. Mousetrap scored 88: its ten episodes repeatedly surface new links to the Rat, recovered memories, hidden pasts and identity reversals; although the opening episode is relatively slow, the season's information cadence remains high. Personalization is dormant because data/personalized-scores.json is absent. The mandatory fresh final identity check found zero duplicates."
     }
   ]
 }
