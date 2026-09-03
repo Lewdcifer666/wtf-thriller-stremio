@@ -93,6 +93,29 @@
         }
       ],
       "rejection_summary": "Two series candidates were researched against the static Thriller profile and both cleared the 62-point minimum after explicit whole-season revelation-cadence research. The Art of Sarah scored 89: its eight-episode murder/identity inquiry introduces new aliases, contradictory histories and identity reversals across the run, with episode-level sources showing repeated reframing rather than one withheld ending twist. Mousetrap scored 88: its ten episodes repeatedly surface new links to the Rat, recovered memories, hidden pasts and identity reversals; although the opening episode is relatively slow, the season's information cadence remains high. Personalization is dormant because data/personalized-scores.json is absent. The mandatory fresh final identity check found zero duplicates."
+    },
+    {
+      "run_id": "2026-09-03-t1",
+      "timestamp": "2026-09-03T07:01:17Z",
+      "searched": 2,
+      "accepted": 2,
+      "rejected": 0,
+      "duplicates": 0,
+      "accepted_items": [
+        {
+          "imdb_id": "tt36303968",
+          "type": "series",
+          "title": "Furious",
+          "match_score": 90
+        },
+        {
+          "imdb_id": "tt38734636",
+          "type": "series",
+          "title": "Oasis",
+          "match_score": 68
+        }
+      ],
+      "rejection_summary": "Two series candidates were researched against the static Thriller profile and both cleared the 62-point minimum after explicit whole-season revelation-cadence research. Furious scored 90: the eight-episode FBI/serial-killer pursuit repeatedly converts evidence into new links among the victims, Catherine, Isabel, the Eastons and institutional failures, with later episodes continuing to reframe the case rather than withholding everything for the finale. Oasis scored 68: its eight-episode locked-resort disappearance mystery lands new clues, memory information, lead changes and a larger-scandal turn across the run; substantial teen drama and romance lower its baseline fit, but the mystery's revelation cadence remains sufficient to clear the threshold. Personalization remains dormant because data/personalized-scores.json is absent. The mandatory fresh final identity check found zero duplicates."
     }
   ]
 }
