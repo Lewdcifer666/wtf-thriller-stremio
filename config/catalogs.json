@@ -2,7 +2,7 @@
   "schema_version": 2,
   "manifest": {
     "id": "com.github.wtfthriller.discovery",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "name": "WTF Thriller Discovery",
     "description": "Automated thrillers that keep paying out: mysteries, investigations and cat-and-mouse where meaningful new information actually lands and reframes what you understood. Slow procedurals that investigate constantly and reveal nothing are penalised on purpose."
   },
