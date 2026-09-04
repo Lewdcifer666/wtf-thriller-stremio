@@ -115,7 +115,24 @@
           "match_score": 68
         }
       ],
-      "rejection_summary": "Two series candidates were researched against the static Thriller profile and both cleared the 62-point minimum after explicit whole-season revelation-cadence research. Furious scored 90: the eight-episode FBI/serial-killer pursuit repeatedly converts evidence into new links among the victims, Catherine, Isabel, the Eastons and institutional failures, with later episodes continuing to reframe the case rather than withholding everything for the finale. Oasis scored 68: its eight-episode locked-resort disappearance mystery lands new clues, memory information, lead changes and a larger-scandal turn across the run; substantial teen drama and romance lower its baseline fit, but the mystery's revelation cadence remains sufficient to clear the threshold. Personalization remains dormant because data/personalized-scores.json is absent. The mandatory fresh final identity check found zero duplicates."
+      "rejection_summary": "Two series candidates were researched against the static Thriller profile and both cleared the 62-point minimum after explicit whole-season revelation-cadence research. Furious scored 90: the eight-episode FBI/serial-killer pursuit repeatedly converts evidence into new links among the victims, Catherine, Isabel, the Eastons and institutional failures, with later episodes continuing to reframe the case rather than withholding everything for the finale. Oasis scored 68: its eight-episode locked-resort disappearance mystery lands new clues, memory information, lead changes and a larger-scandal turn across the run; substantial teen drama and romance lower its baseline fit, but the mystery's revelation cadence remains sufficient to clear the threshold. Personalization is dormant because data/personalized-scores.json is absent. The mandatory fresh final identity check found zero duplicates."
+    },
+    {
+      "run_id": "2026-09-04-t1",
+      "timestamp": "2026-09-04T06:57:29Z",
+      "searched": 2,
+      "accepted": 1,
+      "rejected": 1,
+      "duplicates": 0,
+      "accepted_items": [
+        {
+          "imdb_id": "tt14858658",
+          "type": "movie",
+          "title": "Blink Twice",
+          "match_score": 74
+        }
+      ],
+      "rejection_summary": "Blink Twice was accepted at 74 after explicit whole-film revelation-cadence research: the missing-time mystery pays out through Jess's disappearance, the lighter and time gaps, the perfume mechanism, snake-venom antidote, returning memories, Frida's prior visit and the final reversal, so understanding is repeatedly rebuilt rather than held for one isolated ending twist. By Any Means was rejected: current reviews describe a largely straightforward and predictable investigation with some slower stretches, and its evidence profile does not support enough frequent progressive reframing to clear the Thriller minimum. Personalization remains dormant because data/personalized-scores.json is absent. The mandatory fresh final identity check found zero duplicates."
     }
   ]
 }
