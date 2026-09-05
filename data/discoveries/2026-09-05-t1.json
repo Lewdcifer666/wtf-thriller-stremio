@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "run_id": "2026-09-05-t1",
+  "timestamp": "2026-09-05T07:01:32Z",
+  "items": [
+    {
+      "imdb_id": "tt10855768",
+      "type": "movie",
+      "title": "Missing",
+      "year": 2023,
+      "status": "watch",
+      "match_score": 81,
+      "reason": "A screenlife missing-person investigation where each cracked account, surveillance clue and identity reveal changes the suspect picture, with frequent discoveries and multiple reframings across the full runtime.",
+      "tags": [],
+      "added_at": "2026-09-05T07:01:32Z",
+      "added_by": "daily-automation",
+      "discovery_run_id": "2026-09-05-t1",
+      "source": "https://www.imdb.com/title/tt10855768/ ; https://www.rogerebert.com/reviews/missing-movie-review-2023 ; https://www.theguardian.com/film/2023/jan/19/missing-review-searching-sequel-offers-more-laptop-based-thrills ; https://www.nme.com/news/film/missing-ending-explained-does-june-track-down-her-mother-3832319",
+      "dna": {
+        "mystery": 9,
+        "investigation": 8,
+        "clue_puzzling": 8,
+        "culprit_hunt": 7,
+        "progressive_revelation": 8,
+        "revelation_frequency": 8,
+        "plot_twists": 9,
+        "psychological_strategy": 6,
+        "cat_and_mouse": 4,
+        "deception": 9,
+        "hidden_identity": 7,
+        "unreliable_perspective": 4,
+        "conspiracy": 5,
+        "mole_inside": 0,
+        "corruption": 1,
+        "surveillance": 9,
+        "evidence_manipulation": 8,
+        "technology_threat": 8,
+        "suspense": 9,
+        "action_density": 3,
+        "action_intensity": 5,
+        "brutality": 5,
+        "deadly_game": 0,
+        "weirdness": 3,
+        "military_focus": 0,
+        "romance_focus": 2,
+        "drama_focus": 6,
+        "visual_quality": 8,
+        "retro_visual_style": 0,
+        "pace_speed": 8
+      },
+      "dna_confidence": 0.86,
+      "dna_tags": [
+        "kidnapping"
+      ]
+    }
+  ]
+}

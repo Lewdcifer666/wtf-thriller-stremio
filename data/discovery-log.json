@@ -133,6 +133,23 @@
         }
       ],
       "rejection_summary": "Blink Twice was accepted at 74 after explicit whole-film revelation-cadence research: the missing-time mystery pays out through Jess's disappearance, the lighter and time gaps, the perfume mechanism, snake-venom antidote, returning memories, Frida's prior visit and the final reversal, so understanding is repeatedly rebuilt rather than held for one isolated ending twist. By Any Means was rejected: current reviews describe a largely straightforward and predictable investigation with some slower stretches, and its evidence profile does not support enough frequent progressive reframing to clear the Thriller minimum. Personalization remains dormant because data/personalized-scores.json is absent. The mandatory fresh final identity check found zero duplicates."
+    },
+    {
+      "run_id": "2026-09-05-t1",
+      "timestamp": "2026-09-05T07:01:32Z",
+      "searched": 1,
+      "accepted": 1,
+      "rejected": 0,
+      "duplicates": 0,
+      "accepted_items": [
+        {
+          "imdb_id": "tt10855768",
+          "type": "movie",
+          "title": "Missing",
+          "match_score": 81
+        }
+      ],
+      "rejection_summary": "Missing was accepted at 81 after explicit whole-film revelation-cadence research. June's digital investigation repeatedly lands meaningful new information through cracked accounts, aliases, surveillance, the staged trip, Heather's death, Kevin's role and the later James reveal, so the film rebuilds the suspect picture several times rather than relying on one final twist. Reviews describe it as propulsive, involving and packed with twists, while the plot sources confirm those discoveries are distributed across the runtime. Personalization remains dormant because data/personalized-scores.json is absent. The mandatory fresh final identity check found zero duplicates."
     }
   ]
 }
