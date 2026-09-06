@@ -150,6 +150,16 @@
         }
       ],
       "rejection_summary": "Missing was accepted at 81 after explicit whole-film revelation-cadence research. June's digital investigation repeatedly lands meaningful new information through cracked accounts, aliases, surveillance, the staged trip, Heather's death, Kevin's role and the later James reveal, so the film rebuilds the suspect picture several times rather than relying on one final twist. Reviews describe it as propulsive, involving and packed with twists, while the plot sources confirm those discoveries are distributed across the runtime. Personalization remains dormant because data/personalized-scores.json is absent. The mandatory fresh final identity check found zero duplicates."
+    },
+    {
+      "run_id": "2026-09-06-t1",
+      "timestamp": "2026-09-06T07:01:49Z",
+      "searched": 1,
+      "accepted": 0,
+      "rejected": 1,
+      "duplicates": 0,
+      "accepted_items": [],
+      "rejection_summary": "The Housemaid (2025) was researched as a candidate but rejected fail-closed for this run. Sources clearly support a psychological-thriller structure and major reversals, including the reveal that Andrew rather than Nina is the central abuser, but the available material did not support revelation_frequency and progressive_revelation across the full 131-minute runtime strongly enough without inference. The profile explicitly forbids treating a twisty premise or one large reversal as proof of sustained revelation cadence. Personalization remains dormant because data/personalized-scores.json is absent. The frozen survivor list was empty, so no discovery file was created and the required final duplicate lock produced zero candidate duplicates."
     }
   ]
 }
