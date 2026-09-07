@@ -9,6 +9,7 @@ on:
       - "config/**"
       - "scripts/**"
       - "package.json"
+      - "DAILY_AUTOMATION_RUNBOOK.md"
       - ".github/workflows/deploy-pages.yml"
 
   schedule:
@@ -63,6 +64,9 @@ jobs:
             git commit -m "Auto-repair duplicate discovery before validation"
             git push origin HEAD:main
           fi
+
+      - name: Check automation state
+        run: node scripts/automation-preflight.mjs self-test
 
       - name: Validate source data
         run: node scripts/validate.mjs

@@ -10,6 +10,8 @@
     "resolve": "node scripts/resolve-library.mjs",
     "build": "node scripts/build-site.mjs",
     "validate": "node scripts/validate.mjs",
+    "preflight": "node scripts/automation-preflight.mjs snapshot",
+    "preflight:self-test": "node scripts/automation-preflight.mjs self-test",
     "test": "node test/run-all.mjs"
   }
 }
