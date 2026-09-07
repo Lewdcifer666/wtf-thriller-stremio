@@ -9,18 +9,8 @@
       "rejected": 0,
       "duplicates": 0,
       "accepted_items": [
-        {
-          "imdb_id": "tt30988739",
-          "type": "movie",
-          "title": "Black Bag",
-          "match_score": 78
-        },
-        {
-          "imdb_id": "tt32149847",
-          "type": "movie",
-          "title": "Drop",
-          "match_score": 79
-        }
+        {"imdb_id":"tt30988739","type":"movie","title":"Black Bag","match_score":78},
+        {"imdb_id":"tt32149847","type":"movie","title":"Drop","match_score":79}
       ],
       "rejection_summary": "Both researched candidates cleared the Thriller profile's 62-point minimum after explicit revelation-cadence research. Black Bag qualified through a sustained mole hunt with repeated suspicion shifts; Drop qualified through frequent new information, suspect narrowing, technology-driven surveillance and a brisk contained cat-and-mouse structure. No duplicates or rejection cases were encountered."
     },
@@ -31,10 +21,7 @@
       "accepted": 2,
       "rejected": 1,
       "duplicates": 0,
-      "accepted_items": [
-        "tt18347622",
-        "tt13274016"
-      ],
+      "accepted_items": ["tt18347622","tt13274016"],
       "rejection_summary": "Researched three candidates against the static baseline profile. Two accepted: Bodies (85), a four-timeline murder investigation whose revelations keep recontextualising each other, and Reptile (75), strong on evidence work and institutional corruption though it sags in the middle. The Fall was rejected: it names its killer in the first hour and replaces mystery with a slow pursuit, firing slow_investigation_without_payoff - the guardrail written for exactly this shape - and it does not clear the DNA Match floor. Values were revised down where reviews contradicted the premise. Personalization is dormant: no personalized-scores.json exists and none was created. Zero duplicates against the identity set."
     },
     {
@@ -44,14 +31,7 @@
       "accepted": 1,
       "rejected": 1,
       "duplicates": 0,
-      "accepted_items": [
-        {
-          "imdb_id": "tt9169516",
-          "type": "series",
-          "title": "Run Away",
-          "match_score": 82
-        }
-      ],
+      "accepted_items": [{"imdb_id":"tt9169516","type":"series","title":"Run Away","match_score":82}],
       "rejection_summary": "Run Away was accepted at 82 after explicit whole-series revelation-cadence research: reviews describe shocking revelations, complex lies, taut pacing and a dense twist structure, and ending coverage confirms multiple discoveries that repeatedly reframe the family and murder mystery. 56 Days was rejected at a computed 59: it has real twists and uncertainty, but critics repeatedly describe the mystery as snoozy/overlong and the romance-drama component is dominant enough that the baseline DNA score remains below the Thriller minimum of 62. Personalization remains dormant because data/personalized-scores.json is absent. No duplicates were found in the fresh final identity checks."
     },
     {
@@ -61,14 +41,7 @@
       "accepted": 1,
       "rejected": 0,
       "duplicates": 0,
-      "accepted_items": [
-        {
-          "imdb_id": "tt33035373",
-          "type": "series",
-          "title": "His & Hers",
-          "match_score": 78
-        }
-      ],
+      "accepted_items": [{"imdb_id":"tt33035373","type":"series","title":"His & Hers","match_score":78}],
       "rejection_summary": "His & Hers was accepted at 78 after explicit whole-season revelation-cadence research. Across six episodes the murder investigation repeatedly changes the suspect picture through new murders, identity revelations, planted evidence and back-half reversals; reviews describe the run as tight and twisty while also noting that some major reveals are withheld late, so progressive_revelation and revelation_frequency were kept at 7 rather than inflated. Personalization remains dormant because data/personalized-scores.json is absent. No duplicates were found in the fresh final identity check."
     },
     {
@@ -78,20 +51,7 @@
       "accepted": 2,
       "rejected": 0,
       "duplicates": 0,
-      "accepted_items": [
-        {
-          "imdb_id": "tt35149250",
-          "type": "series",
-          "title": "The Art of Sarah",
-          "match_score": 89
-        },
-        {
-          "imdb_id": "tt36996011",
-          "type": "series",
-          "title": "Mousetrap",
-          "match_score": 88
-        }
-      ],
+      "accepted_items": [{"imdb_id":"tt35149250","type":"series","title":"The Art of Sarah","match_score":89},{"imdb_id":"tt36996011","type":"series","title":"Mousetrap","match_score":88}],
       "rejection_summary": "Two series candidates were researched against the static Thriller profile and both cleared the 62-point minimum after explicit whole-season revelation-cadence research. The Art of Sarah scored 89: its eight-episode murder/identity inquiry introduces new aliases, contradictory histories and identity reversals across the run, with episode-level sources showing repeated reframing rather than one withheld ending twist. Mousetrap scored 88: its ten episodes repeatedly surface new links to the Rat, recovered memories, hidden pasts and identity reversals; although the opening episode is relatively slow, the season's information cadence remains high. Personalization is dormant because data/personalized-scores.json is absent. The mandatory fresh final identity check found zero duplicates."
     },
     {
@@ -101,20 +61,7 @@
       "accepted": 2,
       "rejected": 0,
       "duplicates": 0,
-      "accepted_items": [
-        {
-          "imdb_id": "tt36303968",
-          "type": "series",
-          "title": "Furious",
-          "match_score": 90
-        },
-        {
-          "imdb_id": "tt38734636",
-          "type": "series",
-          "title": "Oasis",
-          "match_score": 68
-        }
-      ],
+      "accepted_items": [{"imdb_id":"tt36303968","type":"series","title":"Furious","match_score":90},{"imdb_id":"tt38734636","type":"series","title":"Oasis","match_score":68}],
       "rejection_summary": "Two series candidates were researched against the static Thriller profile and both cleared the 62-point minimum after explicit whole-season revelation-cadence research. Furious scored 90: the eight-episode FBI/serial-killer pursuit repeatedly converts evidence into new links among the victims, Catherine, Isabel, the Eastons and institutional failures, with later episodes continuing to reframe the case rather than withholding everything for the finale. Oasis scored 68: its eight-episode locked-resort disappearance mystery lands new clues, memory information, lead changes and a larger-scandal turn across the run; substantial teen drama and romance lower its baseline fit, but the mystery's revelation cadence remains sufficient to clear the threshold. Personalization is dormant because data/personalized-scores.json is absent. The mandatory fresh final identity check found zero duplicates."
     },
     {
@@ -124,14 +71,7 @@
       "accepted": 1,
       "rejected": 1,
       "duplicates": 0,
-      "accepted_items": [
-        {
-          "imdb_id": "tt14858658",
-          "type": "movie",
-          "title": "Blink Twice",
-          "match_score": 74
-        }
-      ],
+      "accepted_items": [{"imdb_id":"tt14858658","type":"movie","title":"Blink Twice","match_score":74}],
       "rejection_summary": "Blink Twice was accepted at 74 after explicit whole-film revelation-cadence research: the missing-time mystery pays out through Jess's disappearance, the lighter and time gaps, the perfume mechanism, snake-venom antidote, returning memories, Frida's prior visit and the final reversal, so understanding is repeatedly rebuilt rather than held for one isolated ending twist. By Any Means was rejected: current reviews describe a largely straightforward and predictable investigation with some slower stretches, and its evidence profile does not support enough frequent progressive reframing to clear the Thriller minimum. Personalization remains dormant because data/personalized-scores.json is absent. The mandatory fresh final identity check found zero duplicates."
     },
     {
@@ -141,14 +81,7 @@
       "accepted": 1,
       "rejected": 0,
       "duplicates": 0,
-      "accepted_items": [
-        {
-          "imdb_id": "tt10855768",
-          "type": "movie",
-          "title": "Missing",
-          "match_score": 81
-        }
-      ],
+      "accepted_items": [{"imdb_id":"tt10855768","type":"movie","title":"Missing","match_score":81}],
       "rejection_summary": "Missing was accepted at 81 after explicit whole-film revelation-cadence research. June's digital investigation repeatedly lands meaningful new information through cracked accounts, aliases, surveillance, the staged trip, Heather's death, Kevin's role and the later James reveal, so the film rebuilds the suspect picture several times rather than relying on one final twist. Reviews describe it as propulsive, involving and packed with twists, while the plot sources confirm those discoveries are distributed across the runtime. Personalization remains dormant because data/personalized-scores.json is absent. The mandatory fresh final identity check found zero duplicates."
     },
     {
@@ -160,6 +93,16 @@
       "duplicates": 0,
       "accepted_items": [],
       "rejection_summary": "The Housemaid (2025) was researched as a candidate but rejected fail-closed for this run. Sources clearly support a psychological-thriller structure and major reversals, including the reveal that Andrew rather than Nina is the central abuser, but the available material did not support revelation_frequency and progressive_revelation across the full 131-minute runtime strongly enough without inference. The profile explicitly forbids treating a twisty premise or one large reversal as proof of sustained revelation cadence. Personalization remains dormant because data/personalized-scores.json is absent. The frozen survivor list was empty, so no discovery file was created and the required final duplicate lock produced zero candidate duplicates."
+    },
+    {
+      "run_id": "2026-09-07-t1",
+      "timestamp": "2026-09-07T07:04:26Z",
+      "searched": 1,
+      "accepted": 0,
+      "rejected": 1,
+      "duplicates": 0,
+      "accepted_items": [],
+      "rejection_summary": "Exterritorial (2025) was researched but rejected for this run after explicit revelation-cadence review. The film has a real missing-child investigation, manipulated surveillance, a conspiracy and several intermediate discoveries, but critical evidence specifically describes its schemes as not unraveling easily until a talking-villain finale reveals all. That supports investigation and suspense more strongly than frequent progressive revelation across the whole 109-minute runtime, so the candidate was rejected fail-closed rather than inferring payoff from its premise or dense synopsis. Personalization remains dormant because data/personalized-scores.json is absent. The frozen survivor list was empty; the absolute pre-write lock re-fetched current public state immediately before mutation, so no discovery file was created and there were zero candidate duplicates."
     }
   ]
 }
