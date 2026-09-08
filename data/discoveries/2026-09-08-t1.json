@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "run_id": "2026-09-08-t1",
+  "timestamp": "2026-09-08T07:00:20Z",
+  "items": [
+    {
+      "imdb_id": "tt11514868",
+      "type": "series",
+      "title": "The Perfect Couple",
+      "year": 2024,
+      "status": "watch",
+      "match_score": 65,
+      "reason": "A six-episode Nantucket murder mystery that keeps surfacing new affairs, motives and suspect stories as police interrogations expose the family's secrets; the final killer stays hidden until Episode 6, but meaningful information lands regularly along the way.",
+      "tags": [],
+      "added_at": "2026-09-08T07:00:20Z",
+      "added_by": "daily-automation",
+      "discovery_run_id": "2026-09-08-t1",
+      "source": "https://www.imdb.com/title/tt11514868/ ; https://www.metacritic.com/tv/the-perfect-couple/critic-reviews/ ; https://www.netflix.com/tudum/articles/the-perfect-couple-ending-explained ; https://www.rottentomatoes.com/tv/the_perfect_couple/s01",
+      "dna": {
+        "mystery": 9,
+        "investigation": 8,
+        "progressive_revelation": 7,
+        "revelation_frequency": 7,
+        "suspense": 7,
+        "clue_puzzling": 7,
+        "cat_and_mouse": 4,
+        "psychological_strategy": 5,
+        "culprit_hunt": 9,
+        "plot_twists": 7,
+        "deception": 8,
+        "conspiracy": 2,
+        "evidence_manipulation": 4,
+        "mole_inside": 0,
+        "unreliable_perspective": 3,
+        "hidden_identity": 3,
+        "deadly_game": 0,
+        "surveillance": 2,
+        "visual_quality": 8,
+        "weirdness": 2,
+        "action_density": 1,
+        "corruption": 1,
+        "technology_threat": 1,
+        "brutality": 3,
+        "action_intensity": 2,
+        "drama_focus": 8,
+        "retro_visual_style": 0,
+        "romance_focus": 4,
+        "military_focus": 0,
+        "pace_speed": 6
+      },
+      "dna_confidence": 0.78,
+      "dna_tags": [
+        "small_town"
+      ]
+    }
+  ]
+}
