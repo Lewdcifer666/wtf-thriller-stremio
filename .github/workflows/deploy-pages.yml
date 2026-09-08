@@ -34,7 +34,7 @@ jobs:
 
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      url: ${{ steps.deployment.outputs.page_url || steps.deployment_retry.outputs.page_url || steps.deployment_final.outputs.page_url }}
 
     steps:
       - name: Checkout repository
@@ -84,4 +84,42 @@ jobs:
 
       - name: Deploy GitHub Pages
         id: deployment
+        continue-on-error: true
         uses: actions/deploy-pages@v4
+
+      - name: Wait before Pages retry
+        if: steps.deployment.outcome == 'failure'
+        run: sleep 15
+
+      - name: Retry GitHub Pages deployment
+        id: deployment_retry
+        if: steps.deployment.outcome == 'failure'
+        continue-on-error: true
+        uses: actions/deploy-pages@v4
+
+      - name: Wait before final Pages retry
+        if: steps.deployment.outcome == 'failure' && steps.deployment_retry.outcome == 'failure'
+        run: sleep 45
+
+      - name: Final GitHub Pages deployment retry
+        id: deployment_final
+        if: steps.deployment.outcome == 'failure' && steps.deployment_retry.outcome == 'failure'
+        continue-on-error: true
+        uses: actions/deploy-pages@v4
+
+      - name: Evaluate Pages deployment
+        if: always()
+        shell: bash
+        run: |
+          if [[ "${{ steps.deployment.outcome }}" == "success" || "${{ steps.deployment_retry.outcome }}" == "success" || "${{ steps.deployment_final.outcome }}" == "success" ]]; then
+            echo "Pages deployment succeeded."
+            exit 0
+          fi
+
+          if [[ "${{ github.event_name }}" == "schedule" ]]; then
+            echo "::warning::Scheduled Pages refresh could not deploy after 3 attempts. Treating this as non-fatal; the next hourly refresh will retry automatically."
+            exit 0
+          fi
+
+          echo "::error::Pages deployment failed after 3 attempts."
+          exit 1
