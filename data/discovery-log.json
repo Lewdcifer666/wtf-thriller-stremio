@@ -187,6 +187,23 @@
         }
       ],
       "rejection_summary": "The Perfect Couple (2024) was accepted at 65 after explicit whole-season revelation-cadence research. Across six episodes the murder investigation repeatedly exposes affairs, pregnancy, money/trust motives and shifting suspect stories; critics specifically describe clues being unearthed and long-held family secrets coming to light, while the final killer reveal remains reserved for Episode 6. Revelation frequency and progressive revelation were therefore kept at 7 rather than inflated. Substantial interpersonal drama lowers the deterministic baseline fit, but the investigation-puzzle archetype lifts the final score above the Thriller minimum of 62. Personalization remains dormant because data/personalized-scores.json is absent. The fresh final identity checks found zero duplicates."
+    },
+    {
+      "run_id": "2026-09-09-t1",
+      "timestamp": "2026-09-09T07:06:12Z",
+      "searched": 1,
+      "accepted": 1,
+      "rejected": 0,
+      "duplicates": 0,
+      "accepted_items": [
+        {
+          "imdb_id": "tt27444205",
+          "type": "series",
+          "title": "Paradise",
+          "match_score": 88
+        }
+      ],
+      "rejection_summary": "Paradise (2025) was accepted at 88 after explicit series revelation-cadence research. The presidential-murder investigation repeatedly opens into the bunker's true nature, Sinatra's control, hidden operatives, a livable surface, Trent's false identity and the apocalypse's actual outcome; current second-season coverage confirms the conspiracy continues delivering major revelations rather than collapsing into a one-twist premise. Early episodes are somewhat slower, so revelation_frequency was kept at 7 and pace_speed at 6 rather than inflated. Personalization remains dormant because data/personalized-scores.json is absent. The fresh final identity checks found zero duplicates."
     }
   ]
 }
