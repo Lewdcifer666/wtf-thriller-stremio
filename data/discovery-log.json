@@ -204,6 +204,16 @@
         }
       ],
       "rejection_summary": "Paradise (2025) was accepted at 88 after explicit series revelation-cadence research. The presidential-murder investigation repeatedly opens into the bunker's true nature, Sinatra's control, hidden operatives, a livable surface, Trent's false identity and the apocalypse's actual outcome; current second-season coverage confirms the conspiracy continues delivering major revelations rather than collapsing into a one-twist premise. Early episodes are somewhat slower, so revelation_frequency was kept at 7 and pace_speed at 6 rather than inflated. Personalization remains dormant because data/personalized-scores.json is absent. The fresh final identity checks found zero duplicates."
+    },
+    {
+      "run_id": "2026-09-10-t1",
+      "timestamp": "2026-09-10T07:00:29Z",
+      "searched": 1,
+      "accepted": 0,
+      "rejected": 1,
+      "duplicates": 0,
+      "accepted_items": [],
+      "rejection_summary": "Adolescence (2025) was researched but rejected on revelation cadence. The first episode definitively establishes through CCTV that Jamie killed Katie, shifting the remaining three episodes away from a culprit mystery and toward motive, psychology, family impact and social causes. The series contains investigation and painful new context, but it does not keep delivering the kind of repeated mystery answers and substantive reframing this profile requires, so no full DNA candidate was advanced to scoring. Personalization remains dormant because data/personalized-scores.json is absent. No discovery file was created."
     }
   ]
 }
