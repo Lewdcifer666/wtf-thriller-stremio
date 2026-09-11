@@ -214,6 +214,23 @@
       "duplicates": 0,
       "accepted_items": [],
       "rejection_summary": "Adolescence (2025) was researched but rejected on revelation cadence. The first episode definitively establishes through CCTV that Jamie killed Katie, shifting the remaining three episodes away from a culprit mystery and toward motive, psychology, family impact and social causes. The series contains investigation and painful new context, but it does not keep delivering the kind of repeated mystery answers and substantive reframing this profile requires, so no full DNA candidate was advanced to scoring. Personalization remains dormant because data/personalized-scores.json is absent. No discovery file was created."
+    },
+    {
+      "run_id": "2026-09-11-t1",
+      "timestamp": "2026-09-11T06:58:05Z",
+      "searched": 1,
+      "accepted": 1,
+      "rejected": 0,
+      "duplicates": 0,
+      "accepted_items": [
+        {
+          "imdb_id": "tt30876484",
+          "type": "series",
+          "title": "Just One Look",
+          "match_score": 76
+        }
+      ],
+      "rejection_summary": "Just One Look (2025) was accepted at 76 after explicit whole-season revelation-cadence research. Across six episodes Greta's search moves through the mysterious photograph, Jacek's disappearance, the old concert fire, recovered memory, the real Jacek's death, Szymon's assumed identity and the final explanation of who sent the photograph, so meaningful information repeatedly changes the picture rather than arriving only in one ending reveal. Revelation_frequency was kept at 7 rather than inflated because some of the largest answers land in the final episodes. Personalization remains dormant because data/personalized-scores.json is absent. Fresh public-state and exact IMDb-ID checks found zero duplicates."
     }
   ]
 }

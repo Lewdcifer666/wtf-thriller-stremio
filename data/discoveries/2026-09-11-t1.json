@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "run_id": "2026-09-11-t1",
+  "timestamp": "2026-09-11T06:58:05Z",
+  "items": [
+    {
+      "imdb_id": "tt30876484",
+      "type": "series",
+      "title": "Just One Look",
+      "year": 2025,
+      "status": "watch",
+      "match_score": 76,
+      "reason": "A six-episode missing-person and identity mystery where an old photograph, a disappearance, recovered memories, the concert-fire history and successive identity revelations repeatedly rebuild what Greta understands about her husband and her own past rather than relying on one isolated final twist.",
+      "tags": [],
+      "added_at": "2026-09-11T06:58:05Z",
+      "added_by": "daily-automation",
+      "discovery_run_id": "2026-09-11-t1",
+      "source": "https://www.imdb.com/title/tt30876484/ ; https://www.rottentomatoes.com/tv/just_one_look/s01 ; https://time.com/7264396/just-one-look-netflix-ending-explained/ ; https://dwcmagazine.com/a/blog/post/just-one-look-netflix-review-twists-lies-and-polish-plot-bombshells",
+      "dna": {
+        "mystery": 9,
+        "investigation": 8,
+        "clue_puzzling": 7,
+        "culprit_hunt": 6,
+        "progressive_revelation": 8,
+        "revelation_frequency": 7,
+        "plot_twists": 9,
+        "psychological_strategy": 5,
+        "cat_and_mouse": 5,
+        "deception": 10,
+        "hidden_identity": 10,
+        "unreliable_perspective": 6,
+        "conspiracy": 6,
+        "mole_inside": 1,
+        "corruption": 2,
+        "surveillance": 3,
+        "evidence_manipulation": 5,
+        "technology_threat": 0,
+        "suspense": 8,
+        "action_density": 3,
+        "action_intensity": 5,
+        "brutality": 6,
+        "deadly_game": 0,
+        "weirdness": 4,
+        "military_focus": 0,
+        "romance_focus": 2,
+        "drama_focus": 6,
+        "visual_quality": 7,
+        "retro_visual_style": 0,
+        "pace_speed": 7
+      },
+      "dna_confidence": 0.81,
+      "dna_tags": [
+        "kidnapping",
+        "amnesia"
+      ]
+    }
+  ]
+}
