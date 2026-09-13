@@ -231,6 +231,23 @@
         }
       ],
       "rejection_summary": "Just One Look (2025) was accepted at 76 after explicit whole-season revelation-cadence research. Across six episodes Greta's search moves through the mysterious photograph, Jacek's disappearance, the old concert fire, recovered memory, the real Jacek's death, Szymon's assumed identity and the final explanation of who sent the photograph, so meaningful information repeatedly changes the picture rather than arriving only in one ending reveal. Revelation_frequency was kept at 7 rather than inflated because some of the largest answers land in the final episodes. Personalization remains dormant because data/personalized-scores.json is absent. Fresh public-state and exact IMDb-ID checks found zero duplicates."
+    },
+    {
+      "run_id": "2026-09-13-t1",
+      "timestamp": "2026-09-13T07:02:07Z",
+      "searched": 1,
+      "accepted": 1,
+      "rejected": 0,
+      "duplicates": 0,
+      "accepted_items": [
+        {
+          "imdb_id": "tt31974367",
+          "type": "series",
+          "title": "The Beast in Me",
+          "match_score": 76
+        }
+      ],
+      "rejection_summary": "The Beast in Me (2025) was accepted at 76 after explicit whole-season revelation-cadence research. Across eight episodes Aggie's investigation repeatedly lands meaningful new information through Teddy's disappearance, FBI leaks and surveillance, the encrypted live-feed discovery, Madison's history, later evidence that Nile killed her, and Nile's frame-up of Aggie; reviews and episode-level sources support a tight psychological cat-and-mouse with recurring twists rather than a single withheld ending reveal. Revelation_frequency and progressive_revelation were therefore kept at 7 rather than inflated. Personalization remains dormant because data/personalized-scores.json is absent. Fresh public-state and exact IMDb-ID checks found zero duplicates."
     }
   ]
 }
