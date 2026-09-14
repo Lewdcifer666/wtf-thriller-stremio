@@ -248,6 +248,23 @@
         }
       ],
       "rejection_summary": "The Beast in Me (2025) was accepted at 76 after explicit whole-season revelation-cadence research. Across eight episodes Aggie's investigation repeatedly lands meaningful new information through Teddy's disappearance, FBI leaks and surveillance, the encrypted live-feed discovery, Madison's history, later evidence that Nile killed her, and Nile's frame-up of Aggie; reviews and episode-level sources support a tight psychological cat-and-mouse with recurring twists rather than a single withheld ending reveal. Revelation_frequency and progressive_revelation were therefore kept at 7 rather than inflated. Personalization remains dormant because data/personalized-scores.json is absent. Fresh public-state and exact IMDb-ID checks found zero duplicates."
+    },
+    {
+      "run_id": "2026-09-14-t1",
+      "timestamp": "2026-09-14T07:05:50Z",
+      "searched": 1,
+      "accepted": 1,
+      "rejected": 0,
+      "duplicates": 0,
+      "accepted_items": [
+        {
+          "imdb_id": "tt33496221",
+          "type": "series",
+          "title": "Secrets We Keep",
+          "match_score": 65
+        }
+      ],
+      "rejection_summary": "Secrets We Keep (2025) was accepted at 65 after explicit whole-season revelation-cadence research. Across six episodes Cecilie and Aicha move from Ruby's disappearance through pregnancy evidence, changing suspects, her death, DNA narrowing, assault-video evidence and the later cover-up implication, so meaningful information lands repeatedly rather than being withheld for one final reveal. Substantial interpersonal and social drama keeps the deterministic baseline fit modest, but the investigation-puzzle archetype lifts it above the Thriller minimum of 62. Personalization remains dormant because data/personalized-scores.json is absent. Fresh public-state and exact IMDb-ID checks found zero duplicates."
     }
   ]
 }
