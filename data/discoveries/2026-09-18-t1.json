@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "run_id": "2026-09-18-t1",
+  "timestamp": "2026-09-18T06:58:01Z",
+  "items": [
+    {
+      "imdb_id": "tt27995114",
+      "type": "series",
+      "title": "Dept. Q",
+      "year": 2025,
+      "status": "watch",
+      "match_score": 76,
+      "reason": "A nine-episode cold-case investigation where ferry evidence, a cryptic note, Sam Haig's death and identity puzzle, corruption links and the Jennings connection keep changing the shape of Merritt's disappearance; the overall pace is deliberately slow, but meaningful case information still lands regularly rather than being held for one final reveal.",
+      "tags": [],
+      "added_at": "2026-09-18T06:58:01Z",
+      "added_by": "daily-automation",
+      "discovery_run_id": "2026-09-18-t1",
+      "source": "https://www.imdb.com/title/tt27995114/ ; https://www.netflix.com/tudum/dept-q ; https://www.creativescreenwriting.com/cswcms/dept-q-how-the-writers-engineered-mystery-and-suspense-through-trauma-and-strategic-clues/ ; https://www.metacritic.com/tv/dept-q/critic-reviews/ ; https://tollbit.radiotimes.com/tv/drama/dept-q-review/",
+      "dna": {
+        "mystery": 9,
+        "investigation": 9,
+        "clue_puzzling": 8,
+        "culprit_hunt": 8,
+        "progressive_revelation": 7,
+        "revelation_frequency": 5,
+        "plot_twists": 7,
+        "psychological_strategy": 6,
+        "cat_and_mouse": 4,
+        "deception": 7,
+        "hidden_identity": 7,
+        "unreliable_perspective": 3,
+        "conspiracy": 6,
+        "mole_inside": 4,
+        "corruption": 7,
+        "surveillance": 4,
+        "evidence_manipulation": 6,
+        "technology_threat": 1,
+        "suspense": 8,
+        "action_density": 2,
+        "action_intensity": 4,
+        "brutality": 7,
+        "deadly_game": 0,
+        "weirdness": 2,
+        "military_focus": 0,
+        "romance_focus": 2,
+        "drama_focus": 7,
+        "visual_quality": 9,
+        "retro_visual_style": 0,
+        "pace_speed": 4
+      },
+      "dna_confidence": 0.82,
+      "dna_tags": [
+        "police_procedural",
+        "cold_case",
+        "kidnapping"
+      ]
+    }
+  ]
+}
