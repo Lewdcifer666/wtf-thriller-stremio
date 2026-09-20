@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - "data/**"
+      - "!data/automation-state.json"
       - "config/**"
       - "scripts/**"
       - "package.json"
@@ -57,10 +58,10 @@ jobs:
       - name: Commit automatic duplicate repair
         if: github.event_name == 'push'
         run: |
-          if ! git diff --quiet -- data/discoveries data/discovery-log.json; then
+          if ! git diff --quiet -- data/discoveries data/run-logs data/discovery-log.json; then
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add data/discoveries data/discovery-log.json
+            git add data/discoveries data/run-logs data/discovery-log.json
             git commit -m "Auto-repair duplicate discovery before validation"
             git push origin HEAD:main
           fi
@@ -73,6 +74,25 @@ jobs:
 
       - name: Build static Stremio site
         run: node scripts/build-site.mjs
+
+      - name: Validate immutable run logs
+        run: node scripts/validate-run-logs.mjs
+
+      - name: Refresh compact automation state
+        run: node scripts/export-automation-state.mjs data/automation-state.json
+
+      - name: Commit refreshed automation state
+        shell: bash
+        run: |
+          if [[ -n "$(git status --porcelain -- data/automation-state.json)" ]]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add data/automation-state.json
+            git commit -m "Refresh compact automation state"
+            if ! git push origin HEAD:main; then
+              echo "::warning::Could not push refreshed automation state; a later scheduled run will retry."
+            fi
+          fi
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5

@@ -111,7 +111,6 @@ function buildState() {
     "config/catalogs.json",
     "data/library.json",
     "data/taste-profile.json",
-    "data/discovery-log.json",
     ...(existing("data/rejections.json") ? ["data/rejections.json"] : []),
     ...(existing("data/personalized-scores.json") ? ["data/personalized-scores.json"] : []),
     ...discoveryFiles(),
