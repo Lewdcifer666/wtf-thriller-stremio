@@ -1,0 +1,18 @@
+{
+  "run_id": "2026-09-21-t1",
+  "timestamp": "2026-09-21T07:00:13Z",
+  "searched": 6,
+  "accepted": 2,
+  "rejected": 4,
+  "duplicates": 0,
+  "accepted_items": [
+    {"imdb_id":"tt29494109","type":"series","title":"Caught","match_score":77},
+    {"imdb_id":"tt31019484","type":"series","title":"Missing You","match_score":75}
+  ],
+  "rejection_summary": [
+    "The Breakthrough (2025): revelation-cadence failure; long stretches of investigation pass without meaningful new answers and the decisive breakthrough is concentrated at the end.",
+    "The Gardener (2025): romance/drama dominant and weak final payoff; research did not support sufficient progressive revelation.",
+    "The Waterfront (2025): crime-family drama rather than a sufficiently mystery/revelation-driven thriller fit.",
+    "The Åre Murders (2025): two compact cases with investigation, but available evidence was insufficient to establish a complete live DNA vector confidently enough for deterministic acceptance."
+  ]
+}
