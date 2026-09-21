@@ -24,7 +24,12 @@ for(const name of files){
   for(const key of ["searched","accepted","rejected","duplicates"]) if(!Number.isInteger(run[key]) || run[key]<0) fail(`${name}: ${key} must be a non-negative integer`);
   if(!Array.isArray(run.accepted_items)) fail(`${name}: accepted_items must be an array`);
   if(Array.isArray(run.accepted_items) && Number.isInteger(run.accepted) && run.accepted_items.length!==run.accepted) fail(`${name}: accepted must equal accepted_items.length`);
-  if(typeof run.rejection_summary!=="string") fail(`${name}: rejection_summary must be a string`);
+  const summary=run.rejection_summary;
+  const summaryIsStructured =
+    typeof summary==="string" ||
+    Array.isArray(summary) ||
+    (summary!==null && typeof summary==="object");
+  if(!summaryIsStructured) fail(`${name}: rejection_summary must be a string, array, or object`);
 
   const discoveryPath=path.join(DISC,`${run.run_id}.json`);
   if(run.accepted>0){
