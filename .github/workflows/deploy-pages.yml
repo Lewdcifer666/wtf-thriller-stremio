@@ -16,7 +16,7 @@ on:
   schedule:
     # Rebuild hourly so items automatically leave
     # the Past 24h catalogs after 24 hours.
-    - cron: "47 * * * *"
+    - cron: "52 * * * *"
 
   workflow_dispatch:
 
@@ -27,7 +27,7 @@ permissions:
 
 concurrency:
   group: pages
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   build-and-deploy:
