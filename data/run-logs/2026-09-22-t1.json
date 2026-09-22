@@ -1,0 +1,15 @@
+{
+  "run_id": "2026-09-22-t1",
+  "timestamp": "2026-09-22T07:02:57Z",
+  "searched": 3,
+  "accepted": 2,
+  "rejected": 1,
+  "duplicates": 0,
+  "accepted_items": [
+    {"imdb_id":"tt34771210","type":"series","title":"I Will Find You","match_score":85},
+    {"imdb_id":"tt33539520","type":"series","title":"Neagley","match_score":83}
+  ],
+  "rejection_summary": [
+    "The Perfect Lie / De Eetclub (2026): deterministic score 57, below the 62 acceptance threshold; its mystery and deception are substantial, but relationship drama/romance dominate enough of the seven-episode runtime that the complete DNA vector does not clear the profile threshold. Revelation cadence itself was moderate rather than a failure."
+  ]
+}
