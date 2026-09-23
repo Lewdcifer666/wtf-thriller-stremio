@@ -1,0 +1,16 @@
+{
+  "run_id": "2026-09-23-t1",
+  "timestamp": "2026-09-23T07:05:11Z",
+  "searched": 4,
+  "accepted": 2,
+  "rejected": 2,
+  "duplicates": 0,
+  "accepted_items": [
+    {"imdb_id":"tt11561116","type":"movie","title":"The Whisper Man","match_score":63},
+    {"imdb_id":"tt32430579","type":"movie","title":"Crime 101","match_score":62}
+  ],
+  "rejection_summary": [
+    "Tuner (2025/2026 release cycle): strong crime/heist execution but the complete story is primarily a character-driven safecracking and romance/crime drama, with too little mystery, investigation and progressive revelation to clear this Thriller profile's 62-point acceptance threshold.",
+    "The Shards (2026): revelation-cadence failure for this profile. The nine-episode season sustains suspicion around the Trawler but ends without identifying the killer; secrets and incidents accumulate, yet the central investigation withholds its defining answer and does not provide enough progressive payoff across the season to qualify."
+  ]
+}
