@@ -1,0 +1,14 @@
+{
+  "run_id": "2026-09-24-t1",
+  "timestamp": "2026-09-24T07:05:30Z",
+  "searched": 2,
+  "accepted": 1,
+  "rejected": 1,
+  "duplicates": 0,
+  "accepted_items": [
+    {"imdb_id":"tt32499731","type":"series","title":"Steal","match_score":73}
+  ],
+  "rejection_summary": [
+    "Land of Sin / Synden (2026, tt33501959): revelation-cadence failure for this profile. The five-episode murder investigation contains substantial police work and eventually uncovers the generational family conflict, but the available whole-season evidence shows much of the decisive causal explanation concentrated late: Oliver is implicated and arrested while Dani continues working the case, and the finale supplies the Jon/Katty mechanism and cover-up. Investigation volume is therefore stronger than the frequency of meaningful reframing, and the title was not promoted by treating procedural activity as revelation cadence."
+  ]
+}
