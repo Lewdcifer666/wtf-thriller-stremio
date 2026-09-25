@@ -4,6 +4,7 @@ import crypto from "node:crypto";
 import { identityKey } from "./identity.mjs";
 import { normalizeTitle } from "./cinemeta.mjs";
 import { watchedEvidenceIdentities } from "./validate-profile.mjs";
+import { readPersonalizedScores, personalizationState } from "./personalized-scores.mjs";
 
 const ROOT = process.cwd();
 const DATA = path.join(ROOT, "data");
@@ -62,7 +63,8 @@ const tracked=[
   "scripts/cinemeta.mjs",
   "scripts/validate-profile.mjs",
   "scripts/dna-score.mjs",
-  "scripts/validate.mjs"
+  "scripts/validate.mjs",
+  "scripts/personalized-scores.mjs"
 ];
 
 const state={
@@ -70,7 +72,10 @@ const state={
   state_token:hashFiles(tracked),
   minimum_match_score:profile?.automation_rules?.minimum_match_score ?? null,
   best_match_score:profile?.automation_rules?.best_match_score ?? null,
-  personalization_enabled:exists("data/personalized-scores.json"),
+  ...personalizationState({
+    snapshot:readPersonalizedScores(fs,path.join(DATA,"personalized-scores.json")),
+    profile, catalogs:readJson("config/catalogs.json"), publicItems
+  }),
   discovery_file_count:discoveries.length,
   public_identities:publicIdentities,
   watched_identity_forms:watched,

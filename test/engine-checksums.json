@@ -1,12 +1,12 @@
 {
-  "template_revision": "ad5e495dcea8c619",
+  "template_revision": "762481e93390e768",
   "generated_from": "wtf-addon-template",
   "note": "Vendored engine files. Edit the template and regenerate; never edit these in place.",
   "files": {
     "scripts/dna-score.mjs": "53802d87493b5ea174914c8529be782db6d15126b2edb06e71ca1435c910e56c",
     "scripts/identity.mjs": "e9e7e2335ab562e1470d5e4b8157633055af4ac5670fc9cb4f7f89cea502eeb4",
     "scripts/sort.mjs": "5ae5e53d1f33ee53fb41610e2515597315fa5949c13a106ab8d5c772d7f856ac",
-    "scripts/personalized-scores.mjs": "76159b383acf1b252716961508b866390c0e992ba7b37c476f5f8628696d0da0",
+    "scripts/personalized-scores.mjs": "eecbcaa4dc15913f0b3b7ec7f05558d241edc6390419b0d0dbff5f6de714c985",
     "scripts/validate-profile.mjs": "39dca788cbd2e5041dc5cede12967e2b7456accf322e89c2277a48c39d7d5f75",
     "scripts/validate.mjs": "199bb3b3f26fbbe7b4764462a0303c6c8abddd63a491e5d2acedc83bcf47b839",
     "scripts/build-site.mjs": "5e8d9ee98917615de01e0e7fbd5d6fba4af729d894256ed8055dd1addf3ce89a",
@@ -19,10 +19,11 @@
     "test/baseline-evidence.test.mjs": "7f7364e3ce0ab1d4967f90786ef6df15d09895dea8833562cf3678dbb336cfb8",
     "test/no-production-mutation.test.mjs": "0aed500b006441ff78423312eb18f271fe514456b1a492c53008782a05c1d9a3",
     "scripts/repair-push-duplicates.mjs": "842253f9581b60bd5ced7cbeaf9db5cad25a6b29ee8371d0f1291e958b79a7d3",
-    "scripts/automation-preflight.mjs": "2ac4483e9d0d02a500783b577257416e6125fc025c9f1db53246deb62634b926",
-    "scripts/export-automation-state.mjs": "bdd1100e3aafc30795b21153bf5d79f6ce08890cc4cff4955ac20ad775d069ec",
+    "scripts/automation-preflight.mjs": "9d9ee2cb4a0a83d38c3e1d40693a251ed1fd99cfd599a186732da8cba689ffac",
+    "scripts/export-automation-state.mjs": "5f3e5c8475095d211a21a7ef5c8b67e7739735de14c3a94b86e6c046f1fdea93",
     "scripts/validate-run-logs.mjs": "5cdd9780e03936a1264cbc84a422c7e975050155384c628edd1d8ef5b6d0c07f",
     "test/cinemeta-resolution.test.mjs": "9ce4ac3fcd731c004d2acd7f9cd53db06f8c8bc84702d297fd5a246ea7ec38c1",
-    "test/duplicate-repair-summary.test.mjs": "b918e9db86356aa30a671e092bd9a102f280c16f88f0ee84e64b74b17ca2acbe"
+    "test/duplicate-repair-summary.test.mjs": "b918e9db86356aa30a671e092bd9a102f280c16f88f0ee84e64b74b17ca2acbe",
+    "test/personalization-state.test.mjs": "35e5647d337953beec27b8ec96206b3d4405861d34be23ebb753a9055bafb481"
   }
 }

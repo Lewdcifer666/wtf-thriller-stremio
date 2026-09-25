@@ -14,6 +14,8 @@
 // In every case the site still builds. A missing file is the normal state
 // until F2-9 generates the real one, and is not a warning.
 
+import { makePolicy, scoreItem } from "./dna-score.mjs";
+
 export const PERSONALIZED_SCHEMA_VERSION = 1;
 export const FRESHNESS_MAX_AGE_MS = 72 * 60 * 60 * 1000;   // tolerate two missed daily runs
 export const FRESHNESS_FUTURE_SKEW_MS = 60 * 60 * 1000;    // allow an hour of clock skew
@@ -54,7 +56,7 @@ export function readPersonalizedScores(fs, file, now = Date.now()) {
 
   if (typeof payload.generated_at !== "string" || !UTC_ISO_RE.test(payload.generated_at)) return empty("bad_timestamp");
   const generated = Date.parse(payload.generated_at);
-  if (!Number.isFinite(generated)) return empty("bad_timestamp");
+  if (!Number.isFinite(generated) || new Date(generated).toISOString().replace(/\.000Z$/, "Z") !== payload.generated_at) return empty("bad_timestamp");
   const age = now - generated;
   if (age < -FRESHNESS_FUTURE_SKEW_MS) return empty("future");
   if (age > FRESHNESS_MAX_AGE_MS) return empty("stale");
@@ -71,4 +73,29 @@ export function readPersonalizedScores(fs, file, now = Date.now()) {
   }
 
   return { items, status: "applied", rejectedItems };
+}
+
+// Report effective use, not file presence. A valid snapshot can still have no
+// usable entries for this addon's current watchlist and configured DNA rows.
+// A personalized score below the row threshold counts as applied because it
+// affects filtering, even though the title does not appear in that row.
+export function personalizationState({ snapshot, profile, catalogs, publicItems }) {
+  const applied = new Set();
+  if (snapshot.status === "applied" && snapshot.items.size && profile.dna_dimensions) {
+    const policy = makePolicy(profile);
+    const rows = (catalogs.catalogs || []).filter(def => def.filter === "dna" && def.dna?.mode === "baseline_profile");
+    for (const item of publicItems) {
+      if (item.status !== "watch" || !["movie", "series"].includes(item.type) || !snapshot.items.has(item.imdb_id)) continue;
+      if (rows.some(def => {
+        const result = scoreItem(policy, def, item, snapshot.items);
+        return result.reason === null || result.reason === "below_min_score";
+      })) applied.add(`${item.type}:${item.imdb_id}`);
+    }
+  }
+  return {
+    personalization_enabled: applied.size > 0,
+    personalization_status: snapshot.status !== "applied" ? snapshot.status
+      : !snapshot.items.size ? "empty" : applied.size ? "applied" : "no_applicable_items",
+    personalization_applied_items: applied.size,
+  };
 }

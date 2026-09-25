@@ -5,6 +5,7 @@ import { identityKey } from "./identity.mjs";
 import { normalizeTitle } from "./cinemeta.mjs";
 import { watchedEvidenceIdentities } from "./validate-profile.mjs";
 import { makePolicy, scoreItem } from "./dna-score.mjs";
+import { readPersonalizedScores, personalizationState } from "./personalized-scores.mjs";
 
 const ROOT = process.cwd();
 const DATA = path.join(ROOT, "data");
@@ -119,6 +120,7 @@ function buildState() {
     "scripts/validate-profile.mjs",
     "scripts/dna-score.mjs",
     "scripts/validate.mjs",
+    "scripts/personalized-scores.mjs",
   ];
 
   return {
@@ -130,7 +132,10 @@ function buildState() {
     rejectionForms,
     trackedFiles,
     token: stateToken(trackedFiles),
-    personalization_enabled: existing("data/personalized-scores.json"),
+    ...personalizationState({
+      snapshot: readPersonalizedScores(fs, path.join(DATA, "personalized-scores.json")),
+      profile, catalogs: readJson("config/catalogs.json"), publicItems,
+    }),
   };
 }
 
@@ -141,6 +146,8 @@ function snapshot(state) {
     watched_identity_forms: state.watchedForms.size,
     rejection_identity_forms: state.rejectionForms.size,
     personalization_enabled: state.personalization_enabled,
+    personalization_status: state.personalization_status,
+    personalization_applied_items: state.personalization_applied_items,
     discovery_file_count: discoveryFiles().length,
     public_duplicate_count: state.duplicatePublic.length,
   };
