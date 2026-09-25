@@ -1,0 +1,14 @@
+{
+  "run_id": "2026-09-25-t1",
+  "timestamp": "2026-09-25T07:06:34Z",
+  "searched": 3,
+  "accepted": 0,
+  "rejected": 2,
+  "duplicates": 1,
+  "accepted_items": [],
+  "rejection_summary": [
+    "The Final Problem / El problema final (2026, tt36832679): not accepted because complete whole-season revelation-cadence evidence was not yet available at research time. The five-episode miniseries released on September 25, 2026 and the available sources establish a closed-circle murder investigation, but published material did not yet provide a reliable complete episode-by-episode account sufficient to score the full live DNA vector without inventing cadence.",
+    "Last Seen (2026): not accepted because the six-episode season was still airing and complete whole-season evidence was unavailable; contemporary review evidence also describes it as character-driven and comparatively light on mystery/twists. No deterministic full-season DNA score was invented.",
+    "The Art of Sarah (2026, tt35149250): duplicate; series:tt35149250 is already present in automation-state.public_identities."
+  ]
+}
