@@ -15,7 +15,7 @@ PHASE A — SMALL CURRENT STATE
 1. Fetch data/automation-state.json and config/catalogs.json. Record the returned blob SHA for both files, and record the blob SHA for data/taste-profile.json and scripts/dna-score.mjs when you fetch them; these are the policy-version locks for this run.
 2. Fetch data/taste-profile.json in bounded chunks of about 250 lines until complete. Never make one unbounded request for the full large file.
 3. Fetch scripts/dna-score.mjs and only small policy files needed. A runnable checkout is an optional optimization; its absence is NOT a failure.
-4. Personalization remains dormant while automation-state.personalization_enabled=false. Do not access private feedback.
+4. Personalization remains optional and dormant while automation-state says personalization_enabled=false. This is effective use after freshness, validation and applicability checks; file existence alone never enables it. Keep stable baseline DNA scores until a fresh, valid snapshot has been deterministically rebuilt from the complete current feedback state. Never renew an expired snapshot timestamp or reuse old scores to make it active. Do not access private feedback.
 
 PHASE B — RESEARCH
 5. Search efficiently for Thriller movies/series that fit the current profile. Before deep work reject identities already in automation-state.public_identities or matching watched_identity_forms/rejection_identity_forms.
