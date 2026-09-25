@@ -63,8 +63,8 @@ function itemKey(item) {
 function titleMatches(name, item) {
   const wanted = [
     item.title,
-    ...(item.aliases || [])
-  ].map(normalizeTitle);
+    ...(Array.isArray(item.aliases) ? item.aliases : [])
+  ].filter(value => typeof value === "string").map(normalizeTitle).filter(Boolean);
 
   return wanted.includes(
     normalizeTitle(name)
@@ -73,85 +73,19 @@ function titleMatches(name, item) {
 
 
 function chooseBest(metas, item) {
-  const imdb = metas.filter(
-    meta =>
-      typeof meta.id === "string" &&
-      /^tt\d+$/.test(meta.id)
-  );
-
-  if (!imdb.length) {
-    return null;
+  // A wrong IMDb id changes the public identity permanently. Search rank,
+  // a shared release year, or a title with a conflicting year cannot verify it.
+  // Collect distinct exact identities across the title and explicit aliases;
+  // ambiguity stays unresolved instead of picking whichever result came first.
+  if (!Number.isInteger(item.year)) return null;
+  const exact = new Map();
+  for (const meta of metas) {
+    if (!meta || typeof meta.id !== "string" || !/^tt\d+$/.test(meta.id)) continue;
+    if (meta.type && meta.type !== item.type) continue;
+    if (!titleMatches(meta.name, item) || yearFromMeta(meta) !== item.year) continue;
+    if (!exact.has(meta.id)) exact.set(meta.id, meta);
   }
-
-
-  /*
-   * Best possible match:
-   * exact normalized title + exact year.
-   */
-  const exact =
-    imdb.find(
-      meta =>
-        titleMatches(meta.name, item) &&
-        yearFromMeta(meta) === item.year
-    );
-
-  if (exact) {
-    return exact;
-  }
-
-
-  /*
-   * Some databases disagree by one year because of:
-   *
-   * festival premiere
-   * theatrical release
-   * streaming release
-   */
-  const closeYear =
-    imdb.find(
-      meta =>
-        titleMatches(meta.name, item) &&
-        yearFromMeta(meta) &&
-        Math.abs(
-          yearFromMeta(meta) -
-          item.year
-        ) <= 1
-    );
-
-  if (closeYear) {
-    return closeYear;
-  }
-
-
-  /*
-   * Exact title without usable year information.
-   */
-  const exactTitle =
-    imdb.find(
-      meta =>
-        titleMatches(
-          meta.name,
-          item
-        )
-    );
-
-  if (exactTitle) {
-    return exactTitle;
-  }
-
-
-  /*
-   * Final fallback:
-   * exact requested year.
-   */
-  return (
-    imdb.find(
-      meta =>
-        yearFromMeta(meta) ===
-        item.year
-    ) ||
-    null
-  );
+  return exact.size === 1 ? exact.values().next().value : null;
 }
 
 
@@ -377,13 +311,14 @@ export async function resolveItem(item) {
       : "movie";
 
 
-  const queries = [
+  const queries = [...new Set([
     item.title,
-    ...(item.aliases || [])
-  ];
+    ...(Array.isArray(item.aliases) ? item.aliases : [])
+  ].filter(value => typeof value === "string" && normalizeTitle(value)))];
 
 
   let lastError = null;
+  const candidates = [];
 
 
   for (const query of queries) {
@@ -400,40 +335,7 @@ export async function resolveItem(item) {
         await fetchJson(url);
 
 
-      const chosen =
-        chooseBest(
-          Array.isArray(json.metas)
-            ? json.metas
-            : [],
-          item
-        );
-
-
-      if (!chosen) {
-        continue;
-      }
-
-
-      return {
-        ...item,
-
-        imdb_id:
-          chosen.id,
-
-        canonical_title:
-          chosen.name ||
-          item.title,
-
-        resolved_year:
-          yearFromMeta(chosen) ||
-          item.year,
-
-        resolved_at:
-          new Date().toISOString(),
-
-        resolved_via:
-          "cinemeta"
-      };
+      candidates.push(...(Array.isArray(json?.metas) ? json.metas : []));
 
     } catch (error) {
       lastError = error;
@@ -445,6 +347,19 @@ export async function resolveItem(item) {
         `${error.message}`
       );
     }
+  }
+
+
+  const chosen = chooseBest(candidates, item);
+  if (chosen) {
+    return {
+      ...item,
+      imdb_id: chosen.id,
+      canonical_title: chosen.name,
+      resolved_year: yearFromMeta(chosen),
+      resolved_at: new Date().toISOString(),
+      resolved_via: "cinemeta"
+    };
   }
 
 
