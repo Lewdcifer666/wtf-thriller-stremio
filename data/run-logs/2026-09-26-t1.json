@@ -1,0 +1,26 @@
+{
+  "run_id": "2026-09-26-t1",
+  "timestamp": "2026-09-26T07:06:46Z",
+  "searched": 4,
+  "accepted": 2,
+  "rejected": 1,
+  "duplicates": 1,
+  "accepted_items": [
+    {
+      "imdb_id": "tt39019156",
+      "type": "series",
+      "title": "Gone",
+      "match_score": 66
+    },
+    {
+      "imdb_id": "tt30412907",
+      "type": "series",
+      "title": "56 Days",
+      "match_score": 69
+    }
+  ],
+  "rejection_summary": [
+    "Agatha Christie's Seven Dials (2026, tt31974288): revelation-cadence failure for this profile. The three-part mystery has real investigation and multiple twists, but available whole-season evidence describes a slow first act and concentrates the decisive answers in the final episode, so investigation volume and finale payoff were not treated as frequent progressive revelation.",
+    "His & Hers (2026, tt33035373): duplicate; series:tt33035373 is already present in automation-state.public_identities."
+  ]
+}
