@@ -1,11 +1,10 @@
 import fs from "node:fs";
 import path from "node:path";
-import crypto from "node:crypto";
-import { identityKey } from "./identity.mjs";
+import { validatedIdentityKey } from "./identity.mjs";
 import { normalizeTitle } from "./cinemeta.mjs";
 import { watchedEvidenceIdentities } from "./validate-profile.mjs";
 import { makePolicy, scoreItem } from "./dna-score.mjs";
-import { readPersonalizedScores, personalizationState } from "./personalized-scores.mjs";
+import { createAutomationState } from "./automation-state.mjs";
 
 const ROOT = process.cwd();
 const DATA = path.join(ROOT, "data");
@@ -58,11 +57,7 @@ function identityForms(item) {
 }
 
 function canonicalIdentity(item) {
-  try {
-    return identityKey(item, normalizeTitle);
-  } catch {
-    return null;
-  }
+  return validatedIdentityKey(item, normalizeTitle);
 }
 
 function loadRejections() {
@@ -71,18 +66,7 @@ function loadRejections() {
   return payloadItems(payload);
 }
 
-function stateToken(files) {
-  const hash = crypto.createHash("sha256");
-  for (const file of files) {
-    hash.update(file);
-    hash.update("\0");
-    hash.update(readText(file));
-    hash.update("\0");
-  }
-  return hash.digest("hex");
-}
-
-function buildState() {
+async function buildState() {
   const profile = readJson("data/taste-profile.json");
   const publicItems = loadPublicItems();
   const publicIdentities = new Map();
@@ -108,20 +92,7 @@ function buildState() {
     for (const form of identityForms(item)) rejectionForms.add(form);
   }
 
-  const trackedFiles = [
-    "config/catalogs.json",
-    "data/library.json",
-    "data/taste-profile.json",
-    ...(existing("data/rejections.json") ? ["data/rejections.json"] : []),
-    ...(existing("data/personalized-scores.json") ? ["data/personalized-scores.json"] : []),
-    ...discoveryFiles(),
-    "scripts/identity.mjs",
-    "scripts/cinemeta.mjs",
-    "scripts/validate-profile.mjs",
-    "scripts/dna-score.mjs",
-    "scripts/validate.mjs",
-    "scripts/personalized-scores.mjs",
-  ];
+  const automation = await createAutomationState(ROOT);
 
   return {
     profile,
@@ -130,12 +101,10 @@ function buildState() {
     duplicatePublic,
     watchedForms,
     rejectionForms,
-    trackedFiles,
-    token: stateToken(trackedFiles),
-    ...personalizationState({
-      snapshot: readPersonalizedScores(fs, path.join(DATA, "personalized-scores.json")),
-      profile, catalogs: readJson("config/catalogs.json"), publicItems,
-    }),
+    token: automation.state_token,
+    personalization_enabled: automation.personalization_enabled,
+    personalization_status: automation.personalization_status,
+    personalization_applied_items: automation.personalization_applied_items,
   };
 }
 
@@ -250,7 +219,7 @@ function selfTest(state) {
 }
 
 const command = process.argv[2] || "snapshot";
-const state = buildState();
+const state = await buildState();
 
 if (command === "snapshot") {
   console.log(JSON.stringify(snapshot(state), null, 2));

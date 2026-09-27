@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { execFileSync } from "node:child_process";
-import { identityKey } from "./identity.mjs";
+import { identityKey, validatedIdentityKey } from "./identity.mjs";
 import { normalizeTitle } from "./cinemeta.mjs";
 
 import { fileURLToPath } from "node:url";
@@ -38,11 +38,29 @@ export function repairPushDuplicates() {
   if(!totalRemoved){console.log("Duplicate repair: no duplicates introduced by this push.");return}
   
   function updateRunObject(run,removed,survivors){
-   const removedIds=new Set(removed.map(x=>x.item?.imdb_id).filter(Boolean));
    run.duplicates=(Number.isInteger(run.duplicates)?run.duplicates:0)+removed.length;
    run.accepted=survivors.length;
-   if(Array.isArray(run.accepted_items)) run.accepted_items=run.accepted_items.filter(x=>!removedIds.has(typeof x==="string"?x:x?.imdb_id));
-   else run.accepted_items=survivors.map(item=>({imdb_id:item.imdb_id,type:item.type,title:item.title,match_score:item.match_score})).filter(x=>x.imdb_id);
+   if(Array.isArray(run.accepted_items)) {
+     // Reconcile against the surviving canonical identities, including the
+     // title/year fallback. A set of removed IMDb ids lost fallback entries
+     // and also erased the surviving copy of an intra-run duplicate.
+     const remaining=new Map(survivors.map(item=>[itemKey(item),1]));
+     run.accepted_items=run.accepted_items.filter(entry=>{
+       let key=validatedIdentityKey(entry,normalizeTitle);
+       if(typeof entry==="string" && /^tt\d+$/.test(entry)) {
+         const matches=survivors.filter(item=>item.imdb_id===entry);
+         key=matches.length===1?itemKey(matches[0]):null;
+       }
+       if(!key || !remaining.get(key))return false;
+       remaining.set(key,remaining.get(key)-1);
+       return true;
+     });
+   } else {
+     run.accepted_items=survivors.map(item=>({
+       ...(item.imdb_id?{imdb_id:item.imdb_id}:{}),type:item.type,title:item.title,
+       year:item.year,match_score:item.match_score
+     }));
+   }
    const labels=removed.map(x=>itemLabel(x.item,x.key)).join(", ");
    const base=typeof run.rejection_summary==="string"?run.rejection_summary.trim():"";
    const sentence=`Automatic duplicate repair removed ${labels} because ${removed.length===1?"its public identity already exists":"their public identities already exist"}; this supersedes any earlier duplicate-count statement for this run.`;
@@ -81,4 +99,3 @@ export function repairPushDuplicates() {
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   repairPushDuplicates();
 }
-

@@ -6,6 +6,7 @@ import { identityKey } from "./identity.mjs";
 import { makePolicy, scoreItem } from "./dna-score.mjs";
 import { readPersonalizedScores } from "./personalized-scores.mjs";
 import { sortItems } from "./sort.mjs";
+import { createAutomationState, createBuildStateReceipt, resolveWatchItems } from "./automation-state.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(here, "..");
@@ -25,7 +26,8 @@ const dnaPolicy = taste.dna_dimensions ? makePolicy(taste) : null;
 // not a warning; any invalid file is ignored in favour of stable baseline
 // scores, and the build never fails because of it.
 const personalizedFile = path.join(dataDir, "personalized-scores.json");
-const personalized = readPersonalizedScores(fs, personalizedFile);
+const now = Date.now();
+const personalized = readPersonalizedScores(fs, personalizedFile, now);
 if (personalized.status !== "absent") {
   console.log(`personalized-scores.json: ${personalized.status}` +
     (personalized.status === "applied"
@@ -50,7 +52,6 @@ function dnaScoreFor(def, item) {
 fs.rmSync(out, { recursive: true, force: true });
 fs.mkdirSync(out, { recursive: true });
 
-const now = Date.now();
 const H24 = 24 * 60 * 60 * 1000;
 
 function loadDiscoveryItems() {
@@ -98,18 +99,7 @@ function dedupeSourceItems(items) {
 
 const discoveryItems = loadDiscoveryItems();
 const sourceItems = dedupeSourceItems([...(library.items || []), ...discoveryItems]);
-const watch = [];
-
-for (const original of sourceItems.filter(x => x.status === "watch")) {
-  let item = original;
-  try {
-    if (!item.imdb_id) item = await resolveItem(item);
-  } catch (error) {
-    console.warn(`Skipping unresolved item: ${error.message}`);
-    continue;
-  }
-  watch.push(item);
-}
+const watch = await resolveWatchItems(sourceItems);
 
 function matches(def, item) {
   if (def.filter === "watch") return true;
@@ -236,4 +226,6 @@ body{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:#
 <body><div class="card"><h1>${escapeHtml(pageHeading)}</h1><p>${escapeHtml(pageBlurb)}</p><p><a id="install" class="btn" href="#">Install in Stremio</a><button id="copy" class="btn">Copy manifest URL</button></p><p>Manifest URL:</p><code id="manifest"></code><p class="small">Catalog contents update automatically when the repository deploys. You do not need to reinstall the addon for ordinary movie/series additions.</p></div>
 <script>const u=new URL('manifest.json',location.href).href;document.getElementById('manifest').textContent=u;document.getElementById('install').href=u.replace(/^https:/,'stremio:');document.getElementById('copy').onclick=async()=>{await navigator.clipboard.writeText(u);document.getElementById('copy').textContent='Copied!'};</script></body></html>`;
 fs.writeFileSync(path.join(out, "index.html"), html, "utf8");
+const automationState = await createAutomationState(root, { now, resolvedItems: watch, snapshot: personalized });
+writeJson(path.join(out, "automation-state.json"), createBuildStateReceipt(root, automationState, now));
 console.log(`Built ${watch.length} watchlist items (${discoveryItems.length} from automation discovery files) into ${out}`);
