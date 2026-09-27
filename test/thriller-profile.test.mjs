@@ -15,6 +15,7 @@
 
 import fs from "node:fs";
 import path from "node:path";
+import os from "node:os";
 import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { validateProfile, watchedEvidenceIdentities } from "../scripts/validate-profile.mjs";
@@ -347,7 +348,49 @@ if (fs.existsSync(path.join(root, "site", "catalog"))) {
   const dup = runValidateWith([item(GOOD, { imdb_id: "tt5555555", title: "A" }), item(GOOD, { imdb_id: "tt5555555", title: "B" })]);
   check("AN1", "a duplicate public identity FAILS CLOSED", dup.code !== 0 && /duplicate public identity/.test(dup.output));
 }
-check("AO1", "no personalized-scores.json exists", !fs.existsSync(path.join(root, "data", "personalized-scores.json")));
+// Personalization is optional. Exercise the actual build with synthetic data
+// in isolation; the presence of a real snapshot must never make CI fail.
+{
+  const fixture = fs.mkdtempSync(path.join(os.tmpdir(), "wtf-thriller-personalization-"));
+  try {
+    fs.cpSync(path.join(root, "scripts"), path.join(fixture, "scripts"), { recursive: true });
+    for (const dir of ["data", "config"]) fs.mkdirSync(path.join(fixture, dir));
+    const write = (name, value) => fs.writeFileSync(path.join(fixture, name), JSON.stringify(value) + "\n");
+    const probe = item(GOOD);
+    write("data/library.json", { schema_version: 2, items: [probe] });
+    write("data/taste-profile.json", profile);
+    write("config/catalogs.json", config);
+    const build = () => execFileSync(process.execPath, ["scripts/build-site.mjs"], {
+      cwd: fixture, encoding: "utf8", stdio: "pipe"
+    });
+    const metas = id => JSON.parse(fs.readFileSync(
+      path.join(fixture, "site", "catalog", probe.type, `${id}-${probe.type}.json`), "utf8"
+    )).metas;
+    build();
+    const baseline = scoreItem(policy, row("dna-match"), probe, new Map()).score;
+    const baselineMeta = metas("dna-match").find(x => x.id === probe.imdb_id);
+    check("AO1", "absent personalization builds stable baseline DNA scores",
+      baseline !== null && baselineMeta?.description.includes(` ${baseline}/100`));
+
+    // A valid fresh zero score must affect filtering, proving the build uses
+    // the optional snapshot instead of silently ignoring it or rejecting it.
+    const snapshot = path.join(fixture, "data", "personalized-scores.json");
+    write("data/personalized-scores.json", {
+      schema_version: 1,
+      generated_at: new Date().toISOString().replace(/\.\d{3}Z$/, "Z"),
+      items: { [probe.imdb_id]: { dna_match: 0, execution_fit: 0 } }
+    });
+    const original = fs.readFileSync(snapshot);
+    build();
+    check("AO2", "a valid fresh optional snapshot affects the DNA catalog",
+      metas("dna-match").every(x => x.id !== probe.imdb_id)
+      && metas("full-watchlist").some(x => x.id === probe.imdb_id));
+    check("AO3", "the build never rewrites the snapshot or refreshes its timestamp",
+      fs.readFileSync(snapshot).equals(original));
+  } finally {
+    fs.rmSync(fixture, { recursive: true, force: true });
+  }
+}
 
 // ---------------------------------------------------------------------------
 // AP-AU  engine integrity, independence, pipeline

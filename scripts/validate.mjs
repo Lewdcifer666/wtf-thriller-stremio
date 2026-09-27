@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { validateProfile, validateItemDna, watchedEvidenceIdentities } from "./validate-profile.mjs";
 import { normalizeTitle } from "./cinemeta.mjs";
-import { identityKey } from "./identity.mjs";
+import { identityKey, identityForms as sharedIdentityForms } from "./identity.mjs";
 import { makePolicy, evalCondition, exclusionCondition } from "./dna-score.mjs";
 
 const library = JSON.parse(fs.readFileSync("data/library.json", "utf8"));
@@ -128,15 +128,23 @@ const policy = profile.dna_dimensions ? makePolicy(profile) : null;
 // evidence entry and a library item need not agree about whether an IMDb id is
 // known, and the exclusion must hold either way.
 function identityForms(entry) {
-  const forms = [];
-  if (entry.imdb_id && /^tt\d+$/.test(entry.imdb_id)) forms.push(`${entry.type}:${entry.imdb_id}`);
-  if (Number.isInteger(entry.year)) forms.push(`${entry.type}:${normalizeTitle(entry.title)}:${entry.year}`);
-  return forms;
+  return sharedIdentityForms(entry, normalizeTitle);
 }
 const watchedEvidence = new Map();
 for (const entry of watchedEvidenceIdentities(profile)) {
   for (const form of identityForms(entry)) {
     if (!watchedEvidence.has(form)) watchedEvidence.set(form, entry.title);
+  }
+}
+
+const rejectedIdentities = new Map();
+const rejectionFile = path.join("data", "rejections.json");
+if (fs.existsSync(rejectionFile)) {
+  const payload = JSON.parse(fs.readFileSync(rejectionFile, "utf8"));
+  const entries = Array.isArray(payload) ? payload : payload.items;
+  if (!Array.isArray(entries)) throw new Error(`${rejectionFile}: expected an items array`);
+  for (const entry of entries) {
+    for (const form of identityForms(entry)) rejectedIdentities.set(form, entry.title || form);
   }
 }
 
@@ -225,6 +233,15 @@ for (const [i, item] of all.entries()) {
         `${item.dna[rule.dimension]} is ${bound}) - a hard-excluded title must never be ingested, ` +
         `because the plain watch rows do not consult DNA and would publish it anyway`);
       errors++;
+    }
+  }
+
+  for (const form of identityForms(item)) {
+    if (rejectedIdentities.has(form)) {
+      console.error(`${prefix}: '${rejectedIdentities.get(form)}' is an explicit user rejection ` +
+        `(${form}) and must never be published, regardless of its score`);
+      errors++;
+      break;
     }
   }
 
