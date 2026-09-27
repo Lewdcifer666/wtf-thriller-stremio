@@ -8,7 +8,15 @@ import { fileURLToPath } from "node:url";
 
 export function repairPushDuplicates() {
   function parseJsonArrayEnv(name){const raw=process.env[name];if(!raw)return[];try{const v=JSON.parse(raw);return Array.isArray(v)?v.filter(x=>typeof x==="string"):[]}catch{return[]}}
-  function gitChangedDiscoveryFiles(){try{return execFileSync("git",["diff","--name-only","HEAD^","HEAD","--","data/discoveries"],{encoding:"utf8"}).split(/\r?\n/).map(x=>x.trim()).filter(Boolean)}catch{return[]}}
+  function gitChangedDiscoveryFiles(){
+    const before=process.env.PUSH_BEFORE, after=process.env.PUSH_AFTER;
+    const explicit=Boolean(before || after);
+    if(explicit && (!/^[a-f0-9]{40}$/.test(before || '') || !/^[a-f0-9]{40}$/.test(after || ''))) throw new Error('Invalid push commit range');
+    try {
+      const base=before && !/^0+$/.test(before)?before:'HEAD^';
+      return execFileSync('git',['diff','--name-only',base,after || 'HEAD','--','data/discoveries'],{encoding:'utf8'}).split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
+    } catch(error) { if(explicit) throw error; return []; }
+  }
   const itemKey=item=>identityKey(item,normalizeTitle);
   const itemLabel=(item,key)=>{const t=typeof item?.title==="string"&&item.title.trim()?item.title.trim():key;return item?.imdb_id?`${t} (${item.imdb_id})`:t};
   const touched=new Set([...parseJsonArrayEnv("ADDED_FILES"),...parseJsonArrayEnv("MODIFIED_FILES"),...gitChangedDiscoveryFiles()]);

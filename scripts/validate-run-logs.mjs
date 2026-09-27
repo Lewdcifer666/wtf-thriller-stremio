@@ -37,6 +37,10 @@ for (const name of files) {
   if (name !== `${run.run_id}.json`) fail(`${name}: filename must equal ${run.run_id}.json`);
   if (runs.has(run.run_id)) fail(`${name}: duplicate run_id ${run.run_id}`);
   runs.set(run.run_id, run);
+  checkStructure(run, name);
+}
+
+function checkStructure(run, name) {
   if (!Number.isFinite(Date.parse(run.timestamp || ""))) fail(`${name}: invalid timestamp`);
   for (const key of ["searched", "accepted", "rejected", "duplicates"]) {
     if (!Number.isInteger(run[key]) || run[key] < 0) fail(`${name}: ${key} must be a non-negative integer`);
@@ -92,6 +96,7 @@ for (const name of jsonFiles(DISC)) {
   }
   const run = runs.get(runId) || legacy.get(runId);
   if (!run) { fail(`${file}: no matching immutable or legacy run log`); continue; }
+  if (!runs.has(runId)) checkStructure(run, `${LEGACY}: ${runId}`);
   if (run.accepted === 0) fail(`${file}: accepted is 0 but a same-run discovery file exists`);
   checkAccepted(run, items, file);
 }

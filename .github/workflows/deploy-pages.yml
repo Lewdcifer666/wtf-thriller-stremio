@@ -42,7 +42,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v7
         with:
-          fetch-depth: 2
+          fetch-depth: 0
           persist-credentials: false
 
       - name: Setup Node.js
@@ -57,8 +57,8 @@ jobs:
       - name: Repair duplicate discoveries introduced by this push
         if: github.event_name == 'push'
         env:
-          ADDED_FILES: ${{ toJSON(github.event.head_commit.added) }}
-          MODIFIED_FILES: ${{ toJSON(github.event.head_commit.modified) }}
+          PUSH_BEFORE: ${{ github.event.before }}
+          PUSH_AFTER: ${{ github.event.after }}
         run: node scripts/repair-push-duplicates.mjs
 
       - name: Check automation state
@@ -106,7 +106,7 @@ jobs:
         uses: actions/checkout@v7
         with:
           ref: ${{ github.sha }}
-          fetch-depth: 2
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v7
@@ -117,8 +117,8 @@ jobs:
       - name: Repair duplicate discoveries introduced by this push
         if: github.event_name == 'push'
         env:
-          ADDED_FILES: ${{ toJSON(github.event.head_commit.added) }}
-          MODIFIED_FILES: ${{ toJSON(github.event.head_commit.modified) }}
+          PUSH_BEFORE: ${{ github.event.before }}
+          PUSH_AFTER: ${{ github.event.after }}
         run: node scripts/repair-push-duplicates.mjs
 
       - name: Export the validated artifact's automation state

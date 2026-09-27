@@ -1,5 +1,5 @@
 {
-  "template_revision": "7fead01437269d76",
+  "template_revision": "269d0ce298ac44f6",
   "generated_from": "wtf-addon-template",
   "note": "Vendored engine files. Edit the template and regenerate; never edit these in place.",
   "files": {
@@ -12,11 +12,11 @@
     "scripts/build-site.mjs": "4802dd2b38094e69cad44240c86fdafe82289e99a3430ff10b3bc58d30fe11f9",
     "scripts/cinemeta.mjs": "a175b7cefea33e0ef7d643615f5dfb581715c85dfa005827dd35ed672c5145d2",
     "scripts/resolve-library.mjs": "901b2991c6e8d946ae51c79fc9c1291c3957dfac833324aac5efc1c303f918d4",
-    "scripts/repair-push-duplicates.mjs": "f40b6565487cd6ba164421d667c9c8c034ed024bbf33ef55248f6241e8774051",
+    "scripts/repair-push-duplicates.mjs": "b76b22ef1fa3ea0aea85834c44fb071fe31fdc06f784acce46bd50d0763feed1",
     "scripts/automation-preflight.mjs": "107130a7f9a0888e070ef60de2697c5916fde6d236add6ac31429dc3ffbbfd3e",
     "scripts/export-automation-state.mjs": "5edd56c1e9944dcbef2312e3ffa1cf5d1bebd9877ecac7ccae81a5de381ba3ed",
     "scripts/automation-state.mjs": "b0fa40aead073cca23286085f0086dee551906769319e6b9f7110f81ee3490ab",
-    "scripts/validate-run-logs.mjs": "c538014fe506ea09a99269945cd93a5c15dfc1d6607a5ee9df8d97f25e5fde27",
+    "scripts/validate-run-logs.mjs": "3b117b760478a7b2071dc66ad9f6fccaccd8abfc1ab31623e86e19921f526dfb",
     "test/safe-fixture.mjs": "26bfb5a531dac11e8e8ac78593ce6349c86e1e5fae60579c9447b22373e9d961",
     "test/run-all.mjs": "b4bab63fae794bd6d72dbd7c437204bde15670ea39f037233508a968601553a3",
     "test/engine-checksum.test.mjs": "b1dec1b596b9f6916111eead2a9233ae57cc252f4b37fe7b4438cef40e17831e",
@@ -26,7 +26,7 @@
     "test/cinemeta-resolution.test.mjs": "9ce4ac3fcd731c004d2acd7f9cd53db06f8c8bc84702d297fd5a246ea7ec38c1",
     "test/duplicate-repair-summary.test.mjs": "b918e9db86356aa30a671e092bd9a102f280c16f88f0ee84e64b74b17ca2acbe",
     "test/personalization-state.test.mjs": "35e5647d337953beec27b8ec96206b3d4405861d34be23ebb753a9055bafb481",
-    "test/automation-integrity.test.mjs": "44fa702deeac0d74e66857a1d1cfea2ca1ef2a8041b2233076be008e8c1a80a0",
+    "test/automation-integrity.test.mjs": "314bd2e7f8d7acf783545328a525ec3e5faee32eeca7da2239e1abfede8936da",
     "test/build-state.test.mjs": "76e1f27756adcc4be95039eb60f69a7161fe7efad2a982dec360d845a5991a33"
   }
 }
