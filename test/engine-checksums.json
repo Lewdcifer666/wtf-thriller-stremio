@@ -1,5 +1,5 @@
 {
-  "template_revision": "5b313d28a2d7d5d8",
+  "template_revision": "7fead01437269d76",
   "generated_from": "wtf-addon-template",
   "note": "Vendored engine files. Edit the template and regenerate; never edit these in place.",
   "files": {
@@ -15,7 +15,7 @@
     "scripts/repair-push-duplicates.mjs": "f40b6565487cd6ba164421d667c9c8c034ed024bbf33ef55248f6241e8774051",
     "scripts/automation-preflight.mjs": "107130a7f9a0888e070ef60de2697c5916fde6d236add6ac31429dc3ffbbfd3e",
     "scripts/export-automation-state.mjs": "5edd56c1e9944dcbef2312e3ffa1cf5d1bebd9877ecac7ccae81a5de381ba3ed",
-    "scripts/automation-state.mjs": "c22479b24467cbb8a86200768fa9bdb317bd0586205b3fdd78112c34c54ab02c",
+    "scripts/automation-state.mjs": "b0fa40aead073cca23286085f0086dee551906769319e6b9f7110f81ee3490ab",
     "scripts/validate-run-logs.mjs": "c538014fe506ea09a99269945cd93a5c15dfc1d6607a5ee9df8d97f25e5fde27",
     "test/safe-fixture.mjs": "26bfb5a531dac11e8e8ac78593ce6349c86e1e5fae60579c9447b22373e9d961",
     "test/run-all.mjs": "b4bab63fae794bd6d72dbd7c437204bde15670ea39f037233508a968601553a3",
@@ -27,6 +27,6 @@
     "test/duplicate-repair-summary.test.mjs": "b918e9db86356aa30a671e092bd9a102f280c16f88f0ee84e64b74b17ca2acbe",
     "test/personalization-state.test.mjs": "35e5647d337953beec27b8ec96206b3d4405861d34be23ebb753a9055bafb481",
     "test/automation-integrity.test.mjs": "44fa702deeac0d74e66857a1d1cfea2ca1ef2a8041b2233076be008e8c1a80a0",
-    "test/build-state.test.mjs": "788de590a313c0e5a2818d78d932d8d57c7cf33e4f3c6e6af04bc60bbc11692c"
+    "test/build-state.test.mjs": "76e1f27756adcc4be95039eb60f69a7161fe7efad2a982dec360d845a5991a33"
   }
 }

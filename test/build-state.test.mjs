@@ -37,10 +37,19 @@ try{
   run('build-site.mjs',generated);assert.equal(receipt().state.personalization_enabled,true,'resolved IDs must count as applied');
   run('export-automation-state.mjs',generated);assert.deepEqual(state(),receipt().state,'standalone exporter must use the same resolver');
   const before=fs.readFileSync(path.join(tmp,'data/automation-state.json'));
+  const seedFile=path.join(tmp,'scripts/known-ids.mjs'), seedBytes=fs.readFileSync(seedFile);
+  fs.appendFileSync(seedFile,'\n// Changed resolver mapping input\n');
+  run('export-automation-state.mjs',generated,['data/automation-state.json','--from-build','site/automation-state.json'],false);
+  run('export-automation-state.mjs',generated);assert.notEqual(state().state_token,receipt().state.state_token,'resolver mappings must affect the token');
+  fs.writeFileSync(seedFile,seedBytes);fs.writeFileSync(path.join(tmp,'data/automation-state.json'),before);
   write('data/library.json',{items:[{...item,title:'Changed source'}]});
   run('export-automation-state.mjs',generated,['data/automation-state.json','--from-build','site/automation-state.json'],false);
   assert.deepEqual(fs.readFileSync(path.join(tmp,'data/automation-state.json')),before,'rejected export preserves previous output');
   assert.deepEqual(fs.readFileSync(path.join(tmp,'data/personalized-scores.json')),snapshotBytes,'never rewrite the snapshot timestamp');
+  fs.unlinkSync(path.join(tmp,'data/personalized-scores.json'));fs.mkdirSync(path.join(tmp,'data/personalized-scores.json'));
+  run('build-site.mjs',generated);assert.equal(receipt().state.personalization_status,'unreadable');assert.equal(receipt().state.personalization_enabled,false);
+  run('export-automation-state.mjs',generated);assert.deepEqual(state(),receipt().state,'unreadable optional snapshot must fall back to baseline');
+  if(fs.existsSync(path.join(tmp,'scripts/automation-preflight.mjs'))){const pre=JSON.parse(run('automation-preflight.mjs',generated,['snapshot']).stdout);assert.equal(pre.personalization_enabled,false);}
 }finally{
   assert.equal(path.dirname(path.resolve(tmp)),path.resolve(os.tmpdir()));assert.ok(path.basename(tmp).startsWith('wtf-build-state-'));fs.rmSync(tmp,{recursive:true,force:true});
 }

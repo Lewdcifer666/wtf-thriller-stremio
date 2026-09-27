@@ -25,12 +25,20 @@ export function readAutomationInputs(root) {
     ...(exists("data/rejections.json") ? ["data/rejections.json"] : []),
     ...(exists("data/personalized-scores.json") ? ["data/personalized-scores.json"] : []),
     ...discoveries,
-    "scripts/identity.mjs", "scripts/cinemeta.mjs", "scripts/validate-profile.mjs",
+    "scripts/identity.mjs", "scripts/cinemeta.mjs", "scripts/known-ids.mjs", "scripts/validate-profile.mjs",
     "scripts/dna-score.mjs", "scripts/validate.mjs", "scripts/personalized-scores.mjs",
     "scripts/automation-state.mjs", "scripts/build-site.mjs",
   ];
   const hash = crypto.createHash("sha256");
-  for (const file of files) hash.update(file).update("\0").update(fs.readFileSync(path.join(root, file))).update("\0");
+  for (const file of files) {
+    hash.update(file).update("\0");
+    try { hash.update("readable\0").update(fs.readFileSync(path.join(root, file))); }
+    catch (error) {
+      if (file !== "data/personalized-scores.json") throw error;
+      hash.update("unreadable\0");
+    }
+    hash.update("\0");
+  }
   return { profile, catalogs, publicItems, rejections, discoveries, inputToken: hash.digest("hex") };
 }
 
