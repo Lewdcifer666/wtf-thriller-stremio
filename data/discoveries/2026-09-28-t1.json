@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "run_id": "2026-09-28-t1",
+  "timestamp": "2026-09-28T07:14:17Z",
+  "items": [
+    {
+      "imdb_id": "tt35929525",
+      "type": "series",
+      "title": "Shaque: Trust No One",
+      "year": 2026,
+      "status": "watch",
+      "match_score": 74,
+      "reason": "The seven-part kidnapping mystery delivers meaningful information across the season rather than merely sustaining an investigation: a potential lead changes Anvita's search, an old photograph and a suspicious death open new lines of inquiry, an unexpected confession reframes the case, police trace a woman tied to Rhea's birth, the cause of Anvita's hallucinations is uncovered, and Shreya's final revelation connects the disappearance. The cadence is regular but not maximal because multiple reviews describe the series as slow-burn, stretched or predictable, so investigation and progressive revelation score above pace speed.",
+      "tags": [],
+      "added_at": "2026-09-28T07:14:17Z",
+      "added_by": "daily-automation",
+      "discovery_run_id": "2026-09-28-t1",
+      "source": "https://qr.netflix.com/tw-en/title/81762865 ; https://www.filmfare.com/reviews/bollywood-movies/shaque-trust-no-one-review-slow-burn-mystery-86179.amp ; https://www.idiva.com/entertainment/bollywood/shaque-trust-no-one-review-weak-writing-and-obvious-twists-sink-this-parineeti-chopra-jennifer-winger-thriller/18098329 ; https://www.rediff.com/movies/review/shaque-trust-no-one-review-parineeti-chopras-mystery-drama-lacks-spark/20260924.htm ; https://ottweek.com/title/tv/285147-shaque-trust-no-one",
+      "dna": {
+        "mystery": 9,
+        "investigation": 8,
+        "clue_puzzling": 7,
+        "culprit_hunt": 8,
+        "progressive_revelation": 8,
+        "revelation_frequency": 7,
+        "plot_twists": 7,
+        "psychological_strategy": 6,
+        "cat_and_mouse": 4,
+        "deception": 8,
+        "hidden_identity": 6,
+        "unreliable_perspective": 7,
+        "conspiracy": 5,
+        "mole_inside": 4,
+        "corruption": 4,
+        "surveillance": 3,
+        "evidence_manipulation": 6,
+        "technology_threat": 1,
+        "suspense": 7,
+        "action_density": 2,
+        "action_intensity": 3,
+        "brutality": 4,
+        "deadly_game": 0,
+        "weirdness": 5,
+        "military_focus": 0,
+        "romance_focus": 4,
+        "drama_focus": 8,
+        "visual_quality": 7,
+        "retro_visual_style": 1,
+        "pace_speed": 5
+      },
+      "dna_confidence": 0.82,
+      "dna_tags": [
+        "kidnapping",
+        "police_procedural"
+      ]
+    }
+  ]
+}
