@@ -1,0 +1,19 @@
+{
+  "run_id": "2026-09-28-t1",
+  "timestamp": "2026-09-28T07:14:17Z",
+  "searched": 2,
+  "accepted": 1,
+  "rejected": 1,
+  "duplicates": 0,
+  "accepted_items": [
+    {
+      "imdb_id": "tt35929525",
+      "type": "series",
+      "title": "Shaque: Trust No One",
+      "match_score": 74
+    }
+  ],
+  "rejection_summary": [
+    "The Final Problem (2026): not promoted because complete whole-season evidence sufficient to establish the full live DNA vector and revelation cadence was not available with enough confidence; no score was invented from its twisty closed-circle premise."
+  ]
+}
