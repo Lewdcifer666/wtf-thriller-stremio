@@ -1,0 +1,19 @@
+{
+  "run_id": "2026-09-30-t1",
+  "timestamp": "2026-09-30T07:07:05Z",
+  "searched": 2,
+  "accepted": 1,
+  "rejected": 1,
+  "duplicates": 0,
+  "accepted_items": [
+    {
+      "imdb_id": "tt36832679",
+      "type": "series",
+      "title": "The Final Problem",
+      "match_score": 67
+    }
+  ],
+  "rejection_summary": [
+    "Anomie: The Equation of Death (tt27541778) — revelation-cadence failure: strong investigation premise, but multiple reviews describe long meandering stretches with few eventful turns and the meaningful novelty/revelation arriving mainly in the final stretch, so it does not fit the profile's progressive-payoff requirement."
+  ]
+}
