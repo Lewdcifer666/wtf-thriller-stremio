@@ -1,0 +1,25 @@
+{
+  "run_id": "2026-10-02-t1",
+  "timestamp": "2026-10-02T09:04:57Z",
+  "searched": 3,
+  "accepted": 2,
+  "rejected": 1,
+  "duplicates": 0,
+  "accepted_items": [
+    {
+      "imdb_id": "tt39749747",
+      "type": "series",
+      "title": "Delusion",
+      "match_score": 77
+    },
+    {
+      "imdb_id": "tt36564091",
+      "type": "movie",
+      "title": "Sender",
+      "match_score": 68
+    }
+  ],
+  "rejection_summary": [
+    "Winter (2026 ITV series): rejected from this run because only the opening portion of the season is currently available; complete-season evidence required by the live DNA policy is not yet available, so revelation cadence cannot be established without guessing."
+  ]
+}
