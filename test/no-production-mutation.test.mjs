@@ -17,6 +17,12 @@ import fs from "node:fs";
 import path from "node:path";
 import crypto from "node:crypto";
 import { execFileSync } from "node:child_process";
+import os from "node:os";
+
+if (process.env.WTF_ISOLATED_TEST_ROOT !== process.cwd() || !process.cwd().startsWith(os.tmpdir() + path.sep)) {
+  execFileSync(process.execPath, ["test/run-all.mjs"], { stdio: "inherit" });
+  process.exit(0);
+}
 
 let passed = 0, failed = 0;
 const check = (id, description, condition, detail) => {
@@ -27,7 +33,7 @@ const check = (id, description, condition, detail) => {
 console.log("Production state preservation");
 console.log("");
 
-const WATCHED = ["data", "config", "DAILY_AUTOMATION_PROMPT.md"];
+const WATCHED = ["data", "config", "DAILY_AUTOMATION_PROMPT.md", "DAILY_AUTOMATION_RUNBOOK.md"];
 
 function census() {
   const out = new Map();
@@ -70,7 +76,7 @@ check("C1", `censused ${before.size} tracked files under ${WATCHED.join(", ")}`,
 // recurse) and the helpers, which are imported rather than executed.
 const NOT_A_SUITE_MEMBER = new Set(["no-production-mutation.test.mjs", "safe-fixture.mjs", "run-all.mjs"]);
 const SUITE = fs.readdirSync("test")
-  .filter(name => name.endsWith(".mjs") && !NOT_A_SUITE_MEMBER.has(name))
+  .filter(name => name.endsWith(".test.mjs") && !NOT_A_SUITE_MEMBER.has(name))
   .sort()
   .map(name => path.join("test", name));
 

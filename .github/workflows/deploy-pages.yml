@@ -1,184 +1,81 @@
 name: Build and Deploy Stremio Catalog
-
 on:
   push:
-    branches:
-      - main
-    paths:
-      - "data/**"
-      - "!data/automation-state.json"
-      - "config/**"
-      - "scripts/**"
-      - "test/**"
-      - "package.json"
-      - "DAILY_AUTOMATION_PROMPT.md"
-      - "DAILY_AUTOMATION_RUNBOOK.md"
-      - ".github/workflows/deploy-pages.yml"
-
+    branches: [main]
   pull_request:
-    branches:
-      - main
-
+    branches: [main]
   schedule:
-    # Rebuild hourly so items automatically leave
-    # the Past 24h catalogs after 24 hours.
-    - cron: "52 * * * *"
-
+    - cron: '52 * * * *'
   workflow_dispatch:
-
 permissions:
   contents: read
-
 concurrency:
   group: pages-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: false
-
 jobs:
   validate:
-    outputs:
-      automation_state: ${{ steps.build.outputs.automation_state }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           fetch-depth: 0
           persist-credentials: false
-
-      - name: Setup Node.js
-        id: setup_node
-        uses: actions/setup-node@v7
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
           node-version: 24
           package-manager-cache: false
-
-      # Validate the same deterministic repair that the deploy job will commit.
-      # Pull requests never repair or write production data back to GitHub.
-      - name: Repair duplicate discoveries introduced by this push
-        if: github.event_name == 'push'
-        env:
-          PUSH_BEFORE: ${{ github.event.before }}
-          PUSH_AFTER: ${{ github.event.after }}
-        run: node scripts/repair-push-duplicates.mjs
-
-      - name: Check automation state
-        if: ${{ !cancelled() && steps.setup_node.outcome == 'success' }}
-        run: node scripts/automation-preflight.mjs self-test
-
-      - name: Validate source data
-        if: ${{ !cancelled() && steps.setup_node.outcome == 'success' }}
-        run: node scripts/validate.mjs
-
-      - name: Validate immutable run logs
-        if: ${{ !cancelled() && steps.setup_node.outcome == 'success' }}
-        run: node scripts/validate-run-logs.mjs
-
-      - name: Run full test suite
-        if: ${{ !cancelled() && steps.setup_node.outcome == 'success' }}
-        run: npm test
-
-      - name: Build static Stremio site
-        id: build
-        run: |
-          node scripts/build-site.mjs
-          node --input-type=module -e 'import fs from "node:fs"; fs.appendFileSync(process.env.GITHUB_OUTPUT, "automation_state=" + JSON.stringify(JSON.parse(fs.readFileSync("site/automation-state.json", "utf8"))) + "\n");'
-
-      - name: Upload validated Pages artifact
+      - uses: ./.github/actions/validate
+        with:
+          base: ${{ github.event.pull_request.base.sha || '' }}
+      - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5
         if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
-        uses: actions/upload-pages-artifact@v5
         with:
           path: site
-
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        with:
+          name: expected-publication-receipt
+          path: site/publication-receipt.json
   deploy:
     needs: validate
     if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: read
       pages: write
       id-token: write
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url || steps.deployment_retry.outputs.page_url || steps.deployment_final.outputs.page_url }}
-
+      url: ${{ steps.deployment.outputs.page_url || steps.retry.outputs.page_url || steps.final.outputs.page_url }}
     steps:
-      - name: Checkout validated revision
-        uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           ref: ${{ github.sha }}
-          fetch-depth: 0
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v7
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
           node-version: 24
           package-manager-cache: false
-
-      - name: Repair duplicate discoveries introduced by this push
-        if: github.event_name == 'push'
-        env:
-          PUSH_BEFORE: ${{ github.event.before }}
-          PUSH_AFTER: ${{ github.event.after }}
-        run: node scripts/repair-push-duplicates.mjs
-
-      - name: Export the validated artifact's automation state
-        env:
-          BUILT_AUTOMATION_STATE: ${{ needs.validate.outputs.automation_state }}
-        run: node scripts/export-automation-state.mjs data/automation-state.json --from-build env
-
-      - name: Commit validated repairs and refreshed automation state
-        shell: bash
-        run: |
-          git fetch --no-tags origin main
-          if [[ "$(git rev-parse origin/main)" != "$GITHUB_SHA" ]]; then
-            echo "::error::Main changed after validation. Rerun this workflow on the latest main; refusing to publish a stale snapshot."
-            exit 1
-          fi
-
-          if [[ -n "$(git status --porcelain -- data/discoveries data/run-logs data/discovery-log.json data/automation-state.json)" ]]; then
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add data/discoveries data/run-logs data/discovery-log.json data/automation-state.json
-            git commit -m "Commit validated discovery repair and automation state"
-            git push origin HEAD:main
-          fi
-
-      - name: Configure GitHub Pages
-        uses: actions/configure-pages@v6
-
-      - name: Deploy GitHub Pages
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: expected-publication-receipt
+          path: expected
+      - uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6
+      - uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5
         id: deployment
         continue-on-error: true
-        uses: actions/deploy-pages@v5
-
-      - name: Wait before Pages retry
-        if: steps.deployment.outcome == 'failure'
+      - if: steps.deployment.outcome == 'failure'
         run: sleep 15
-
-      - name: Retry GitHub Pages deployment
-        id: deployment_retry
+      - uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5
+        id: retry
         if: steps.deployment.outcome == 'failure'
         continue-on-error: true
-        uses: actions/deploy-pages@v5
-
-      - name: Wait before final Pages retry
-        if: steps.deployment.outcome == 'failure' && steps.deployment_retry.outcome == 'failure'
+      - if: steps.deployment.outcome == 'failure' && steps.retry.outcome == 'failure'
         run: sleep 45
-
-      - name: Final GitHub Pages deployment retry
-        id: deployment_final
-        if: steps.deployment.outcome == 'failure' && steps.deployment_retry.outcome == 'failure'
+      - uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5
+        id: final
+        if: steps.deployment.outcome == 'failure' && steps.retry.outcome == 'failure'
         continue-on-error: true
-        uses: actions/deploy-pages@v5
-
-      - name: Require a successful Pages deployment
-        if: ${{ !cancelled() }}
-        shell: bash
-        run: |
-          if [[ "${{ steps.deployment.outcome }}" == "success" || "${{ steps.deployment_retry.outcome }}" == "success" || "${{ steps.deployment_final.outcome }}" == "success" ]]; then
-            echo "Pages deployment succeeded."
-            exit 0
-          fi
-
-          echo "::error::GitHub Pages did not deploy the validated catalog."
-          exit 1
+      - env:
+          PAGE_URL: ${{ steps.deployment.outputs.page_url || steps.retry.outputs.page_url || steps.final.outputs.page_url }}
+        run: node scripts/verify-deployment.mjs "$PAGE_URL" expected/publication-receipt.json

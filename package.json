@@ -13,5 +13,8 @@
     "preflight": "node scripts/automation-preflight.mjs snapshot",
     "preflight:self-test": "node scripts/automation-preflight.mjs self-test",
     "test": "node test/run-all.mjs"
+  },
+  "dependencies": {
+    "ajv": "8.20.0"
   }
 }
