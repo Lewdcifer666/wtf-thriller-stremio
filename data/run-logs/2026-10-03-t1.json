@@ -1,0 +1,50 @@
+{
+  "run_id": "2026-10-03-t1",
+  "timestamp": "2026-10-03T09:00:00.575Z",
+  "searched": 4,
+  "accepted": 1,
+  "rejected": 3,
+  "duplicates": 0,
+  "accepted_items": [
+    {
+      "imdb_id": "tt38448408",
+      "type": "series",
+      "title": "The Killings: Parrish Station",
+      "match_score": 79
+    }
+  ],
+  "rejection_summary": [
+    {
+      "title": "Winter",
+      "type": "series",
+      "year": 2026,
+      "imdb_id": null,
+      "reason": "Qualitative rejection for now: the ITV crime series only premiered on September 30, 2026 and is releasing as an ongoing series. Current evidence establishes a forensic procedural with an overarching cold-case thread around Simone's murder, but not the complete-season revelation cadence required to measure all Thriller DNA dimensions honestly. Reconsider after the full season has aired.",
+      "category": "rejected"
+    },
+    {
+      "title": "Line of Fire",
+      "type": "series",
+      "year": 2026,
+      "imdb_id": null,
+      "reason": "Qualitative rejection for now: season one is a ten-episode weekly release that began September 21, 2026, so complete-season evidence is unavailable. Available reporting describes a conspiracy and cliffhangers but also explicitly frames the show as a family drama/procedural hybrid. Without the full season, progressive revelation and revelation frequency cannot be measured across the complete runtime without inference.",
+      "category": "rejected"
+    },
+    {
+      "title": "Psycho Killer",
+      "type": "movie",
+      "year": 2026,
+      "imdb_id": "tt1764551",
+      "reason": "Qualitative rejection: the 91-minute film has a police pursuit, serial-killer hunt, occult clues and brutality, but whole-film critical evidence is strongly unfavorable and specifically describes the plot as obvious with no surprises. The identity and hunt are clear, but available evidence does not support the profile's required high-confidence measurements of progressive revelation and revelation frequency as a strong fit; do not turn a serial-killer pursuit premise into assumed revelation cadence.",
+      "category": "rejected"
+    }
+  ],
+  "publication": {
+    "schema_version": 1,
+    "daily_key": "thriller:2026-10-03",
+    "packet_hash": "76cf42a84c5f217917d2dd9cdd6030158a5343809a93ea6bd5c3ce1335acf248",
+    "research_commit": "12c3597f23e8b5944d10d01c89f4c97ff49f839e",
+    "evaluated_base": "16f6665539d6d5441a4a1794908db0593f29f7fe",
+    "policy_fingerprint": "8ef14ab2d45193555cb1111800b7e78044a9738355723a77d1fc943283f7dcd4"
+  }
+}
