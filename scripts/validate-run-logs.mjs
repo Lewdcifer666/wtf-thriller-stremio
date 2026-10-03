@@ -42,6 +42,8 @@ for (const name of files) {
 
 function checkStructure(run, name) {
   if (!Number.isFinite(Date.parse(run.timestamp || ""))) fail(`${name}: invalid timestamp`);
+  if (run.publication && Date.parse(run.timestamp) > Date.now()) fail(`${name}: future publication timestamp`);
+  if (run.publication && run.searched !== run.accepted + run.rejected + run.duplicates) fail(`${name}: publication counts disagree`);
   for (const key of ["searched", "accepted", "rejected", "duplicates"]) {
     if (!Number.isInteger(run[key]) || run[key] < 0) fail(`${name}: ${key} must be a non-negative integer`);
   }

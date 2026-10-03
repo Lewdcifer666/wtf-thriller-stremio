@@ -422,7 +422,8 @@ if (fs.existsSync(path.join(root, "site", "catalog"))) {
   walk(root);
   check("AS1", "no cross-repo reference or runtime dependency", offenders.length === 0, offenders.join("\n         "));
   const pkg = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
-  check("AS2", "zero dependencies", !pkg.dependencies && !pkg.devDependencies);
+  check("AS2", "only the approved pinned schema validator dependency",
+    JSON.stringify(pkg.dependencies) === JSON.stringify({ ajv: "8.20.0" }) && !pkg.devDependencies);
 }
 check("AR1", "the profile validates", validateProfile(profile).length === 0, validateProfile(profile).join("\n         "));
 {

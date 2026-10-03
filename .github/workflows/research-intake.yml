@@ -1,0 +1,13 @@
+name: Research Intake
+on:
+  push:
+    branches: ['research/**']
+# No checkout, scripts, dependencies, artifacts, caches or credentials from the
+# research branch. The privileged main workflow independently retrieves data.
+permissions:
+  contents: read
+jobs:
+  intake:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo 'Research branch persisted; trusted-main reconciliation will validate its packet.'

@@ -1,4 +1,5 @@
 import fs from "node:fs";
+import { deploymentReceipt } from "./verify-deployment.mjs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { normalizeTitle, resolveItem } from "./cinemeta.mjs";
@@ -208,6 +209,7 @@ const manifest = {
   idPrefixes: ["tt"]
 };
 writeJson(path.join(out, "manifest.json"), manifest);
+writeJson(path.join(out, "publication-receipt.json"), deploymentReceipt(root, manifest, now));
 fs.writeFileSync(path.join(out, ".nojekyll"), "", "utf8");
 
 // site was resolved above, where the catalog row names are built.

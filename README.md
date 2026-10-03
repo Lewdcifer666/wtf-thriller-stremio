@@ -39,7 +39,21 @@ generated once from this addon's own profile and are owned by this repository.
 ## Commands
 
 ```bash
+npm ci --ignore-scripts # pinned schema validator
 npm test              # full suite, production-state census last
 npm run validate      # fail-closed validation of data/ against the profile
 npm run build         # build site/ (manifest + catalog JSON)
 ```
+
+## Research and publication
+
+ChatGPT stages a dated raw packet on `research/<date>-thriller`. Trusted-main
+GitHub code owns scores, timestamps, run IDs, counts, validation and publication
+PRs. Daily retries reconcile persisted packets and immutable attempts. All
+tests run in a temporary copy of the checkout. Existing data, scoring policy,
+22 catalog identities and the Pages endpoint are preserved.
+
+See [publication cutover and recovery](docs/publication-cutover.md) for the App,
+main-only environment, branch protection, task change and live acceptance
+gates. Publication remains disabled until the explicit cutover. Automatic
+private feedback learning is still a required later phase of this migration.

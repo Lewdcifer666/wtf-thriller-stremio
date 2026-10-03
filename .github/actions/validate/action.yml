@@ -1,0 +1,16 @@
+name: Complete catalog validation
+description: Shared source, history, publication, test and build checks
+inputs:
+  base:
+    description: Trusted base SHA for append-only history checks
+    required: false
+    default: ''
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      run: npm ci --ignore-scripts
+    - shell: bash
+      env:
+        PUBLICATION_BASE: ${{ inputs.base }}
+      run: node scripts/publish-research.mjs validate
