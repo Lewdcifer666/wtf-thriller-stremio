@@ -38,14 +38,28 @@ const bad = clone(bundle); bad.plans[0].files['scripts/evil.mjs'] = { content: '
 assert.throws(() => assertBundle(bad), /output path/);
 const badHash = clone(bundle); Object.values(badHash.plans[0].files)[0].content += ' ';
 assert.throws(() => assertBundle(badHash), /digest/);
-function fakeApi({ main = options.evaluatedBase, research = options.researchCommit, existing = [], refSha = 'd'.repeat(40), failAt, protectedMain = true } = {}) {
+function fakeApi({ main = options.evaluatedBase, research = options.researchCommit, existing = [], refSha = 'd'.repeat(40), failAt, protectedMain = true,
+  mainFiles = {}, truncated = false, failRead } = {}) {
   const writes = [];
+  const reads = [];
+  const mainBlobs = new Map(Object.values(mainFiles).map(content => [hash(content), content]));
   const pr = { number: 1, node_id: 'PR_node', html_url: 'https://github.com/example/repo/pull/1', head: { ref: branch, sha: refSha }, state: 'open' };
-  return { writes,
+  return { writes, reads,
     async get(route) {
+      reads.push(route);
       if (route === '/branches/main') return { protected: protectedMain };
       if (route === '') return { allow_auto_merge: true };
       if (route === '/git/ref/heads/main') return { object: { sha: main } };
+      if (route === `/git/trees/${main}?recursive=1`) {
+        if (failRead === 'tree') throw new Error('simulated inaccessible main tree');
+        return { truncated, tree: Object.entries(mainFiles).map(([name, content]) => ({ path: name, mode: '100644', type: 'blob', size: Buffer.byteLength(content), sha: hash(content) })) };
+      }
+      if (route.startsWith('/git/blobs/')) {
+        if (failRead === 'blob') throw new Error('simulated inaccessible main blob');
+        const content = mainBlobs.get(route.slice('/git/blobs/'.length));
+        assert.notEqual(content, undefined, 'Only observed main-tree blobs may be read');
+        return { encoding: 'base64', size: Buffer.byteLength(content), content: Buffer.from(content).toString('base64') };
+      }
       if (route.startsWith('/git/ref/heads/research/')) return { object: { sha: research } };
       if (route.startsWith('/git/ref/heads/publication/')) return { object: { sha: refSha } };
       if (route.startsWith('/pulls?')) return existing;
@@ -71,6 +85,46 @@ assert.ok(api.writes.find(w => w.route === '/git/refs').body.ref.startsWith('ref
 assert.equal(api.writes.some(w => w.body?.ref === 'refs/heads/main'), false);
 const stale = fakeApi({ main: 'e'.repeat(40) });
 await assert.rejects(publish(bundle, stale), /Main changed/); assert.equal(stale.writes.length, 0);
+// A duplicate workflow wake can finish preparation before the original PR's
+// auto-merge, then reach publication after it. Exact immutable artifacts on
+// fresh main prove completion without recreating a branch, PR or deployment.
+const mergedMain = 'e'.repeat(40);
+const mergedFiles = Object.fromEntries(Object.entries(files).map(([name, file]) => [name, file.content]));
+mergedFiles['data/automation-state.json'] = serialize({ changed_after_merge: true });
+mergedFiles['scripts/publish-research.mjs'] = 'throw new Error("Must never execute or retrieve main code during completion detection")';
+const mergedRetry = fakeApi({ main: mergedMain, mainFiles: mergedFiles });
+assert.deepEqual(await publish(bundle, mergedRetry), [{ daily_key: bundle.plans[0].daily_key, state: 'merged', run_id: finalized.log.run_id, revision: mergedMain }]);
+assert.equal(mergedRetry.writes.length, 0);
+assert.deepEqual(mergedRetry.reads, ['/git/ref/heads/main', `/git/trees/${mergedMain}?recursive=1`,
+  `/git/blobs/${hash(files[`data/run-logs/${finalized.log.run_id}.json`].content)}`,
+  `/git/blobs/${hash(files[`data/discoveries/${finalized.log.run_id}.json`].content)}`]);
+for (const kind of ['changed log', 'changed discovery', 'missing log', 'missing discovery']) {
+  const altered = { ...mergedFiles };
+  const name = `data/${kind.endsWith('log') ? 'run-logs' : 'discoveries'}/${finalized.log.run_id}.json`;
+  if (kind.startsWith('missing')) delete altered[name];
+  else altered[name] += '\n'; // Semantic equality is insufficient: history bytes are immutable.
+  const rejectedRetry = fakeApi({ main: mergedMain, mainFiles: altered });
+  await assert.rejects(publish(bundle, rejectedRetry), /Main changed/, kind);
+  assert.equal(rejectedRetry.writes.length, 0, kind);
+}
+for (const fault of [{ truncated: true }, { failRead: 'tree' }, { failRead: 'blob' }]) {
+  const rejectedRetry = fakeApi({ main: mergedMain, mainFiles: mergedFiles, ...fault });
+  await assert.rejects(publish(bundle, rejectedRetry), /Main changed/);
+  assert.equal(rejectedRetry.writes.length, 0);
+}
+const zeroFinalized = finalizeResearch({ ...packet, candidates: [], research_rejections: [] }, inputs, options);
+const zeroBundle = clone(bundle);
+zeroBundle.plans[0].accepted = 0;
+delete zeroBundle.plans[0].files[`data/discoveries/${zeroFinalized.log.run_id}.json`];
+const zeroLog = serialize(zeroFinalized.log);
+zeroBundle.plans[0].files[`data/run-logs/${zeroFinalized.log.run_id}.json`] = { content: zeroLog, sha256: hash(zeroLog) };
+const zeroFiles = { [`data/run-logs/${zeroFinalized.log.run_id}.json`]: zeroLog };
+const zeroRetry = fakeApi({ main: mergedMain, mainFiles: zeroFiles });
+assert.deepEqual(await publish(zeroBundle, zeroRetry), [{ daily_key: zeroBundle.plans[0].daily_key, state: 'merged', run_id: zeroFinalized.log.run_id, revision: mergedMain }]);
+assert.equal(zeroRetry.writes.length, 0);
+const forbiddenZeroDiscovery = fakeApi({ main: mergedMain, mainFiles: { ...zeroFiles, [`data/discoveries/${zeroFinalized.log.run_id}.json`]: serialize({ items: [] }) } });
+await assert.rejects(publish(zeroBundle, forbiddenZeroDiscovery), /Main changed/);
+assert.equal(forbiddenZeroDiscovery.writes.length, 0);
 const unprotected = fakeApi({ protectedMain: false });
 await assert.rejects(publish(bundle, unprotected), /protection/); assert.equal(unprotected.writes.length, 0);
 const changedPacket = fakeApi({ research: 'f'.repeat(40) });

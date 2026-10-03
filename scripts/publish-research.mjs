@@ -61,14 +61,31 @@ export function githubClient(repository, token, fetchImpl = fetch) {
     graphql: (query, variables) => request('POST', '/graphql', { query, variables }),
   };
 }
-async function getFile(api, commit, relative) {
-  const tree = await api.get(`/git/trees/${commit}?recursive=1`);
-  if (tree.truncated) throw new Error('Git tree truncated; refusing incomplete input');
-  const entry = tree.tree.find(e => e.path === relative);
+async function getBlob(api, entry) {
   assertBlob(entry);
   const blob = await api.get(`/git/blobs/${entry.sha}`);
   if (blob.encoding !== 'base64' || blob.size > 1024 * 1024) throw new Error('Unsupported packet encoding or size');
   return Buffer.from(blob.content, 'base64').toString('utf8');
+}
+async function getFile(api, commit, relative) {
+  const tree = await api.get(`/git/trees/${commit}?recursive=1`);
+  if (tree.truncated) throw new Error('Git tree truncated; refusing incomplete input');
+  return getBlob(api, tree.tree.find(e => e.path === relative));
+}
+async function matchesMergedPlan(api, commit, plan) {
+  // A prior auto-merge can finish between preparation and publication. Read
+  // immutable artifacts from one pinned main revision, never code or mutable
+  // automation state, to distinguish that completed retry from a stale plan.
+  const tree = await api.get(`/git/trees/${commit}?recursive=1`);
+  if (tree.truncated) throw new Error('Git tree truncated; refusing incomplete input');
+  const logPath = `data/run-logs/${plan.run_id}.json`;
+  const discoveryPath = `data/discoveries/${plan.run_id}.json`;
+  if (plan.accepted === 0 && tree.tree.some(entry => entry.path === discoveryPath)) return false;
+  for (const name of [logPath, ...(plan.accepted ? [discoveryPath] : [])]) {
+    const entry = tree.tree.find(e => e.path === name);
+    if (!entry || await getBlob(api, entry) !== plan.files[name].content) return false;
+  }
+  return true;
 }
 async function allPulls(api) {
   const result = [];
@@ -218,12 +235,21 @@ export async function prepare(root, api, outDir, { validate = fullValidation, wi
 
 export async function publish(bundle, api) {
   assertBundle(bundle);
-  await assertFreshMain(api, bundle.base);
   const results = [];
   // Only one plan may be published per fresh base. Remaining packets stay in
   // their research branches and are picked up after merge by reconciliation.
   // This avoids creating mutually out-of-date PRs under strict protection.
   const plan = bundle.plans[0];
+  const currentMain = (await api.get('/git/ref/heads/main')).object.sha;
+  if (currentMain !== bundle.base) {
+    const stale = new Error('Main changed; hourly reconciliation will re-evaluate against fresh trusted main');
+    try {
+      if (plan && await matchesMergedPlan(api, currentMain, plan)) {
+        return [{ daily_key: plan.daily_key, state: 'merged', run_id: plan.run_id, revision: currentMain }];
+      }
+    } catch (error) { stale.cause = error; }
+    throw stale;
+  }
   if (!plan) return results;
   await assertPublicationEnabled(api);
   if ((await api.get(`/git/ref/heads/${plan.research_branch}`)).object.sha !== plan.research_commit) throw new Error('Research changed after validation; retry from the persisted packet');
