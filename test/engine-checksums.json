@@ -1,5 +1,5 @@
 {
-  "template_revision": "5e909aa86f7e21f9",
+  "template_revision": "241dcb66f7e5134f",
   "generated_from": "wtf-addon-template",
   "note": "Vendored engine files. Edit the template and regenerate; never edit these in place.",
   "files": {
@@ -20,7 +20,7 @@
     "scripts/validate-research-packet.mjs": "1f35240fd96a24d1fd647a479741f98de25fe7234175164ef5e707c61272cad0",
     "scripts/finalize-research.mjs": "612a14e5ea86e2f0589ef4e804508ead3c1479ef58e7e4beab7ee2a5a2e4495e",
     "scripts/validate-publication.mjs": "528c7f622d3bd0103c7eebbdbcbe4eae0913fedef7989530377257883320f512",
-    "scripts/publish-research.mjs": "3de5f20c309e3c1b1ece1322da13cfe6aaed127671d169b399bcab62df3888a6",
+    "scripts/publish-research.mjs": "93e46096414ca79c85fe52c655ede4afef3a7d40e25447d98bd68eb595756281",
     "scripts/verify-deployment.mjs": "e5b92bfb06b884968a956b2042315483a0593981a36eae966325ca2d6c7d728e",
     "test/safe-fixture.mjs": "26bfb5a531dac11e8e8ac78593ce6349c86e1e5fae60579c9447b22373e9d961",
     "test/run-all.mjs": "55bd65f67840aa376f50675a30d1cb0bca2e758ef611a04f1bcb522ba4e7f350",
@@ -35,7 +35,7 @@
     "test/build-state.test.mjs": "76e1f27756adcc4be95039eb60f69a7161fe7efad2a982dec360d845a5991a33",
     "test/research-packet.test.mjs": "92ad9f7f99da358a25b0b9e654d26c7c7afd378fdd4890e26fc39c04f1e550b8",
     "test/research-finalizer.test.mjs": "39ff5089de60b7f3903c33b38badefde8974bd3c5cb5eac951fe66320144e12a",
-    "test/research-publication.test.mjs": "2bb57eb86c2bddd22c31a13225d1c0c6a92aad6f47e5c81684d519d08ceaa482",
+    "test/research-publication.test.mjs": "8d541aeff607f89e39731dfb48ec506cf560a780df53430ead7c17cc41bb414b",
     "test/deployment-verification.test.mjs": "b55070f03d26a390deb1377ce67a4ac2e0b63ae69ea5251f658f2ce6fb043350",
     "test/fixtures/research/helpers.mjs": "a3c3d885770638a01a87571df6efe3d0f5ac45e87f8f4622321eeb6197b4141f",
     "schemas/research-packet.schema.json": "946e84767121e35d80591444606c79ba65f4f7e3d79d6cae7c8dfdc0570f2344",
