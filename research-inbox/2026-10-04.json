@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "genre": "thriller",
+  "research_date": "2026-10-04",
+  "candidates": [
+    {
+      "imdb_id": "tt32261958",
+      "type": "movie",
+      "title": "Verity",
+      "year": 2026,
+      "reason": "A psychological mystery built around competing versions of the truth. Lowen is hired to ghostwrite for incapacitated author Verity Crawford, discovers a manuscript that appears to confess to horrific acts, and increasingly suspects Verity is faking her condition. The film supplies meaningful information in stages: the manuscript reframes the Crawford family history; Lowen's observations undermine the claimed paralysis; Verity's sudden movement confirms a major suspicion; Jeremy kills Verity after reading the manuscript; and a hidden letter then substantially rebuilds the entire interpretation by claiming the manuscript was fictional and Jeremy had previously tried to kill Verity. The ending deliberately leaves manuscript-versus-letter truth unresolved. This gives the film strong mystery, deception, unreliable-perspective and progressive-revelation characteristics, with regular secrets in the first half and a major late reframe. Weaknesses are substantial romance/erotic relationship material, interpersonal melodrama, and reviews describing the later plotting as messy, slow or underwhelming rather than consistently gripping. Investigation is present through Lowen's document-reading and observation but is not a procedural inquiry, and the largest reframe is finale-weighted, so investigation and revelation frequency are kept below the mystery/deception values.",
+      "sources": [
+        {
+          "url": "https://www.imdb.com/title/tt32261958/",
+          "purpose": "identity"
+        },
+        {
+          "url": "https://ew.com/verity-ending-explained-12152860",
+          "purpose": "whole_runtime"
+        },
+        {
+          "url": "https://www.tomsguide.com/entertainment/movies/verity-review-a-creepy-steamy-thriller-that-gets-increasingly-messy-and-not-in-a-good-way",
+          "purpose": "review"
+        },
+        {
+          "url": "https://www.hollywoodreporter.com/movies/movie-reviews/verity-review-anne-hathaway-dakota-johnson-josh-hartnett-1236714142/",
+          "purpose": "review"
+        }
+      ],
+      "dna": {
+        "mystery": 8,
+        "investigation": 5,
+        "clue_puzzling": 5,
+        "culprit_hunt": 3,
+        "progressive_revelation": 7,
+        "revelation_frequency": 6,
+        "plot_twists": 8,
+        "psychological_strategy": 6,
+        "cat_and_mouse": 5,
+        "deception": 9,
+        "hidden_identity": 3,
+        "unreliable_perspective": 9,
+        "conspiracy": 2,
+        "mole_inside": 0,
+        "corruption": 0,
+        "surveillance": 2,
+        "evidence_manipulation": 7,
+        "technology_threat": 0,
+        "suspense": 6,
+        "action_density": 2,
+        "action_intensity": 4,
+        "brutality": 6,
+        "deadly_game": 0,
+        "weirdness": 5,
+        "military_focus": 0,
+        "romance_focus": 7,
+        "drama_focus": 8,
+        "visual_quality": 8,
+        "retro_visual_style": 0,
+        "pace_speed": 5
+      },
+      "dna_confidence": 0.86,
+      "dna_tags": []
+    }
+  ],
+  "research_rejections": [
+    {
+      "title": "Winter",
+      "type": "series",
+      "year": 2026,
+      "imdb_id": null,
+      "reason": "Still airing in early October 2026. Available material does not establish revelation_frequency and progressive_revelation across the complete season, so a complete 30-dimension DNA measurement would require inventing unknown evidence. Reconsider after the season is complete and whole-season evidence exists."
+    },
+    {
+      "title": "Line of Fire",
+      "type": "series",
+      "year": 2026,
+      "imdb_id": null,
+      "reason": "Still airing, with insufficient complete-season evidence for revelation cadence and progressive reframing. The conspiracy/federal-investigation premise is potentially relevant, but premise evidence cannot substitute for complete-season payoff evidence."
+    },
+    {
+      "title": "Crushed",
+      "type": "movie",
+      "year": 2026,
+      "imdb_id": null,
+      "reason": "Source-backed coverage describes a harrowing child-abduction search with moral and grief themes, but the available evidence is insufficient to support all 30 required DNA dimensions confidently, particularly progressive revelation, revelation frequency, clue puzzling and deception across the whole runtime. Kept qualitative rather than converting unknowns to zero."
+    }
+  ]
+}
