@@ -9,6 +9,12 @@ import { finalizeResearch, loadFinalizerInputs, writeFinalized, hash, serialize,
 import { readJson, berlinDate } from './validate-research-packet.mjs';
 import { deploymentReceipt, verifyDeployment } from './verify-deployment.mjs';
 
+const PACKET_BLOB = { maxBytes: 1024 * 1024, label: 'Packet' };
+// Generated JSON can grow beyond its input packet through formatting and
+// provenance. Bound publication reads/writes by the Git blob API's 100 MB
+// ceiling, independently of the untrusted research packet's 1 MiB limit.
+const PUBLICATION_BLOB = { maxBytes: 100_000_000, label: 'Publication artifact' };
+
 export function reconciliationState({ packet, failed, attempt, merged, deployed }) {
   if (deployed && !merged) throw new Error('Deployment without a merged run');
   if (deployed) return 'deployed';
@@ -22,7 +28,13 @@ export function assertResearchDiff(files, expectedPath, truncated = false) {
     || !['added', 'modified'].includes(files[0].status)) throw new Error('Unauthorized research-branch changes; only its dated packet is permitted');
 }
 export function assertBlob(entry) {
-  if (!entry || entry.type !== 'blob' || entry.mode !== '100644' || !Number.isInteger(entry.size) || entry.size < 0 || entry.size > 1024 * 1024) throw new Error('Packet must be a regular file of at most 1 MiB');
+  assertRegularBlob(entry, PACKET_BLOB);
+}
+function assertRegularBlob(entry, { maxBytes, label }) {
+  if (!entry || entry.type !== 'blob' || entry.mode !== '100644' || !Number.isSafeInteger(entry.size) || entry.size < 0 || entry.size > maxBytes) throw new Error(`${label} must be a regular file of at most ${maxBytes} bytes`);
+}
+function assertPublicationSize(content) {
+  if (typeof content !== 'string' || Buffer.byteLength(content) > PUBLICATION_BLOB.maxBytes) throw new Error('Publication output exceeds Git blob size limit');
 }
 export function publicationPaths(runId, accepted) {
   if (!/^20\d\d-\d\d-\d\d-[a-z]+[1-9]\d*$/.test(runId)) throw new Error('Invalid generated run ID');
@@ -33,7 +45,10 @@ export function assertBundle(bundle) {
   for (const plan of bundle.plans) {
     if (!/^publication\/20\d\d-\d\d-\d\d-[a-z]+-[1-9]\d*$/.test(plan.branch || '')) throw new Error('Invalid publication branch');
     if (JSON.stringify(Object.keys(plan.files).sort()) !== JSON.stringify(publicationPaths(plan.run_id, plan.accepted))) throw new Error('Unauthorized publication output path');
-    for (const file of Object.values(plan.files)) if (typeof file.content !== 'string' || hash(file.content) !== file.sha256) throw new Error('Publication output digest mismatch');
+    for (const file of Object.values(plan.files)) {
+      if (typeof file.content !== 'string' || hash(file.content) !== file.sha256) throw new Error('Publication output digest mismatch');
+      assertPublicationSize(file.content);
+    }
     const log = JSON.parse(plan.files[`data/run-logs/${plan.run_id}.json`].content);
     if (log.run_id !== plan.run_id || log.accepted !== plan.accepted || log.publication?.evaluated_base !== bundle.base
       || log.publication?.daily_key !== plan.daily_key) throw new Error('Publication bundle/log disagreement');
@@ -61,16 +76,18 @@ export function githubClient(repository, token, fetchImpl = fetch) {
     graphql: (query, variables) => request('POST', '/graphql', { query, variables }),
   };
 }
-async function getBlob(api, entry) {
-  assertBlob(entry);
+async function getBlob(api, entry, limits = PACKET_BLOB) {
+  assertRegularBlob(entry, limits);
   const blob = await api.get(`/git/blobs/${entry.sha}`);
-  if (blob.encoding !== 'base64' || blob.size > 1024 * 1024) throw new Error('Unsupported packet encoding or size');
-  return Buffer.from(blob.content, 'base64').toString('utf8');
+  if (blob.encoding !== 'base64' || typeof blob.content !== 'string' || blob.size !== entry.size) throw new Error(`Unsupported ${limits.label} encoding or size`);
+  const bytes = Buffer.from(blob.content, 'base64');
+  if (bytes.length !== entry.size) throw new Error(`${limits.label} decoded size mismatch`);
+  return bytes.toString('utf8');
 }
-async function getFile(api, commit, relative) {
+async function getFile(api, commit, relative, limits = PACKET_BLOB) {
   const tree = await api.get(`/git/trees/${commit}?recursive=1`);
   if (tree.truncated) throw new Error('Git tree truncated; refusing incomplete input');
-  return getBlob(api, tree.tree.find(e => e.path === relative));
+  return getBlob(api, tree.tree.find(e => e.path === relative), limits);
 }
 async function matchesMergedPlan(api, commit, plan) {
   // A prior auto-merge can finish between preparation and publication. Read
@@ -83,7 +100,7 @@ async function matchesMergedPlan(api, commit, plan) {
   if (plan.accepted === 0 && tree.tree.some(entry => entry.path === discoveryPath)) return false;
   for (const name of [logPath, ...(plan.accepted ? [discoveryPath] : [])]) {
     const entry = tree.tree.find(e => e.path === name);
-    if (!entry || await getBlob(api, entry) !== plan.files[name].content) return false;
+    if (!entry || await getBlob(api, entry, PUBLICATION_BLOB) !== plan.files[name].content) return false;
   }
   return true;
 }
@@ -161,7 +178,7 @@ export async function prepare(root, api, outDir, { validate = fullValidation, wi
       let finalized, branch, reuseSha, closePr;
       if (last) {
         const existingRunId = `${date}-${inputs.research.run_prefix}${last.number}`;
-        const existingRaw = await getFile(api, last.object.sha, `data/run-logs/${existingRunId}.json`);
+        const existingRaw = await getFile(api, last.object.sha, `data/run-logs/${existingRunId}.json`, PUBLICATION_BLOB);
         const log = JSON.parse(existingRaw);
         const unchanged = log.publication?.packet_hash === hash(raw) && log.publication?.research_commit === ref.object.sha
           && log.publication?.evaluated_base === base && log.publication?.policy_fingerprint === inputs.policyFingerprint;
@@ -189,7 +206,7 @@ export async function prepare(root, api, outDir, { validate = fullValidation, wi
           const comparison = await api.get(`/compare/${base}...${reuseSha}`);
           if (comparison.total_commits >= 250 || JSON.stringify(comparison.files?.map(f => f.filename).sort()) !== JSON.stringify(names.sort())) throw new Error('Frozen attempt contains unauthorized changes');
           for (const name of names) {
-            const prior = await getFile(api, reuseSha, name);
+            const prior = await getFile(api, reuseSha, name, PUBLICATION_BLOB);
             // Automation state is a derived snapshot. Retain its exact frozen
             // bytes on a retry; the build always derives its effective live state.
             if (name === 'data/automation-state.json') {
@@ -305,6 +322,7 @@ export function prepareMaintenance(root, outDir) {
   const content = fs.readFileSync(path.join(root, file), 'utf8');
   const ready = content !== before;
   if (ready) {
+    assertPublicationSize(content);
     const oldItems = JSON.parse(before).items;
     const newItems = JSON.parse(content).items;
     if (oldItems.length !== newItems.length || oldItems.some((item, i) => {
@@ -319,6 +337,7 @@ export function prepareMaintenance(root, outDir) {
   if (process.env.GITHUB_OUTPUT) fs.appendFileSync(process.env.GITHUB_OUTPUT, `ready=${ready}\n`);
 }
 export async function publishMaintenance(root, api, bundle) {
+  assertPublicationSize(bundle.content);
   if (!bundle.ready || bundle.base !== headSha(root) || hash(bundle.content) !== bundle.sha256) throw new Error('Invalid maintenance bundle');
   await assertFreshMain(api, bundle.base);
   await assertPublicationEnabled(api);
@@ -330,7 +349,7 @@ export async function publishMaintenance(root, api, bundle) {
   let ref;
   try { ref = await api.get(`/git/ref/heads/${branch}`); } catch (error) { if (error.status !== 404) throw error; }
   if (ref) {
-    if (await getFile(api, ref.object.sha, 'data/library.json') !== bundle.content) throw new Error('Frozen metadata branch differs from validated output');
+    if (await getFile(api, ref.object.sha, 'data/library.json', PUBLICATION_BLOB) !== bundle.content) throw new Error('Frozen metadata branch differs from validated output');
     const comparison = await api.get(`/compare/${bundle.base}...${ref.object.sha}`);
     if (comparison.files?.length !== 1 || comparison.files[0].filename !== 'data/library.json') throw new Error('Unauthorized metadata branch changes');
   } else {
