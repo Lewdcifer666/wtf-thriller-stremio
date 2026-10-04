@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
-import { reconciliationState, assertResearchDiff, assertBlob, assertBundle, publish, prepare, githubClient } from '../scripts/publish-research.mjs';
+import { reconciliationState, assertResearchDiff, assertBlob, assertBundle, publish, publishMaintenance, prepare, githubClient } from '../scripts/publish-research.mjs';
 import { finalizeResearch, hash, serialize } from '../scripts/finalize-research.mjs';
 import { fixture, options, clone, inFixture } from './fixtures/research/helpers.mjs';
 assert.equal(reconciliationState({}), 'not_started');
@@ -23,6 +23,14 @@ assert.throws(() => assertBlob({ type: 'blob', mode: '120000', size: 20 }));
 assert.throws(() => assertBlob({ type: 'blob', mode: '100644', size: 1048577 }));
 assert.throws(() => githubClient('owner/repo', ''), /credential/);
 const { packet, inputs } = fixture();
+// A valid minified packet remains below 1 MiB while its generated rejection
+// log exceeds it. Include multibyte text so these are byte, not character, caps.
+const largePacket = { ...clone(packet), research_rejections: Array.from({ length: 500 }, (_, i) => ({ title: `Unresolved ${i}`, reason: '' })) };
+const reasonLength = Math.floor((1024 * 1024 - 4096 - Buffer.byteLength(JSON.stringify(largePacket))) / 1000);
+largePacket.research_rejections.forEach(item => { item.reason = 'é'.repeat(reasonLength); });
+const largeRaw = JSON.stringify(largePacket);
+assert.ok(Buffer.byteLength(largeRaw) < 1024 * 1024);
+assert.ok(Buffer.byteLength(serialize(finalizeResearch(largePacket, inputs, options).log)) > 1024 * 1024);
 const finalized = finalizeResearch(packet, inputs, options);
 const branch = `publication/2020-01-02-${packet.genre}-1`;
 const files = Object.fromEntries([
@@ -39,7 +47,7 @@ assert.throws(() => assertBundle(bad), /output path/);
 const badHash = clone(bundle); Object.values(badHash.plans[0].files)[0].content += ' ';
 assert.throws(() => assertBundle(badHash), /digest/);
 function fakeApi({ main = options.evaluatedBase, research = options.researchCommit, existing = [], refSha = 'd'.repeat(40), failAt, protectedMain = true,
-  mainFiles = {}, truncated = false, failRead } = {}) {
+  mainFiles = {}, truncated = false, failRead, treeEntryOverride = {}, blobOverride = {} } = {}) {
   const writes = [];
   const reads = [];
   const mainBlobs = new Map(Object.values(mainFiles).map(content => [hash(content), content]));
@@ -52,13 +60,13 @@ function fakeApi({ main = options.evaluatedBase, research = options.researchComm
       if (route === '/git/ref/heads/main') return { object: { sha: main } };
       if (route === `/git/trees/${main}?recursive=1`) {
         if (failRead === 'tree') throw new Error('simulated inaccessible main tree');
-        return { truncated, tree: Object.entries(mainFiles).map(([name, content]) => ({ path: name, mode: '100644', type: 'blob', size: Buffer.byteLength(content), sha: hash(content) })) };
+        return { truncated, tree: Object.entries(mainFiles).map(([name, content]) => ({ path: name, mode: '100644', type: 'blob', size: Buffer.byteLength(content), sha: hash(content), ...treeEntryOverride })) };
       }
       if (route.startsWith('/git/blobs/')) {
         if (failRead === 'blob') throw new Error('simulated inaccessible main blob');
         const content = mainBlobs.get(route.slice('/git/blobs/'.length));
         assert.notEqual(content, undefined, 'Only observed main-tree blobs may be read');
-        return { encoding: 'base64', size: Buffer.byteLength(content), content: Buffer.from(content).toString('base64') };
+        return { encoding: 'base64', size: Buffer.byteLength(content), content: Buffer.from(content).toString('base64'), ...blobOverride };
       }
       if (route.startsWith('/git/ref/heads/research/')) return { object: { sha: research } };
       if (route.startsWith('/git/ref/heads/publication/')) return { object: { sha: refSha } };
@@ -125,6 +133,33 @@ assert.equal(zeroRetry.writes.length, 0);
 const forbiddenZeroDiscovery = fakeApi({ main: mergedMain, mainFiles: { ...zeroFiles, [`data/discoveries/${zeroFinalized.log.run_id}.json`]: serialize({ items: [] }) } });
 await assert.rejects(publish(zeroBundle, forbiddenZeroDiscovery), /Main changed/);
 assert.equal(forbiddenZeroDiscovery.writes.length, 0);
+for (const candidates of [largePacket.candidates, []]) {
+  const largeFinalized = finalizeResearch({ ...largePacket, candidates }, inputs, options);
+  const largeLog = serialize(largeFinalized.log);
+  assert.ok(Buffer.byteLength(largeLog) > 1024 * 1024);
+  const largeBundle = clone(candidates.length ? bundle : zeroBundle);
+  const logPath = `data/run-logs/${largeFinalized.log.run_id}.json`;
+  largeBundle.plans[0].files[logPath] = { content: largeLog, sha256: hash(largeLog) };
+  const largeFiles = Object.fromEntries(Object.entries(largeBundle.plans[0].files).map(([name, file]) => [name, file.content]));
+  const largeRetry = fakeApi({ main: mergedMain, mainFiles: largeFiles });
+  assert.equal((await publish(largeBundle, largeRetry))[0].state, 'merged');
+  assert.equal(largeRetry.writes.length, 0);
+  const alteredLarge = fakeApi({ main: mergedMain, mainFiles: { ...largeFiles, [logPath]: largeLog + '\n' } });
+  await assert.rejects(publish(largeBundle, alteredLarge), /Main changed/);
+  assert.equal(alteredLarge.writes.length, 0);
+}
+for (const fault of [
+  { treeEntryOverride: { size: 100_000_001 } },
+  { treeEntryOverride: { mode: '120000' } },
+  { blobOverride: { encoding: 'utf-8' } },
+  { blobOverride: { size: 100_000_001 } },
+  { blobOverride: { content: Buffer.from('short').toString('base64') } },
+]) {
+  const rejectedArtifact = fakeApi({ main: mergedMain, mainFiles: mergedFiles, ...fault });
+  await assert.rejects(publish(bundle, rejectedArtifact), /Main changed/);
+  assert.equal(rejectedArtifact.writes.length, 0);
+  if (fault.treeEntryOverride) assert.equal(rejectedArtifact.reads.some(route => route.startsWith('/git/blobs/')), false);
+}
 const unprotected = fakeApi({ protectedMain: false });
 await assert.rejects(publish(bundle, unprotected), /protection/); assert.equal(unprotected.writes.length, 0);
 const changedPacket = fakeApi({ research: 'f'.repeat(40) });
@@ -167,7 +202,7 @@ await inFixture(async root => {
   git('add', '.'); git('commit', '-m', 'Trusted fixture main');
   let base = git('rev-parse', 'HEAD');
   let researchSha = '1'.repeat(40);
-  let raw = serialize(packet);
+  let raw = largeRaw;
   let refs = [];
   let prs = [];
   let malicious = false;
@@ -201,6 +236,7 @@ await inFixture(async root => {
   const first = await prepare(root, mock, directory, { validate: check });
   assert.deepEqual(first.errors, []); assert.equal(first.plans.length, 1); assert.equal(validated, 1);
   const frozen = first.plans[0];
+  assert.ok(Buffer.byteLength(frozen.files[`data/run-logs/${frozen.run_id}.json`].content) > 1024 * 1024);
   const attemptSha = '2'.repeat(40);
   refs = [{ ref: `refs/heads/${frozen.branch}`, object: { sha: attemptSha } }];
   snapshots.set(attemptSha, Object.fromEntries(Object.entries(frozen.files).map(([name, file]) => [name, file.content])));
@@ -208,6 +244,11 @@ await inFixture(async root => {
   const retry = await prepare(root, mock, directory, { validate: check });
   assert.deepEqual(retry.errors, []); assert.equal(retry.plans[0].reuse_sha, attemptSha);
   assert.deepEqual(retry.plans[0].files, frozen.files);
+  raw = largeRaw + ' '.repeat(1024 * 1024 - Buffer.byteLength(largeRaw) + 1);
+  const oversizedPacket = await prepare(root, mock, directory, { validate: check });
+  assert.equal(oversizedPacket.plans.length, 0);
+  assert.match(oversizedPacket.errors[0].error, /Packet must be a regular file/);
+  raw = largeRaw;
   const invalid = await prepare(root, mock, directory, { validate() { throw new Error('pre-PR check failed'); } });
   assert.equal(invalid.plans.length, 0); assert.ok(invalid.states.some(s => s.state === 'finalization_failed'));
   malicious = true;
@@ -235,5 +276,30 @@ await inFixture(async root => {
   noPacket = true;
   const absent = await prepare(root, mock, directory, { validate: check, clock: () => Date.parse('2021-01-02T12:00:00Z') });
   assert.equal(absent.plans.length, 0); assert.ok(absent.states.some(s => s.state === 'not_started'));
+  // Metadata recovery also reads generated JSON, not a research packet. Legal
+  // JSON whitespace makes this fixture large without changing library content.
+  const libraryContent = fs.readFileSync(path.join(root, 'data/library.json'), 'utf8') + ' '.repeat(1024 * 1024);
+  const maintenanceBundle = { ready: true, base, content: libraryContent, sha256: hash(libraryContent) };
+  const maintenanceBranch = `maintenance/metadata-${base.slice(0, 12)}`;
+  const maintenanceSha = '9'.repeat(40);
+  const maintenancePr = { number: 11, state: 'open', node_id: 'maintenance_pr', html_url: 'https://github.com/example/repo/pull/11', head: { ref: maintenanceBranch, sha: maintenanceSha } };
+  for (const changed of [false, true]) {
+    const metadataApi = fakeApi({ main: base, existing: [maintenancePr], mainFiles: { 'data/library.json': libraryContent + (changed ? '\n' : '') } });
+    const originalGet = metadataApi.get;
+    metadataApi.get = route => {
+      if (route === `/git/ref/heads/${maintenanceBranch}`) return { object: { sha: maintenanceSha } };
+      if (route === `/git/trees/${maintenanceSha}?recursive=1`) return originalGet(`/git/trees/${base}?recursive=1`);
+      if (route === `/compare/${base}...${maintenanceSha}`) return { files: [{ filename: 'data/library.json' }] };
+      return originalGet(route);
+    };
+    if (changed) {
+      await assert.rejects(publishMaintenance(root, metadataApi, maintenanceBundle), /Frozen metadata branch differs/);
+      assert.equal(metadataApi.writes.length, 0);
+    } else {
+      assert.equal(await publishMaintenance(root, metadataApi, maintenanceBundle), maintenancePr.html_url);
+      assert.equal(metadataApi.writes.length, 1);
+      assert.ok(metadataApi.writes[0].query.includes('enablePullRequestAutoMerge'));
+    }
+  }
 });
 console.log('Publication: trust boundary, states, interrupted jobs, retries, current base and single-PR ownership passed');
