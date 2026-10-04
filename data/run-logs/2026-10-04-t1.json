@@ -1,0 +1,50 @@
+{
+  "run_id": "2026-10-04-t1",
+  "timestamp": "2026-10-04T09:05:47.095Z",
+  "searched": 4,
+  "accepted": 0,
+  "rejected": 4,
+  "duplicates": 0,
+  "accepted_items": [],
+  "rejection_summary": [
+    {
+      "imdb_id": "tt32261958",
+      "type": "movie",
+      "title": "Verity",
+      "category": "rejected",
+      "reason": "below_publication_threshold"
+    },
+    {
+      "title": "Winter",
+      "type": "series",
+      "year": 2026,
+      "imdb_id": null,
+      "reason": "Still airing in early October 2026. Available material does not establish revelation_frequency and progressive_revelation across the complete season, so a complete 30-dimension DNA measurement would require inventing unknown evidence. Reconsider after the season is complete and whole-season evidence exists.",
+      "category": "rejected"
+    },
+    {
+      "title": "Line of Fire",
+      "type": "series",
+      "year": 2026,
+      "imdb_id": null,
+      "reason": "Still airing, with insufficient complete-season evidence for revelation cadence and progressive reframing. The conspiracy/federal-investigation premise is potentially relevant, but premise evidence cannot substitute for complete-season payoff evidence.",
+      "category": "rejected"
+    },
+    {
+      "title": "Crushed",
+      "type": "movie",
+      "year": 2026,
+      "imdb_id": null,
+      "reason": "Source-backed coverage describes a harrowing child-abduction search with moral and grief themes, but the available evidence is insufficient to support all 30 required DNA dimensions confidently, particularly progressive revelation, revelation frequency, clue puzzling and deception across the whole runtime. Kept qualitative rather than converting unknowns to zero.",
+      "category": "rejected"
+    }
+  ],
+  "publication": {
+    "schema_version": 1,
+    "daily_key": "thriller:2026-10-04",
+    "packet_hash": "bc1f61196600af48c9e81b83ccc4991cea64049a5bee6a79ec8f8acaed44fe58",
+    "research_commit": "a3fb24bbb92b1e41030364002012683e9e6849d4",
+    "evaluated_base": "6c6461b07ac7aee72ea7f1d2eac0ca138ffc24fd",
+    "policy_fingerprint": "24c749f675b6cd560ec75fa61cab869cefd8214c0fa3fd54822859e39e0a3492"
+  }
+}
