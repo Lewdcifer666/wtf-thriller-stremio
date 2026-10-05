@@ -1,0 +1,34 @@
+{
+  "run_id": "2026-10-05-t1",
+  "timestamp": "2026-10-05T09:03:22.946Z",
+  "searched": 2,
+  "accepted": 1,
+  "rejected": 1,
+  "duplicates": 0,
+  "accepted_items": [
+    {
+      "imdb_id": "tt35726020",
+      "type": "series",
+      "title": "Kill Jackie",
+      "match_score": 65
+    }
+  ],
+  "rejection_summary": [
+    {
+      "title": "Drishyam: The Conclusion",
+      "type": "movie",
+      "year": 2026,
+      "imdb_id": null,
+      "reason": "Qualitatively very promising for the profile: the Sameer Deshmukh case is reopened, police search for loopholes in Vijay's cover story, and multiple fresh reviews describe strong suspense, cat-and-mouse play and a major climax. However, the canonical IMDb title identity could not be resolved confidently from the consulted sources in this run. The research runbook requires uncertain identities to stay out of candidates, so no 30-dimension measurement is invented for it here. It should be reconsidered once the canonical IMDb identity is independently confirmed.",
+      "category": "rejected"
+    }
+  ],
+  "publication": {
+    "schema_version": 1,
+    "daily_key": "thriller:2026-10-05",
+    "packet_hash": "a2b2e816081d955e0bda3f69f06b6331c6e6abcbfb7af5ac7f837969fea06268",
+    "research_commit": "da958e95f7afd1418f99b7b881be43805986bcf6",
+    "evaluated_base": "61fdac310aca45f46fb6329c34618a82249c4f94",
+    "policy_fingerprint": "24c749f675b6cd560ec75fa61cab869cefd8214c0fa3fd54822859e39e0a3492"
+  }
+}
