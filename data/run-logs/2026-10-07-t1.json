@@ -1,0 +1,42 @@
+{
+  "run_id": "2026-10-07-t1",
+  "timestamp": "2026-10-07T09:02:14.713Z",
+  "searched": 3,
+  "accepted": 1,
+  "rejected": 2,
+  "duplicates": 0,
+  "accepted_items": [
+    {
+      "imdb_id": "tt6037988",
+      "type": "series",
+      "title": "Last Seen",
+      "match_score": 65
+    }
+  ],
+  "rejection_summary": [
+    {
+      "title": "Below",
+      "type": "series",
+      "year": 2026,
+      "imdb_id": null,
+      "reason": "Premieres after the research date, so the complete six-episode season is not yet available and revelation cadence across the complete season cannot be established.",
+      "category": "rejected"
+    },
+    {
+      "title": "The Trap",
+      "type": "series",
+      "year": 2026,
+      "imdb_id": null,
+      "reason": "Scheduled to premiere after the research date. Its premise is promising, but complete-season revelation_frequency and progressive_revelation evidence is not yet available; no DNA measurements were invented from the premise.",
+      "category": "rejected"
+    }
+  ],
+  "publication": {
+    "schema_version": 1,
+    "daily_key": "thriller:2026-10-07",
+    "packet_hash": "ff0fde35b9ce8816e8d9a87f2bbe6f0eaec86a20c14b344525a6fe08191d9cf3",
+    "research_commit": "7d700a263ffb3a6a7420f9cc46b83825e074c233",
+    "evaluated_base": "86aa9162399cac0e48b993598be6f87e666ba846",
+    "policy_fingerprint": "24c749f675b6cd560ec75fa61cab869cefd8214c0fa3fd54822859e39e0a3492"
+  }
+}
