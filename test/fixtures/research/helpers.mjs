@@ -17,6 +17,9 @@ export function fixture() {
       { url: 'https://example.org/identity', purpose: 'identity' },
       { url: 'https://example.org/structure', purpose: 'whole_runtime' },
       { url: 'https://example.org/review', purpose: 'review' }], dna, dna_confidence: 1, dna_tags: [], tags: [] };
+  for (const host of new Set(Object.values(inputs.research.required_source_hosts_by_type || {}).flat())) {
+    candidate.sources.push({ url: `https://${host}/fixture-episodes`, purpose: 'whole_runtime' });
+  }
   const packet = { schema_version: 1, genre: inputs.research.genre, research_date: '2020-01-02', candidates: [candidate], research_rejections: [] };
   return { inputs, packet, candidate };
 }

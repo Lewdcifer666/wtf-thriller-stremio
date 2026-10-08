@@ -30,8 +30,23 @@ invalid(p => { p.genre = 'wrong'; });
 invalid(p => { p.research_date = '2026-02-30'; });
 invalid(p => { p.research_date = '2099-01-01'; });
 const three = { ...inputs, research: { ...inputs.research, minimum_sources: 3 } };
-const few = clone(packet); few.candidates[0].sources.pop();
+const few = clone(packet); few.candidates[0].sources = few.candidates[0].sources.slice(0, 2);
 assert.ok(check(few, three).length);
+const byHost = { ...inputs, research: { ...inputs.research, blocked_source_hosts: ['youtube.com'], required_source_hosts_by_type: { series: ['tvmaze.com'] } } };
+const series = clone(packet); series.candidates[0].type = 'series';
+series.candidates[0].sources = series.candidates[0].sources.filter(source => !new URL(source.url).hostname.endsWith('tvmaze.com'));
+assert.ok(check(series, byHost).some(error => error.includes('requires a source from tvmaze.com')));
+series.candidates[0].sources.push({ url: 'https://www.tvmaze.com/shows/123/episodes', purpose: 'whole_runtime' });
+assert.deepEqual(check(series, byHost), []);
+for (const spoof of ['https://tvmaze.com.example.org/episodes', 'https://example.org/tvmaze.com', 'https://not-tvmaze.com/episodes']) {
+  const badHost = clone(series); badHost.candidates[0].sources.at(-1).url = spoof;
+  assert.ok(check(badHost, byHost).some(error => error.includes('requires a source from tvmaze.com')));
+}
+const trailer = clone(packet); trailer.candidates[0].sources[0].url = 'https://www.youtube.com/watch?v=fixture';
+assert.ok(check(trailer, byHost).some(error => error.includes('not permitted')));
+trailer.candidates[0].sources[0].url = 'https://example.org/review?reference=youtube.com';
+assert.deepEqual(check(trailer, byHost), []);
+assert.ok(check(packet, { ...inputs, research: { ...inputs.research, blocked_source_hosts: ['https://youtube.com'] } }).length);
 const unresolved = clone(packet); unresolved.candidates = []; unresolved.research_rejections = [{ title: 'Unknown', imdb_id: null, reason: 'Identity cannot be established' }];
 assert.deepEqual(check(unresolved), []);
 assert.equal(berlinDate(Date.parse('2026-10-01T22:30:00Z')), '2026-10-02');

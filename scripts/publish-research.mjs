@@ -42,6 +42,7 @@ export function publicationPaths(runId, accepted) {
 }
 export function assertBundle(bundle) {
   if (bundle.schema_version !== 1 || !/^[a-f0-9]{40}$/.test(bundle.base || '') || !Array.isArray(bundle.plans)) throw new Error('Invalid publication bundle');
+  if (bundle.stale_base) throw new Error('Stale preparation bundle cannot be published; reconcile against fresh trusted main');
   for (const plan of bundle.plans) {
     if (!/^publication\/20\d\d-\d\d-\d\d-[a-z]+-[1-9]\d*$/.test(plan.branch || '')) throw new Error('Invalid publication branch');
     if (JSON.stringify(Object.keys(plan.files).sort()) !== JSON.stringify(publicationPaths(plan.run_id, plan.accepted))) throw new Error('Unauthorized publication output path');
@@ -201,12 +202,26 @@ export async function prepare(root, api, outDir, { validate = fullValidation, wi
         branch = `publication/${date}-${inputs.research.genre}-${number}`;
       }
       const render = () => withCheckout(root, base, async temp => {
+        const statePath = 'data/automation-state.json';
+        const stateFile = path.join(temp, statePath);
+        const baseState = fs.existsSync(stateFile) ? fs.readFileSync(stateFile) : null;
         const names = await writeFinalized(temp, finalized);
         if (reuseSha) {
+          // Git omits unchanged files from its diff. A zero-result run may
+          // regenerate the exact base state, but its frozen state still needs
+          // to be read and validated. Derive the expected diff from base and
+          // frozen bytes, independently of time-sensitive state re-evaluation.
+          const frozenState = await getFile(api, reuseSha, statePath, PUBLICATION_BLOB);
+          const expectedChanges = names.filter(name => name !== statePath
+            || baseState === null || !baseState.equals(Buffer.from(frozenState)));
           const comparison = await api.get(`/compare/${base}...${reuseSha}`);
-          if (comparison.total_commits >= 250 || JSON.stringify(comparison.files?.map(f => f.filename).sort()) !== JSON.stringify(names.sort())) throw new Error('Frozen attempt contains unauthorized changes');
+          if (comparison.total_commits >= 250
+            || JSON.stringify(comparison.files?.map(f => f.filename).sort()) !== JSON.stringify(expectedChanges.sort())
+            || comparison.files.some(f => f.status !== (f.filename === statePath && baseState !== null ? 'modified' : 'added'))) {
+            throw new Error('Frozen attempt contains unauthorized changes');
+          }
           for (const name of names) {
-            const prior = await getFile(api, reuseSha, name, PUBLICATION_BLOB);
+            const prior = name === statePath ? frozenState : await getFile(api, reuseSha, name, PUBLICATION_BLOB);
             // Automation state is a derived snapshot. Retain its exact frozen
             // bytes on a retry; the build always derives its effective live state.
             if (name === 'data/automation-state.json') {
@@ -243,10 +258,45 @@ export async function prepare(root, api, outDir, { validate = fullValidation, wi
     const prior = inputs.logs.find(log => log.publication?.daily_key === today || new RegExp(`^${berlinDate(clock())}-${inputs.research.run_prefix}[0-9]+$`).test(log.run_id));
     bundle.states.push({ daily_key: today, state: prior ? 'merged' : 'not_started', ...(prior ? { run_id: prior.run_id } : {}) });
   }
-  await assertFreshMain(api, base);
   assertBundle(bundle);
-  fs.mkdirSync(outDir, { recursive: true });
-  fs.writeFileSync(path.join(outDir, 'bundle.json'), serialize(bundle));
+  const persist = () => {
+    fs.mkdirSync(outDir, { recursive: true });
+    fs.writeFileSync(path.join(outDir, 'bundle.json'), serialize(bundle));
+  };
+  try {
+    const currentMain = (await api.get('/git/ref/heads/main')).object.sha;
+    if (currentMain !== base) {
+      bundle.observed_main = currentMain;
+      const stale = new Error('Main changed; hourly reconciliation will re-evaluate against fresh trusted main');
+      // A redundant wake can be validating the original frozen attempt while
+      // its PR auto-merges. Completion requires exact immutable bytes for EVERY
+      // plan at one pinned main revision. Never change the trusted code/base or
+      // discard a partially completed batch merely because one plan matched.
+      try {
+        if (!bundle.plans.length || !/^[a-f0-9]{40}$/.test(currentMain)) throw stale;
+        for (const plan of bundle.plans) if (!await matchesMergedPlan(api, currentMain, plan)) throw stale;
+      } catch (error) {
+        if (error !== stale) stale.cause = error;
+        throw stale;
+      }
+      for (const plan of bundle.plans) {
+        const state = bundle.states.find(s => s.daily_key === plan.daily_key && s.run_id === plan.run_id);
+        state.state = 'merged';
+        state.revision = currentMain;
+      }
+      bundle.plans = [];
+    }
+  } catch (error) {
+    // The workflow fails before emitting publish-ready outputs. Preserve all
+    // prepared artifacts and earlier diagnostics for the next reconciliation,
+    // and make a mistakenly reused diagnostic bundle fail before token minting.
+    bundle.stale_base = true;
+    bundle.errors.push({ stage: 'prepare', error: error.message,
+      ...(error.cause ? { cause: error.cause.message } : {}) });
+    persist();
+    throw error;
+  }
+  persist();
   return bundle;
 }
 
@@ -301,14 +351,19 @@ export async function publish(bundle, api) {
   return results;
 }
 
-async function verifyMerged(root, bundle) {
+export async function verifyMerged(root, bundle, { verify = verifyDeployment } = {}) {
+  // This checkout can only construct a receipt for its pinned trusted base.
+  // A merge detected during preparation belongs to a newer revision; retain
+  // its merged state until a fresh-main reconciliation can verify deployment.
+  if (bundle.stale_base || (bundle.observed_main && bundle.observed_main !== bundle.base)
+    || bundle.states.some(s => s.state === 'merged' && s.revision && s.revision !== bundle.base)) return;
+  if (!bundle.states.some(s => s.state === 'merged')) return;
   const config = readJson(path.join(root, 'config/catalogs.json'));
   const manifest = { id: config.manifest.id, catalogs: ['movie', 'series'].flatMap(type => config.catalogs.map(c => ({ id: `${c.id}-${type}`, type }))) };
   const expected = deploymentReceipt(root, manifest, Date.now(), bundle.base);
   const research = readJson(path.join(root, 'config/research.json'));
-  if (!bundle.states.some(s => s.state === 'merged')) return;
   try {
-    await verifyDeployment(research.pages_url, expected);
+    await verify(research.pages_url, expected);
     bundle.states.filter(s => s.state === 'merged').forEach(s => { s.state = 'deployed'; });
   } catch (error) {
     bundle.errors.push({ deployment: error.message, recovery: 'Existing hourly Pages workflow retries hosting without regenerating discoveries.' });
