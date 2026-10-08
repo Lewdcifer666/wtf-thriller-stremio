@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "genre": "thriller",
+  "research_date": "2026-10-08",
+  "candidates": [
+    {
+      "imdb_id": "tt36743307",
+      "type": "series",
+      "title": "Inside the Circle (El círculo)",
+      "year": 2026,
+      "reason": "Completed eight-episode Mexican political murder/conspiracy thriller, released October 7, 2026. Reporter Tomás's leaked footage of actress Pamela Dosantos's last sighting starts a dangerous inquiry into blackmail and powerful insiders. The full official episode guide supports an actual spread of evidence across the season: Jimena examines Pamela's video in episode 2; Tomás and Mario investigate a stylist/photographer in episode 4; Mario finds Pamela's intimate recordings in episode 5; fresh murders and Jimena's lead change the case in episode 6; Amelia confronts Carlos about Pamela and buried history in episode 7; and a new autopsy finding in episode 8 sends Tomás toward another mystery amid a kidnapping rescue. These are recurring leads and shifts, not proof of a continuous answer-per-scene cadence: investigation is substantial (7), but revelation_frequency and progressive_revelation are each a more cautious 6, separate from brisk overall pace (7). The main strengths are political conspiracy, corruption, deception, evidence leverage, sustained pursuit, suspense and investigative journalism. A Spanish-language full-season review describes steady momentum, deliberate information release and polished contemporary photography/editing, but warns that many characters, subplots and relationship conflicts sometimes crowd the mystery and strain the ensemble balance. The personal-friendship drama is therefore substantial (7), and not every escalation supplies a solved clue. The compromising video is treated as selective evidence leverage, not as a proven deepfake. Despite an important defense/security official, the story is political rather than a military-operations thriller. The grounded full-season account contains no organized rule-bound lethal game. Confidence is moderated because measurements come from published complete-season episode descriptions and critical reporting rather than direct viewing; avoid asserting disputed details from inconsistent third-party finale summaries.",
+      "sources": [
+        {
+          "url": "https://www.imdb.com/title/tt36743307",
+          "purpose": "identity"
+        },
+        {
+          "url": "https://www.netflix.com/id/title/80217807",
+          "purpose": "whole_runtime"
+        },
+        {
+          "url": "https://blog.reelgood.com/how-to-watch-inside-the-circle-on-netflix-streaming-guide",
+          "purpose": "structure"
+        },
+        {
+          "url": "https://www.mindies.es/pelicula/el-circulo-critica-de-la-serie-de-netflix/",
+          "purpose": "review"
+        },
+        {
+          "url": "https://www.netflix.com/be-en/title/80217807",
+          "purpose": "identity"
+        }
+      ],
+      "dna": {
+        "mystery": 8,
+        "investigation": 7,
+        "clue_puzzling": 7,
+        "culprit_hunt": 7,
+        "progressive_revelation": 6,
+        "revelation_frequency": 6,
+        "plot_twists": 7,
+        "psychological_strategy": 6,
+        "cat_and_mouse": 6,
+        "deception": 8,
+        "hidden_identity": 3,
+        "unreliable_perspective": 3,
+        "conspiracy": 9,
+        "mole_inside": 6,
+        "corruption": 9,
+        "surveillance": 5,
+        "evidence_manipulation": 5,
+        "technology_threat": 3,
+        "suspense": 8,
+        "action_density": 4,
+        "action_intensity": 6,
+        "brutality": 6,
+        "deadly_game": 0,
+        "weirdness": 1,
+        "military_focus": 2,
+        "romance_focus": 2,
+        "drama_focus": 7,
+        "visual_quality": 8,
+        "retro_visual_style": 1,
+        "pace_speed": 7
+      },
+      "dna_confidence": 0.74,
+      "dna_tags": [
+        "journalism",
+        "kidnapping"
+      ]
+    }
+  ],
+  "research_rejections": [
+    {
+      "title": "The Trap (Die Falle)",
+      "type": "series",
+      "year": 2026,
+      "reason": "Netflix confirms all six episodes release October 13, 2026, after this research date. The sister-murder bait-and-cat-and-mouse premise is promising, but there is no completed-season evidence yet to establish meaningful revelation frequency and progressive revelation; do not score from the trailer or source novel."
+    },
+    {
+      "title": "Below",
+      "type": "series",
+      "year": 2026,
+      "reason": "The six-part Netflix sea-creature thriller premieres October 8, 2026, but the currently consulted launch reviews and promotional material emphasize the creature/horror premise, not independently substantiated revelations distributed through all six episodes. Whole-season revelation cadence and all required DNA dimensions are not sufficiently established for a candidate today."
+    },
+    {
+      "title": "American Sweatshop",
+      "type": "movie",
+      "year": 2025,
+      "imdb_id": "tt32387554",
+      "reason": "A social-media moderator investigates a violent video, but whole-film synopsis and mixed critical/audience reactions indicate repeated dead ends, deterioration of the protagonist, and a late ambiguous encounter rather than a well-paced series of meaningful answers. Some reviewers find the script shallow or the payoff disappointing; this is investigation and psychological distress without sufficiently reliable progressive-revelation evidence for the current research candidate set."
+    }
+  ]
+}
