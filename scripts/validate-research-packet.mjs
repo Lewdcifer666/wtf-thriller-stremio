@@ -19,6 +19,9 @@ export function sourceUrl(value) {
   url.hash = '';
   return url.href;
 }
+const hostMatches = (host, rule) => host === rule || host.endsWith('.' + rule);
+const validHostList = value => Array.isArray(value) && value.every(host => typeof host === 'string'
+  && /^(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/.test(host));
 export function validateResearchPacket(packet, { profile, research, now = Date.now() }) {
   const errors = [];
   if (!shape(packet)) return shape.errors.map(e => `${e.instancePath || '/'} ${e.message}`);
@@ -27,6 +30,11 @@ export function validateResearchPacket(packet, { profile, research, now = Date.n
       || !/^[a-z]+$/.test(research.run_prefix) || research.timezone !== 'Europe/Berlin'
       || !Number.isInteger(research.minimum_sources) || research.minimum_sources < 1
       || typeof research.require_all_known !== 'boolean') errors.push('invalid trusted research configuration');
+  const requiredHosts = research.required_source_hosts_by_type ?? {};
+  const blockedHosts = research.blocked_source_hosts ?? [];
+  if (!requiredHosts || typeof requiredHosts !== 'object' || Array.isArray(requiredHosts)
+      || Object.entries(requiredHosts).some(([type, hosts]) => !['movie', 'series'].includes(type) || !validHostList(hosts))
+      || !validHostList(blockedHosts)) return [...errors, 'invalid trusted source-host configuration'];
   if (packet.genre !== research.genre) errors.push('genre does not match repository');
   const date = new Date(`${packet.research_date}T12:00:00Z`);
   if (!Number.isFinite(+date) || date.toISOString().slice(0, 10) !== packet.research_date) errors.push('invalid research_date');
@@ -50,6 +58,11 @@ export function validateResearchPacket(packet, { profile, research, now = Date.n
     }
     if (new Set(urls).size !== urls.length) errors.push(`${prefix}: repeated source document`);
     if (new Set(urls).size < research.minimum_sources) errors.push(`${prefix}: requires ${research.minimum_sources} distinct sources`);
+    const hosts = urls.map(url => new URL(url).hostname.toLowerCase().replace(/\.$/, ''));
+    if (hosts.some(host => blockedHosts.some(rule => hostMatches(host, rule)))) errors.push(`${prefix}: source host is not permitted by this profile`);
+    for (const required of requiredHosts[item.type] || []) {
+      if (!hosts.some(host => hostMatches(host, required))) errors.push(`${prefix}: ${item.type} requires a source from ${required}`);
+    }
     if (research.require_non_metadata_source && !item.sources.some(s => {
       try { return ['structure', 'review', 'whole_runtime'].includes(s.purpose) && !new URL(sourceUrl(s.url)).hostname.includes('cinemeta'); }
       catch { return false; }

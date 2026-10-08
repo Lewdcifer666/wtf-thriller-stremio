@@ -2,8 +2,9 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
-import { reconciliationState, assertResearchDiff, assertBlob, assertBundle, publish, publishMaintenance, prepare, githubClient } from '../scripts/publish-research.mjs';
+import { reconciliationState, assertResearchDiff, assertBlob, assertBundle, publish, publishMaintenance, prepare, verifyMerged, githubClient } from '../scripts/publish-research.mjs';
 import { finalizeResearch, hash, serialize } from '../scripts/finalize-research.mjs';
+import { createAutomationState } from '../scripts/automation-state.mjs';
 import { fixture, options, clone, inFixture } from './fixtures/research/helpers.mjs';
 assert.equal(reconciliationState({}), 'not_started');
 assert.equal(reconciliationState({ packet: true }), 'research_staged');
@@ -199,6 +200,7 @@ await inFixture(async root => {
   git('init', '-b', 'main');
   git('config', 'user.name', 'Fixture'); git('config', 'user.email', 'fixture@example.invalid');
   git('config', 'core.autocrlf', 'false');
+  fs.writeFileSync(path.join(root, 'data/automation-state.json'), serialize(await createAutomationState(root)));
   git('add', '.'); git('commit', '-m', 'Trusted fixture main');
   let base = git('rev-parse', 'HEAD');
   let researchSha = '1'.repeat(40);
@@ -207,18 +209,31 @@ await inFixture(async root => {
   let prs = [];
   let malicious = false;
   let noPacket = false;
+  let comparisonOverride = null;
+  const reads = [];
   const snapshots = new Map();
   const blobs = new Map();
+  const baseBlob = name => {
+    try { return execFileSync('git', ['show', `${base}:${name}`], { cwd: root, stdio: ['ignore', 'pipe', 'pipe'] }); }
+    catch { return null; }
+  };
   let validated = 0;
   const mock = { async get(route) {
+    reads.push(route);
     if (route === '/git/ref/heads/main') return { object: { sha: base } };
     if (route === '/git/matching-refs/heads/research/') return noPacket ? [] : [{ ref: `refs/heads/research/2020-01-02-${packet.genre}`, object: { sha: researchSha } }];
     if (route === '/git/matching-refs/heads/publication/') return refs;
     if (route.startsWith('/pulls?')) return prs;
     if (route.startsWith('/compare/')) {
       const sha = route.split('...')[1];
-      const names = sha === researchSha ? [packetPath, ...(malicious ? ['scripts/publish-research.mjs'] : [])] : Object.keys(snapshots.get(sha));
-      return { total_commits: 1, files: names.map(filename => ({ filename, status: 'added' })) };
+      if (sha === researchSha) return { total_commits: 1, files: [packetPath, ...(malicious ? ['scripts/publish-research.mjs'] : [])].map(filename => ({ filename, status: 'added' })) };
+      // Match GitHub's real diff: a generated file whose bytes equal the base
+      // still exists in the tree, but must not appear among changed paths.
+      const changes = Object.entries(snapshots.get(sha)).flatMap(([filename, content]) => {
+        const before = baseBlob(filename);
+        return before?.equals(Buffer.from(content)) ? [] : [{ filename, status: before === null ? 'added' : 'modified' }];
+      });
+      return { total_commits: 1, files: comparisonOverride || changes };
     }
     if (route.startsWith('/git/trees/')) {
       const sha = route.slice('/git/trees/'.length).split('?')[0];
@@ -233,8 +248,48 @@ await inFixture(async root => {
   } };
   const check = temp => { validated++; assert.ok(fs.existsSync(path.join(temp, 'data/run-logs', finalized.log.run_id + '.json')) || fs.readdirSync(path.join(temp, 'data/run-logs')).some(n => n.startsWith('2020-01-02-'))); };
   const directory = path.join(root, 'bundle');
+  // A real zero-result first attempt adds only its immutable log. It still
+  // carries the regenerated state in its bundle, and retries must verify that
+  // inherited state even though the commit diff does not list it.
+  raw = serialize({ ...packet, candidates: [], research_rejections: [{ title: 'Unresolved fixture', reason: 'Whole-runtime evidence unavailable' }] });
+  const zeroFirst = await prepare(root, mock, directory, { validate: check });
+  assert.deepEqual(zeroFirst.errors, []);
+  const zeroFrozen = zeroFirst.plans[0], zeroSha = '7'.repeat(40);
+  const statePath = 'data/automation-state.json', zeroLogPath = `data/run-logs/${zeroFrozen.run_id}.json`;
+  assert.equal(zeroFrozen.accepted, 0);
+  assert.deepEqual(Object.keys(zeroFrozen.files).sort(), [zeroLogPath, statePath].sort());
+  assert.equal(zeroFrozen.files[statePath].content, fs.readFileSync(path.join(root, statePath), 'utf8'));
+  refs = [{ ref: `refs/heads/${zeroFrozen.branch}`, object: { sha: zeroSha } }];
+  snapshots.set(zeroSha, Object.fromEntries(Object.entries(zeroFrozen.files).map(([name, file]) => [name, file.content])));
+  prs = [{ number: 9, state: 'open', head: { ref: zeroFrozen.branch, sha: zeroSha } }];
+  const zeroDiff = (await mock.get(`/compare/${base}...${zeroSha}`)).files;
+  assert.deepEqual(zeroDiff, [{ filename: zeroLogPath, status: 'added' }]);
+  reads.length = 0;
+  const zeroResume = await prepare(root, mock, directory, { validate: check });
+  assert.deepEqual(zeroResume.errors, []);
+  assert.equal(zeroResume.plans[0].reuse_sha, zeroSha);
+  assert.deepEqual(zeroResume.plans[0].files, zeroFrozen.files);
+  assert.ok(reads.includes(`/git/blobs/${hash(zeroFrozen.files[statePath].content)}`), 'Unchanged frozen state must still be fetched');
+  for (const changes of [[], [...zeroDiff, { filename: 'scripts/unauthorized.mjs', status: 'added' }],
+    [...zeroDiff, { filename: statePath, status: 'modified' }],
+    [{ filename: zeroLogPath, status: 'removed' }], [{ filename: zeroLogPath, status: 'renamed' }]]) {
+    comparisonOverride = changes;
+    const invalidDiff = await prepare(root, mock, directory, { validate: check });
+    assert.equal(invalidDiff.plans.length, 0);
+    assert.match(invalidDiff.errors[0].error, /Frozen attempt contains unauthorized changes/);
+  }
+  // Omitting state is permitted only when base and frozen bytes agree, even
+  // if the difference is JSON whitespace rather than a semantic change.
+  snapshots.get(zeroSha)[statePath] += '\n';
+  comparisonOverride = zeroDiff;
+  const hiddenStateChange = await prepare(root, mock, directory, { validate: check });
+  assert.equal(hiddenStateChange.plans.length, 0);
+  assert.match(hiddenStateChange.errors[0].error, /Frozen attempt contains unauthorized changes/);
+  snapshots.get(zeroSha)[statePath] = zeroFrozen.files[statePath].content;
+  comparisonOverride = null; refs = []; prs = []; raw = largeRaw;
+  const validatedBefore = validated;
   const first = await prepare(root, mock, directory, { validate: check });
-  assert.deepEqual(first.errors, []); assert.equal(first.plans.length, 1); assert.equal(validated, 1);
+  assert.deepEqual(first.errors, []); assert.equal(first.plans.length, 1); assert.equal(validated, validatedBefore + 1);
   const frozen = first.plans[0];
   assert.ok(Buffer.byteLength(frozen.files[`data/run-logs/${frozen.run_id}.json`].content) > 1024 * 1024);
   const attemptSha = '2'.repeat(40);
@@ -244,6 +299,15 @@ await inFixture(async root => {
   const retry = await prepare(root, mock, directory, { validate: check });
   assert.deepEqual(retry.errors, []); assert.equal(retry.plans[0].reuse_sha, attemptSha);
   assert.deepEqual(retry.plans[0].files, frozen.files);
+  const acceptedDiff = (await mock.get(`/compare/${base}...${attemptSha}`)).files;
+  assert.deepEqual(acceptedDiff.map(f => f.filename).sort(), Object.keys(frozen.files).sort());
+  for (const omitted of Object.keys(frozen.files)) {
+    comparisonOverride = acceptedDiff.filter(file => file.filename !== omitted);
+    const incomplete = await prepare(root, mock, directory, { validate: check });
+    assert.equal(incomplete.plans.length, 0);
+    assert.match(incomplete.errors[0].error, /Frozen attempt contains unauthorized changes/);
+  }
+  comparisonOverride = null;
   raw = largeRaw + ' '.repeat(1024 * 1024 - Buffer.byteLength(largeRaw) + 1);
   const oversizedPacket = await prepare(root, mock, directory, { validate: check });
   assert.equal(oversizedPacket.plans.length, 0);
@@ -273,6 +337,14 @@ await inFixture(async root => {
   git('add', 'data'); git('commit', '-m', 'Merged finalized daily receipt'); base = git('rev-parse', 'HEAD');
   const merged = await prepare(root, mock, directory, { validate: check });
   assert.equal(merged.plans.length, 0); assert.ok(merged.states.some(s => s.state === 'merged'));
+  let deploymentsVerified = 0;
+  await verifyMerged(root, merged, { verify: async (url, expected) => {
+    deploymentsVerified++;
+    assert.equal(expected.revision, base);
+    assert.ok(expected.runs.some(run => run.run_id === changedBase.plans[0].run_id));
+  } });
+  assert.equal(deploymentsVerified, 1);
+  assert.ok(merged.states.some(s => s.state === 'deployed'));
   noPacket = true;
   const absent = await prepare(root, mock, directory, { validate: check, clock: () => Date.parse('2021-01-02T12:00:00Z') });
   assert.equal(absent.plans.length, 0); assert.ok(absent.states.some(s => s.state === 'not_started'));
@@ -300,6 +372,165 @@ await inFixture(async root => {
       assert.equal(metadataApi.writes.length, 1);
       assert.ok(metadataApi.writes[0].query.includes('enablePullRequestAutoMerge'));
     }
+  }
+});
+// A competing workflow can auto-merge while prepare is running its pre-PR
+// validation. Exercise the actual temporary Git checkout and advance the API's
+// main revision from that validation callback, not before preparation starts.
+await inFixture(async root => {
+  const git = (...args) => execFileSync('git', args, { cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
+  git('init', '-b', 'main');
+  git('config', 'user.name', 'Fixture'); git('config', 'user.email', 'fixture@example.invalid');
+  git('config', 'core.autocrlf', 'false');
+  git('add', '.'); git('commit', '-m', 'Pinned prepare-race fixture');
+  const base = git('rev-parse', 'HEAD'), advanced = '8'.repeat(40);
+  const unchanged = git('status', '--porcelain');
+  const directory = path.join(root, 'race-bundle');
+  // Use a day distinct from both fixture packets and real production history.
+  // The shared default clock can already have a genuine merged daily receipt.
+  const clock = () => Date.parse('2020-01-04T10:00:00Z');
+  async function race({ zero = false, count = 1, alter, failure, invalidPacket = false } = {}) {
+    let remoteMain = base;
+    const packets = new Map(Array.from({ length: count }, (_, i) => {
+      const value = clone(packet);
+      value.research_date = `2020-01-0${i + 2}`;
+      if (zero) value.candidates = [];
+      else value.candidates[0].imdb_id = `tt99999999${i + 1}`;
+      return [String(i + 1).repeat(40), value];
+    }));
+    if (invalidPacket) packets.set('9'.repeat(40), { ...clone(packet), research_date: '2020-01-09', forbidden: true });
+    const mainFiles = {}, blobs = new Map(), reads = [], validated = [];
+    let writes = 0, beforeMutation;
+    const api = {
+      async get(route) {
+        reads.push(route);
+        if (route === '/git/ref/heads/main') {
+          if (remoteMain !== base && failure === 'main') throw new Error('Injected main lookup failure');
+          return { object: { sha: remoteMain } };
+        }
+        if (route === '/git/matching-refs/heads/research/') return [...packets].map(([sha, value]) => ({ ref: `refs/heads/research/${value.research_date}-${packet.genre}`, object: { sha } }));
+        if (route === '/git/matching-refs/heads/publication/' || route.startsWith('/pulls?')) return [];
+        if (route.startsWith('/compare/')) {
+          assert.ok(route.startsWith(`/compare/${base}...`), 'Research comparison must retain the original trusted base');
+          const value = packets.get(route.split('...')[1]);
+          return { total_commits: 1, files: [{ filename: `research-inbox/${value.research_date}.json`, status: 'added' }] };
+        }
+        if (route.startsWith('/git/trees/')) {
+          const sha = route.slice('/git/trees/'.length).split('?')[0];
+          if (sha === advanced && failure === 'tree') throw new Error('Injected merged tree failure');
+          const value = packets.get(sha);
+          const contents = value ? { [`research-inbox/${value.research_date}.json`]: serialize(value) } : mainFiles;
+          assert.ok(value || sha === advanced, 'Only the packet and the pinned observed-main tree may be read');
+          return { truncated: sha === advanced && failure === 'truncated', tree: Object.entries(contents).map(([name, content]) => {
+            const sha = hash(content); blobs.set(sha, content);
+            return { path: name, mode: '100644', type: 'blob', size: Buffer.byteLength(content), sha };
+          }) };
+        }
+        if (route.startsWith('/git/blobs/')) {
+          if (remoteMain !== base && failure === 'blob') throw new Error('Injected merged blob failure');
+          const content = blobs.get(route.slice('/git/blobs/'.length));
+          return { encoding: 'base64', size: Buffer.byteLength(content), content: Buffer.from(content).toString('base64') };
+        }
+        throw new Error(`Unexpected prepare-race read ${route}`);
+      },
+      async post() { writes++; throw new Error('Prepare must never write remotely'); },
+      async patch() { writes++; throw new Error('Prepare must never write remotely'); },
+      async graphql() { writes++; throw new Error('Prepare must never write remotely'); },
+    };
+    const validate = (temp, evaluatedBase) => {
+      assert.equal(evaluatedBase, base);
+      assert.notEqual(temp, root);
+      assert.equal(execFileSync('git', ['rev-parse', 'HEAD'], { cwd: temp, encoding: 'utf8' }).trim(), base);
+      assert.equal(fs.readFileSync(path.join(temp, 'scripts/publish-research.mjs'), 'utf8'), fs.readFileSync(path.join(root, 'scripts/publish-research.mjs'), 'utf8'));
+      for (const name of fs.readdirSync(path.join(temp, 'data/run-logs')).filter(name => /^2020-01-0[23]-/.test(name))) {
+        const logPath = `data/run-logs/${name}`;
+        const content = fs.readFileSync(path.join(temp, logPath), 'utf8');
+        const log = JSON.parse(content);
+        assert.equal(log.publication.evaluated_base, base);
+        validated.push(log.run_id);
+        mainFiles[logPath] = content;
+        if (log.accepted) mainFiles[`data/discoveries/${name}`] = fs.readFileSync(path.join(temp, 'data/discoveries', name), 'utf8');
+      }
+      // Mutable state and code at the newly observed main are deliberately
+      // unrelated. Completion detection may only retrieve immutable outputs.
+      mainFiles['data/automation-state.json'] = serialize({ changed_after_merge: true });
+      mainFiles['scripts/publish-research.mjs'] = 'throw new Error("Untrusted revision code must not execute")';
+      if (validated.length === count) {
+        beforeMutation = { ...mainFiles };
+        alter?.(mainFiles, validated);
+        remoteMain = advanced;
+      }
+    };
+    let result, caught;
+    try { result = await prepare(root, api, directory, { validate, clock }); }
+    catch (error) { caught = error; }
+    const saved = JSON.parse(fs.readFileSync(path.join(directory, 'bundle.json'), 'utf8'));
+    assert.equal(saved.base, base, 'The bundle must retain the code and policy revision that evaluated it');
+    assert.equal(saved.observed_main, failure === 'main' ? undefined : advanced);
+    assert.equal(validated.length, count);
+    assert.equal(writes, 0);
+    assert.equal(git('rev-parse', 'HEAD'), base, 'Detecting completion must never checkout the newer main');
+    assert.equal(git('status', '--porcelain', '--untracked-files=no'), unchanged);
+    for (const name of ['data/automation-state.json', 'scripts/publish-research.mjs']) {
+      assert.ok(!reads.includes(`/git/blobs/${hash(mainFiles[name])}`), `Do not retrieve ${name} from newer main`);
+    }
+    return { result, caught, saved, validated, beforeMutation };
+  }
+  for (const zero of [false, true]) {
+    const { result, caught, saved, validated } = await race({ zero });
+    assert.equal(caught, undefined);
+    assert.deepEqual(saved, result);
+    assert.deepEqual(saved.plans, []);
+    assert.deepEqual(saved.errors, []);
+    assert.equal(saved.stale_base, undefined);
+    assert.deepEqual(saved.states.find(state => state.run_id === validated[0]), {
+      daily_key: `${packet.genre}:2020-01-02`, state: 'merged', run_id: validated[0], revision: advanced,
+    });
+    assert.ok(saved.states.some(state => state.state === 'not_started'), 'Missing current research must remain not_started');
+    let verified = 0;
+    await verifyMerged(root, saved, { verify: async () => { verified++; } });
+    assert.equal(verified, 0, 'An old checkout cannot verify the newly merged revision');
+    assert.ok(saved.states.some(state => state.state === 'merged'));
+    const revisionOnly = clone(saved); delete revisionOnly.observed_main;
+    await verifyMerged(root, revisionOnly, { verify: async () => { verified++; } });
+    assert.equal(verified, 0, 'Per-state revisions also prevent an old receipt from claiming deployment');
+  }
+  const bothMerged = await race({ count: 2 });
+  assert.equal(bothMerged.caught, undefined);
+  assert.equal(bothMerged.saved.states.filter(state => state.state === 'merged').length, 2);
+  assert.equal(bothMerged.saved.plans.length, 0);
+  const brokenCases = [
+    ...['run-logs', 'discoveries'].flatMap(folder => ['missing', 'mismatch'].map(kind => ({
+      alter(files, runs) {
+        const name = `data/${folder}/${runs[0]}.json`;
+        if (kind === 'missing') delete files[name]; else files[name] += '\n';
+      },
+    }))),
+    { zero: true, alter(files, runs) { files[`data/discoveries/${runs[0]}.json`] = serialize({ items: [] }); } },
+    { count: 2, invalidPacket: true, alter(files, runs) { delete files[`data/run-logs/${runs[1]}.json`]; } },
+    ...['main', 'tree', 'blob', 'truncated'].map(failure => ({ failure })),
+  ];
+  for (const scenario of brokenCases) {
+    const { caught, saved, beforeMutation } = await race(scenario);
+    assert.ok(caught, 'Incomplete or unreadable completion evidence must fail preparation');
+    assert.match(caught.message, scenario.failure === 'main' ? /main lookup failure/ : /Main changed/);
+    assert.equal(saved.stale_base, true);
+    assert.equal(saved.plans.length, scenario.count || 1, 'A partial batch must retain every original plan');
+    for (const plan of saved.plans) {
+      for (const [name, file] of Object.entries(plan.files)) if (name !== 'data/automation-state.json') {
+        assert.equal(file.content, beforeMutation[name], 'Failure must preserve the original validated artifact bytes');
+      }
+      assert.equal(saved.states.find(state => state.run_id === plan.run_id).state, 'research_staged');
+    }
+    assert.ok(saved.errors.some(error => error.stage === 'prepare'));
+    if (scenario.invalidPacket) {
+      assert.ok(saved.errors.some(error => error.daily_key === `${packet.genre}:2020-01-09`), 'Earlier packet diagnostics must survive a stale-base failure');
+      assert.ok(saved.states.some(state => state.daily_key === `${packet.genre}:2020-01-09` && state.state === 'finalization_failed'));
+    }
+    assert.throws(() => assertBundle(saved), /Stale preparation bundle/);
+    let verified = 0;
+    await verifyMerged(root, saved, { verify: async () => { verified++; } });
+    assert.equal(verified, 0);
   }
 });
 console.log('Publication: trust boundary, states, interrupted jobs, retries, current base and single-PR ownership passed');
