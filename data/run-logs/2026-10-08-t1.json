@@ -1,0 +1,48 @@
+{
+  "run_id": "2026-10-08-t1",
+  "timestamp": "2026-10-08T09:03:53.882Z",
+  "searched": 4,
+  "accepted": 1,
+  "rejected": 3,
+  "duplicates": 0,
+  "accepted_items": [
+    {
+      "imdb_id": "tt36743307",
+      "type": "series",
+      "title": "Inside the Circle (El círculo)",
+      "match_score": 75
+    }
+  ],
+  "rejection_summary": [
+    {
+      "title": "The Trap (Die Falle)",
+      "type": "series",
+      "year": 2026,
+      "reason": "Netflix confirms all six episodes release October 13, 2026, after this research date. The sister-murder bait-and-cat-and-mouse premise is promising, but there is no completed-season evidence yet to establish meaningful revelation frequency and progressive revelation; do not score from the trailer or source novel.",
+      "category": "rejected"
+    },
+    {
+      "title": "Below",
+      "type": "series",
+      "year": 2026,
+      "reason": "The six-part Netflix sea-creature thriller premieres October 8, 2026, but the currently consulted launch reviews and promotional material emphasize the creature/horror premise, not independently substantiated revelations distributed through all six episodes. Whole-season revelation cadence and all required DNA dimensions are not sufficiently established for a candidate today.",
+      "category": "rejected"
+    },
+    {
+      "title": "American Sweatshop",
+      "type": "movie",
+      "year": 2025,
+      "imdb_id": "tt32387554",
+      "reason": "A social-media moderator investigates a violent video, but whole-film synopsis and mixed critical/audience reactions indicate repeated dead ends, deterioration of the protagonist, and a late ambiguous encounter rather than a well-paced series of meaningful answers. Some reviewers find the script shallow or the payoff disappointing; this is investigation and psychological distress without sufficiently reliable progressive-revelation evidence for the current research candidate set.",
+      "category": "rejected"
+    }
+  ],
+  "publication": {
+    "schema_version": 1,
+    "daily_key": "thriller:2026-10-08",
+    "packet_hash": "19c4853c98aa1a32c40e155c53a80a7955d8c3dc701303243f95c0c006e41610",
+    "research_commit": "f136d114fcdd1a14ef180de5574f8d1b9de5b4d3",
+    "evaluated_base": "10bb37b9d5bfb6c9d3b64ed5e3baf6339c3a3e1c",
+    "policy_fingerprint": "a13636e8880999cc7a4e52d5ffbae5266bf873f1f3f73e7696f5e3542405a480"
+  }
+}
