@@ -8,6 +8,8 @@ import { fileURLToPath } from 'node:url';
 import { finalizeResearch, loadFinalizerInputs, writeFinalized, hash, serialize, dailyKey } from './finalize-research.mjs';
 import { readJson, berlinDate } from './validate-research-packet.mjs';
 import { deploymentReceipt, verifyDeployment } from './verify-deployment.mjs';
+import { assertStrictValidation } from './verify-publication-protection.mjs';
+import { createAutomationState } from './automation-state.mjs';
 
 const PACKET_BLOB = { maxBytes: 1024 * 1024, label: 'Packet' };
 // Generated JSON can grow beyond its input packet through formatting and
@@ -105,14 +107,33 @@ async function matchesMergedPlan(api, commit, plan) {
   }
   return true;
 }
-async function allPulls(api) {
+async function repositoryName(api) {
+  const repository = (await api.get('')).full_name;
+  if (!/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(repository || '')) throw new Error('Cannot verify publication repository identity');
+  return repository;
+}
+function assertPullHead(pr, repository, branch, sha) {
+  if (pr?.state !== 'open' || pr.head?.repo?.full_name !== repository || pr.head.ref !== branch || pr.head.sha !== sha) {
+    throw new Error('Publication PR head repository, branch or SHA mismatch');
+  }
+}
+async function enableValidatedAutoMerge(api, pr, repository, branch, sha) {
+  assertPullHead(pr, repository, branch, sha);
+  await assertPublicationEnabled(api);
+  // Listing and creating PRs are not a lock: re-read the selected PR before
+  // granting auto-merge, and never act on a same-named branch from a fork.
+  const current = await api.get(`/pulls/${pr.number}`);
+  assertPullHead(current, repository, branch, sha);
+  await api.graphql('mutation($id:ID!,$head:GitObjectID!){enablePullRequestAutoMerge(input:{pullRequestId:$id,expectedHeadOid:$head,mergeMethod:SQUASH}){pullRequest{id}}}', { id: current.node_id, head: sha });
+}
+async function allPulls(api, repository) {
   const result = [];
   for (let page = 1; ; page++) {
     const entries = await api.get(`/pulls?state=all&base=main&per_page=100&page=${page}`);
     result.push(...entries);
     if (entries.length < 100) break;
   }
-  return result;
+  return result.filter(pr => pr.head?.repo?.full_name === repository);
 }
 const run = (command, args, cwd, env = {}) => execFileSync(command, args, { cwd, stdio: 'inherit', env: { ...process.env, ...env } });
 export function fullValidation(root, base) {
@@ -144,14 +165,16 @@ async function assertPublicationEnabled(api) {
   if (!(await api.get('/branches/main')).protected || !(await api.get('')).allow_auto_merge) {
     throw new Error('Publication requires verified main protection and enabled repository auto-merge');
   }
+  await assertStrictValidation(api);
 }
 export async function prepare(root, api, outDir, { validate = fullValidation, withCheckout = inTemporaryCheckout, clock = Date.now } = {}) {
   const base = headSha(root);
   await assertFreshMain(api, base);
   const inputs = loadFinalizerInputs(root);
+  const repository = await repositoryName(api);
   const researchRefs = await api.get('/git/matching-refs/heads/research/');
   const attemptRefs = await api.get('/git/matching-refs/heads/publication/');
-  const pulls = await allPulls(api);
+  const pulls = await allPulls(api, repository);
   const bundle = { schema_version: 1, base, plans: [], states: [], errors: [] };
   const pattern = new RegExp(`^refs/heads/research/(20\\d\\d-\\d\\d-\\d\\d)-${inputs.research.genre}$`);
   for (const ref of researchRefs.sort((a, b) => a.ref.localeCompare(b.ref))) {
@@ -175,6 +198,10 @@ export async function prepare(root, api, outDir, { validate = fullValidation, wi
       const attempts = attemptRefs.flatMap(a => { const m = attemptPattern.exec(a.ref); return m ? [{ ...a, number: Number(m[1]) }] : []; }).sort((a, b) => a.number - b.number);
       const active = pulls.filter(pr => pr.state === 'open' && attempts.some(a => a.ref.slice(11) === pr.head.ref));
       if (active.length > 1) throw new Error('Multiple active publication PRs; refusing ambiguous recovery');
+      for (const pr of active) {
+        const attempt = attempts.find(a => a.ref.slice(11) === pr.head.ref);
+        assertPullHead(pr, repository, pr.head.ref, attempt.object.sha);
+      }
       const last = attempts.at(-1);
       let finalized, branch, reuseSha, closePr;
       if (last) {
@@ -191,6 +218,7 @@ export async function prepare(root, api, outDir, { validate = fullValidation, wi
           reuseSha = last.object.sha;
           const previousPr = pulls.find(pr => pr.head.ref === branch);
           if (previousPr?.state === 'closed') throw new Error('Unmerged publication was closed; explicit review is required before reopening');
+          if (previousPr) assertPullHead(previousPr, repository, branch, reuseSha);
         } else {
           closePr = active[0]?.number;
         }
@@ -319,13 +347,18 @@ export async function publish(bundle, api) {
   }
   if (!plan) return results;
   await assertPublicationEnabled(api);
+  const repository = await repositoryName(api);
   if ((await api.get(`/git/ref/heads/${plan.research_branch}`)).object.sha !== plan.research_commit) throw new Error('Research changed after validation; retry from the persisted packet');
-  let pulls = await allPulls(api);
+  const pulls = await allPulls(api, repository);
   const ownPr = pulls.find(p => p.head.ref === plan.branch && p.state === 'open');
   if (plan.close_pr) {
     const previous = pulls.find(p => p.number === plan.close_pr);
     if (!previous || previous.state !== 'open' || !previous.head.ref.startsWith(`publication/${plan.daily_key.split(':')[1]}-${plan.daily_key.split(':')[0]}-`)) throw new Error('Superseded PR changed; reconcile again');
-    if (previous.auto_merge) await api.graphql('mutation($id:ID!){disablePullRequestAutoMerge(input:{pullRequestId:$id}){pullRequest{id}}}', { id: previous.node_id });
+    const previousHead = (await api.get(`/git/ref/heads/${previous.head.ref}`)).object.sha;
+    assertPullHead(previous, repository, previous.head.ref, previousHead);
+    const currentPrevious = await api.get(`/pulls/${previous.number}`);
+    assertPullHead(currentPrevious, repository, previous.head.ref, previousHead);
+    if (currentPrevious.auto_merge) await api.graphql('mutation($id:ID!){disablePullRequestAutoMerge(input:{pullRequestId:$id}){pullRequest{id}}}', { id: currentPrevious.node_id });
     await api.patch(`/pulls/${previous.number}`, { state: 'closed' });
     await assertFreshMain(api, bundle.base);
   }
@@ -345,8 +378,7 @@ export async function publish(bundle, api) {
   }
   const pr = ownPr || await api.post('/pulls', { base: 'main', head: plan.branch, title: `Publish ${plan.run_id}`,
     body: `Deterministically finalized ${plan.daily_key}. Full source, run-log, publication, test and build checks passed before this PR.\n\nResearch commit: ${plan.research_commit}\nEvaluated main: ${bundle.base}\nImmutable attempt: ${plan.run_id}\n\nAuto-merge remains subject to required validate checks and branch protection.` });
-  if (pr.head.sha !== commitSha) throw new Error('Publication PR head mismatch');
-  await api.graphql('mutation($id:ID!){enablePullRequestAutoMerge(input:{pullRequestId:$id,mergeMethod:SQUASH}){pullRequest{id}}}', { id: pr.node_id });
+  await enableValidatedAutoMerge(api, pr, repository, plan.branch, commitSha);
   results.push({ daily_key: plan.daily_key, state: 'PR_open', pull_request: pr.html_url });
   return results;
 }
@@ -369,14 +401,27 @@ export async function verifyMerged(root, bundle, { verify = verifyDeployment } =
     bundle.errors.push({ deployment: error.message, recovery: 'Existing hourly Pages workflow retries hosting without regenerating discoveries.' });
   }
 }
-export function prepareMaintenance(root, outDir) {
+const MAINTENANCE_PATHS = ['data/automation-state.json', 'data/library.json'];
+function assertMaintenanceFiles(bundle) {
+  if (bundle.schema_version !== 1 || JSON.stringify(Object.keys(bundle.files || {}).sort()) !== JSON.stringify(MAINTENANCE_PATHS)) {
+    throw new Error('Invalid maintenance output paths; regenerate the bundle from trusted main');
+  }
+  for (const file of Object.values(bundle.files)) {
+    assertPublicationSize(file.content);
+    if (hash(file.content) !== file.sha256) throw new Error('Maintenance output digest mismatch');
+  }
+}
+export async function prepareMaintenance(root, outDir, {
+  resolve = current => run(process.execPath, ['scripts/resolve-library.mjs'], current), validate = fullValidation,
+} = {}) {
   const base = headSha(root);
   const file = 'data/library.json';
   const before = fs.readFileSync(path.join(root, file), 'utf8');
-  run(process.execPath, ['scripts/resolve-library.mjs'], root);
+  const statePath = path.join(root, 'data/automation-state.json');
+  const beforeState = fs.existsSync(statePath) ? fs.readFileSync(statePath, 'utf8') : null;
+  await resolve(root);
   const content = fs.readFileSync(path.join(root, file), 'utf8');
-  const ready = content !== before;
-  if (ready) {
+  if (content !== before) {
     assertPublicationSize(content);
     const oldItems = JSON.parse(before).items;
     const newItems = JSON.parse(content).items;
@@ -385,38 +430,66 @@ export function prepareMaintenance(root, outDir) {
       const { imdb_id: resolved, ...next } = newItems[i] || {};
       return JSON.stringify(original) !== JSON.stringify(next) || (imdb_id && imdb_id !== resolved);
     })) throw new Error('Metadata maintenance may only fill missing IMDb IDs; content changes require review');
-    fullValidation(root, base);
   }
+  // The library and its exclusion snapshot form one reviewed result. Updating
+  // only the library would leave public identities/state_token stale after the
+  // deployment workflow stopped committing derived state directly to main.
+  const state = serialize(await createAutomationState(root));
+  fs.writeFileSync(statePath, state);
+  const ready = content !== before || state !== beforeState;
+  const files = Object.fromEntries(MAINTENANCE_PATHS.map(name => {
+    const content = fs.readFileSync(path.join(root, name), 'utf8');
+    return [name, { content, sha256: hash(content) }];
+  }));
+  const bundle = { schema_version: 1, base, ready, files };
+  assertMaintenanceFiles(bundle);
+  if (ready) await validate(root, base);
   fs.mkdirSync(outDir, { recursive: true });
-  fs.writeFileSync(path.join(outDir, 'maintenance.json'), serialize({ base, ready, content, sha256: hash(content) }));
+  fs.writeFileSync(path.join(outDir, 'maintenance.json'), serialize(bundle));
   if (process.env.GITHUB_OUTPUT) fs.appendFileSync(process.env.GITHUB_OUTPUT, `ready=${ready}\n`);
+  return bundle;
 }
 export async function publishMaintenance(root, api, bundle) {
-  assertPublicationSize(bundle.content);
-  if (!bundle.ready || bundle.base !== headSha(root) || hash(bundle.content) !== bundle.sha256) throw new Error('Invalid maintenance bundle');
+  assertMaintenanceFiles(bundle);
+  if (!bundle.ready || bundle.base !== headSha(root)) throw new Error('Invalid maintenance bundle');
   await assertFreshMain(api, bundle.base);
   await assertPublicationEnabled(api);
+  const repository = await repositoryName(api);
   const branch = `maintenance/metadata-${bundle.base.slice(0, 12)}`;
-  const pulls = await allPulls(api);
+  const pulls = await allPulls(api, repository);
   if (pulls.some(p => p.state === 'open' && p.head.ref.startsWith('maintenance/metadata-') && p.head.ref !== branch)) throw new Error('An older metadata PR requires review before another is created');
   const existing = pulls.find(p => p.head.ref === branch);
   if (existing?.state === 'closed') throw new Error('Metadata PR was closed; explicit review is required');
-  let ref;
+  let ref, commitSha;
   try { ref = await api.get(`/git/ref/heads/${branch}`); } catch (error) { if (error.status !== 404) throw error; }
   if (ref) {
-    if (await getFile(api, ref.object.sha, 'data/library.json', PUBLICATION_BLOB) !== bundle.content) throw new Error('Frozen metadata branch differs from validated output');
+    commitSha = ref.object.sha;
+    for (const [name, file] of Object.entries(bundle.files)) {
+      if (await getFile(api, ref.object.sha, name, PUBLICATION_BLOB) !== file.content) throw new Error('Frozen metadata branch differs from validated output; preserve this attempt for review');
+    }
+    const baseTree = await api.get(`/git/trees/${bundle.base}?recursive=1`);
+    if (baseTree.truncated) throw new Error('Git tree truncated; refusing incomplete metadata base');
+    const expectedChanges = [];
+    for (const name of MAINTENANCE_PATHS) {
+      const before = baseTree.tree.find(entry => entry.path === name);
+      if (!before || await getBlob(api, before, PUBLICATION_BLOB) !== bundle.files[name].content) {
+        expectedChanges.push({ filename: name, status: before ? 'modified' : 'added' });
+      }
+    }
     const comparison = await api.get(`/compare/${bundle.base}...${ref.object.sha}`);
-    if (comparison.files?.length !== 1 || comparison.files[0].filename !== 'data/library.json') throw new Error('Unauthorized metadata branch changes');
+    const changes = comparison.files?.map(({ filename, status }) => ({ filename, status })).sort((a, b) => a.filename.localeCompare(b.filename));
+    if (comparison.total_commits >= 250 || JSON.stringify(changes) !== JSON.stringify(expectedChanges)) throw new Error('Unauthorized metadata branch changes');
   } else {
     const parent = await api.get(`/git/commits/${bundle.base}`);
-    const tree = await api.post('/git/trees', { base_tree: parent.tree.sha, tree: [{ path: 'data/library.json', mode: '100644', type: 'blob', content: bundle.content }] });
+    const tree = await api.post('/git/trees', { base_tree: parent.tree.sha, tree: Object.entries(bundle.files).map(([name, file]) => ({ path: name, mode: '100644', type: 'blob', content: file.content })) });
     const commit = await api.post('/git/commits', { message: 'Resolve missing library IMDb metadata', tree: tree.sha, parents: [bundle.base] });
     await assertFreshMain(api, bundle.base);
     await api.post('/git/refs', { ref: `refs/heads/${branch}`, sha: commit.sha });
+    commitSha = commit.sha;
   }
   const pr = existing || await api.post('/pulls', { base: 'main', head: branch, title: 'Resolve missing library IMDb metadata',
-    body: 'Fill missing IMDb IDs without changing existing content or identities. The full validation, test and build sequence passed before this PR.' });
-  await api.graphql('mutation($id:ID!){enablePullRequestAutoMerge(input:{pullRequestId:$id,mergeMethod:SQUASH}){pullRequest{id}}}', { id: pr.node_id });
+    body: 'Fill missing IMDb IDs and regenerate their automation-state identities without changing existing content or identities. Both outputs passed the full validation, test and build sequence before this PR.' });
+  await enableValidatedAutoMerge(api, pr, repository, branch, commitSha);
   return pr.html_url;
 }
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
@@ -425,7 +498,7 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   if (command === 'validate') {
     fullValidation(root, process.env.PUBLICATION_BASE || undefined);
   } else if (command === 'prepare-maintenance') {
-    prepareMaintenance(root, bundleDir);
+    await prepareMaintenance(root, bundleDir);
   } else if (command === 'verify-bundle') {
     const bundle = assertBundle(readJson(path.join(bundleDir, 'bundle.json')));
     if (headSha(root) !== bundle.base) throw new Error('Bundle must be consumed by the exact trusted-main revision that validated it');
