@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
-import { reconciliationState, assertResearchDiff, assertBlob, assertBundle, publish, publishMaintenance, prepare, verifyMerged, githubClient } from '../scripts/publish-research.mjs';
+import { reconciliationState, assertResearchDiff, assertBlob, assertBundle, publish, publishMaintenance, prepareMaintenance, prepare, verifyMerged, githubClient } from '../scripts/publish-research.mjs';
 import { finalizeResearch, hash, serialize } from '../scripts/finalize-research.mjs';
 import { createAutomationState } from '../scripts/automation-state.mjs';
 import { fixture, options, clone, inFixture } from './fixtures/research/helpers.mjs';
@@ -34,6 +34,8 @@ assert.ok(Buffer.byteLength(largeRaw) < 1024 * 1024);
 assert.ok(Buffer.byteLength(serialize(finalizeResearch(largePacket, inputs, options).log)) > 1024 * 1024);
 const finalized = finalizeResearch(packet, inputs, options);
 const branch = `publication/2020-01-02-${packet.genre}-1`;
+const repository = 'example/repo';
+const ownedHead = (ref, sha = 'd'.repeat(40)) => ({ ref, sha, repo: { full_name: repository } });
 const files = Object.fromEntries([
   [`data/run-logs/${finalized.log.run_id}.json`, finalized.log],
   [`data/discoveries/${finalized.log.run_id}.json`, finalized.discovery],
@@ -48,16 +50,19 @@ assert.throws(() => assertBundle(bad), /output path/);
 const badHash = clone(bundle); Object.values(badHash.plans[0].files)[0].content += ' ';
 assert.throws(() => assertBundle(badHash), /digest/);
 function fakeApi({ main = options.evaluatedBase, research = options.researchCommit, existing = [], refSha = 'd'.repeat(40), failAt, protectedMain = true,
-  mainFiles = {}, truncated = false, failRead, treeEntryOverride = {}, blobOverride = {} } = {}) {
+  mainFiles = {}, truncated = false, failRead, treeEntryOverride = {}, blobOverride = {}, createdPr, freshPr } = {}) {
   const writes = [];
   const reads = [];
   const mainBlobs = new Map(Object.values(mainFiles).map(content => [hash(content), content]));
-  const pr = { number: 1, node_id: 'PR_node', html_url: 'https://github.com/example/repo/pull/1', head: { ref: branch, sha: refSha }, state: 'open' };
+  let pr = { number: 1, node_id: 'PR_node', html_url: 'https://github.com/example/repo/pull/1', head: ownedHead(branch, refSha), state: 'open' };
   return { writes, reads,
     async get(route) {
       reads.push(route);
       if (route === '/branches/main') return { protected: protectedMain };
-      if (route === '') return { allow_auto_merge: true };
+      if (route === '/rules/branches/main?per_page=100&page=1') return [{ type: 'required_status_checks', parameters: {
+        strict_required_status_checks_policy: true, required_status_checks: [{ context: 'validate', integration_id: 15368 }],
+      } }];
+      if (route === '') return { allow_auto_merge: true, full_name: repository };
       if (route === '/git/ref/heads/main') return { object: { sha: main } };
       if (route === `/git/trees/${main}?recursive=1`) {
         if (failRead === 'tree') throw new Error('simulated inaccessible main tree');
@@ -72,6 +77,7 @@ function fakeApi({ main = options.evaluatedBase, research = options.researchComm
       if (route.startsWith('/git/ref/heads/research/')) return { object: { sha: research } };
       if (route.startsWith('/git/ref/heads/publication/')) return { object: { sha: refSha } };
       if (route.startsWith('/pulls?')) return existing;
+      if (/^\/pulls\/\d+$/.test(route)) return freshPr || existing.find(p => p.number === Number(route.split('/').at(-1))) || pr;
       if (route.startsWith('/git/commits/')) return { tree: { sha: 'tree_base' } };
       throw new Error(`unexpected read ${route}`);
     },
@@ -80,7 +86,7 @@ function fakeApi({ main = options.evaluatedBase, research = options.researchComm
       if (route === failAt) throw new Error('simulated interruption');
       if (route === '/git/trees') return { sha: 'tree_new' };
       if (route === '/git/commits') return { sha: refSha };
-      if (route === '/pulls') return pr;
+      if (route === '/pulls') { pr = createdPr || { ...pr, head: ownedHead(body.head, refSha) }; return pr; }
       return {};
     },
     async patch(route, body) { writes.push({ route, body }); return {}; },
@@ -92,6 +98,8 @@ assert.equal((await publish(bundle, api))[0].state, 'PR_open');
 assert.equal(api.writes.filter(w => w.route === '/pulls').length, 1);
 assert.ok(api.writes.find(w => w.route === '/git/refs').body.ref.startsWith('refs/heads/publication/'));
 assert.equal(api.writes.some(w => w.body?.ref === 'refs/heads/main'), false);
+assert.equal(api.writes.find(w => w.query?.includes('enablePullRequestAutoMerge')).variables.head, 'd'.repeat(40));
+assert.match(api.writes.find(w => w.query?.includes('enablePullRequestAutoMerge')).query, /expectedHeadOid:\$head/);
 const stale = fakeApi({ main: 'e'.repeat(40) });
 await assert.rejects(publish(bundle, stale), /Main changed/); assert.equal(stale.writes.length, 0);
 // A duplicate workflow wake can finish preparation before the original PR's
@@ -166,7 +174,7 @@ await assert.rejects(publish(bundle, unprotected), /protection/); assert.equal(u
 const changedPacket = fakeApi({ research: 'f'.repeat(40) });
 await assert.rejects(publish(bundle, changedPacket), /Research changed/); assert.equal(changedPacket.writes.length, 0);
 const retryBundle = clone(bundle); retryBundle.plans[0].reuse_sha = 'd'.repeat(40);
-const existing = [{ number: 1, node_id: 'node', html_url: 'url', head: { ref: branch, sha: 'd'.repeat(40) }, state: 'open' }];
+const existing = [{ number: 1, node_id: 'node', html_url: 'url', head: ownedHead(branch), state: 'open' }];
 const retry = fakeApi({ existing });
 await publish(retryBundle, retry);
 assert.equal(retry.writes.some(w => w.route === '/pulls' || w.route === '/git/refs'), false);
@@ -178,8 +186,43 @@ assert.equal(recovered.writes.some(w => w.route === '/git/refs'), false);
 assert.equal(recovered.writes.filter(w => w.route === '/pulls').length, 1);
 const changedFrozen = fakeApi({ refSha: 'e'.repeat(40) });
 await assert.rejects(publish(retryBundle, changedFrozen), /Frozen publication branch changed/);
-const duplicate = fakeApi({ existing: [{ number: 9, state: 'open', head: { ref: `publication/2020-01-02-${packet.genre}-9` } }] });
+const duplicate = fakeApi({ existing: [{ number: 9, state: 'open', head: ownedHead(`publication/2020-01-02-${packet.genre}-9`) }] });
 await assert.rejects(publish(bundle, duplicate), /active PR/);
+// A fork may copy every predictable branch name. It must never own or block
+// our daily key, be closed as superseded, or receive auto-merge permission.
+const forkPr = (ref = branch, state = 'open') => ({ number: 99, node_id: 'fork_node', state,
+  html_url: 'https://github.com/example/repo/pull/99', head: { ref, sha: 'd'.repeat(40), repo: { full_name: 'outsider/repo' } } });
+for (const impostor of [forkPr(), forkPr(branch, 'closed'), forkPr(`publication/2020-01-02-${packet.genre}-9`),
+  { ...forkPr(), head: { ...forkPr().head, repo: null } }]) {
+  const safe = fakeApi({ existing: [impostor] });
+  await publish(bundle, safe);
+  assert.equal(safe.writes.filter(w => w.route === '/pulls').length, 1);
+  assert.deepEqual(safe.writes.filter(w => w.query).map(w => w.variables.id), ['PR_node']);
+  assert.equal(safe.writes.some(w => w.route === '/pulls/99'), false);
+}
+const foreignSuperseded = clone(bundle); foreignSuperseded.plans[0].close_pr = 99;
+const protectedFork = fakeApi({ existing: [forkPr(`publication/2020-01-02-${packet.genre}-9`)] });
+await assert.rejects(publish(foreignSuperseded, protectedFork), /Superseded PR changed/);
+assert.deepEqual(protectedFork.writes, []);
+for (const badHead of [ownedHead(branch, 'e'.repeat(40)), ownedHead(branch + '-other'), forkPr().head,
+  { ...ownedHead(branch), repo: null }]) {
+  const changed = { ...existing[0], head: badHead };
+  const staleHead = fakeApi({ existing, freshPr: changed });
+  await assert.rejects(publish(retryBundle, staleHead), /PR head repository, branch or SHA mismatch/);
+  assert.deepEqual(staleHead.writes, [], 'Fresh mismatched PR must not receive auto-merge');
+  const badCreated = fakeApi({ createdPr: changed });
+  await assert.rejects(publish(bundle, badCreated), /PR head repository, branch or SHA mismatch/);
+  assert.equal(badCreated.writes.some(w => w.query), false, 'Creation response must also identify the verified local branch');
+}
+const wrongListedHead = fakeApi({ existing: [{ ...existing[0], head: ownedHead(branch, 'e'.repeat(40)) }] });
+await assert.rejects(publish(retryBundle, wrongListedHead), /PR head repository, branch or SHA mismatch/);
+assert.deepEqual(wrongListedHead.writes, []);
+const staleSuperseded = clone(bundle); staleSuperseded.plans[0].close_pr = 9;
+const priorBranch = `publication/2020-01-02-${packet.genre}-9`;
+const priorPr = { number: 9, node_id: 'prior_node', state: 'open', auto_merge: {}, head: ownedHead(priorBranch) };
+const hijackedPrevious = fakeApi({ existing: [priorPr], freshPr: { ...priorPr, head: { ...priorPr.head, repo: { full_name: 'outsider/repo' } } } });
+await assert.rejects(publish(staleSuperseded, hijackedPrevious), /PR head repository, branch or SHA mismatch/);
+assert.deepEqual(hijackedPrevious.writes, [], 'A changed superseded PR must not be closed or have auto-merge changed');
 const finalizerWorkflow = fs.readFileSync('.github/workflows/research-finalize.yml', 'utf8');
 assert.match(finalizerWorkflow, /workflow_run:/);
 assert.match(finalizerWorkflow, /ref: main/);
@@ -220,6 +263,7 @@ await inFixture(async root => {
   let validated = 0;
   const mock = { async get(route) {
     reads.push(route);
+    if (route === '') return { full_name: repository };
     if (route === '/git/ref/heads/main') return { object: { sha: base } };
     if (route === '/git/matching-refs/heads/research/') return noPacket ? [] : [{ ref: `refs/heads/research/2020-01-02-${packet.genre}`, object: { sha: researchSha } }];
     if (route === '/git/matching-refs/heads/publication/') return refs;
@@ -261,7 +305,7 @@ await inFixture(async root => {
   assert.equal(zeroFrozen.files[statePath].content, fs.readFileSync(path.join(root, statePath), 'utf8'));
   refs = [{ ref: `refs/heads/${zeroFrozen.branch}`, object: { sha: zeroSha } }];
   snapshots.set(zeroSha, Object.fromEntries(Object.entries(zeroFrozen.files).map(([name, file]) => [name, file.content])));
-  prs = [{ number: 9, state: 'open', head: { ref: zeroFrozen.branch, sha: zeroSha } }];
+  prs = [{ number: 9, state: 'open', head: ownedHead(zeroFrozen.branch, zeroSha) }];
   const zeroDiff = (await mock.get(`/compare/${base}...${zeroSha}`)).files;
   assert.deepEqual(zeroDiff, [{ filename: zeroLogPath, status: 'added' }]);
   reads.length = 0;
@@ -295,10 +339,23 @@ await inFixture(async root => {
   const attemptSha = '2'.repeat(40);
   refs = [{ ref: `refs/heads/${frozen.branch}`, object: { sha: attemptSha } }];
   snapshots.set(attemptSha, Object.fromEntries(Object.entries(frozen.files).map(([name, file]) => [name, file.content])));
-  prs = [{ number: 10, state: 'open', head: { ref: frozen.branch, sha: attemptSha } }];
+  prs = [{ number: 10, state: 'open', head: ownedHead(frozen.branch, attemptSha) }];
   const retry = await prepare(root, mock, directory, { validate: check });
   assert.deepEqual(retry.errors, []); assert.equal(retry.plans[0].reuse_sha, attemptSha);
   assert.deepEqual(retry.plans[0].files, frozen.files);
+  const ownedPr = clone(prs[0]);
+  for (const state of ['open', 'closed']) {
+    prs = [forkPr(frozen.branch, state), ownedPr];
+    const unrelatedFork = await prepare(root, mock, directory, { validate: check });
+    assert.deepEqual(unrelatedFork.errors, []);
+    assert.equal(unrelatedFork.plans[0].reuse_sha, attemptSha);
+    assert.equal(unrelatedFork.plans[0].close_pr, null);
+  }
+  prs = [{ ...ownedPr, head: ownedHead(frozen.branch, 'e'.repeat(40)) }];
+  const mismatchedOwnedPr = await prepare(root, mock, directory, { validate: check });
+  assert.deepEqual(mismatchedOwnedPr.plans, []);
+  assert.match(mismatchedOwnedPr.errors[0].error, /PR head repository, branch or SHA mismatch/);
+  prs = [ownedPr];
   const acceptedDiff = (await mock.get(`/compare/${base}...${attemptSha}`)).files;
   assert.deepEqual(acceptedDiff.map(f => f.filename).sort(), Object.keys(frozen.files).sort());
   for (const omitted of Object.keys(frozen.files)) {
@@ -351,19 +408,14 @@ await inFixture(async root => {
   // Metadata recovery also reads generated JSON, not a research packet. Legal
   // JSON whitespace makes this fixture large without changing library content.
   const libraryContent = fs.readFileSync(path.join(root, 'data/library.json'), 'utf8') + ' '.repeat(1024 * 1024);
-  const maintenanceBundle = { ready: true, base, content: libraryContent, sha256: hash(libraryContent) };
+  const stateContent = fs.readFileSync(path.join(root, 'data/automation-state.json'), 'utf8');
+  const maintenanceContents = { 'data/library.json': libraryContent, 'data/automation-state.json': stateContent };
+  const maintenanceBundle = { schema_version: 1, ready: true, base, files: Object.fromEntries(Object.entries(maintenanceContents).map(([name, content]) => [name, { content, sha256: hash(content) }])) };
   const maintenanceBranch = `maintenance/metadata-${base.slice(0, 12)}`;
   const maintenanceSha = '9'.repeat(40);
-  const maintenancePr = { number: 11, state: 'open', node_id: 'maintenance_pr', html_url: 'https://github.com/example/repo/pull/11', head: { ref: maintenanceBranch, sha: maintenanceSha } };
+  const maintenancePr = { number: 11, state: 'open', node_id: 'maintenance_pr', html_url: 'https://github.com/example/repo/pull/11', head: ownedHead(maintenanceBranch, maintenanceSha) };
   for (const changed of [false, true]) {
-    const metadataApi = fakeApi({ main: base, existing: [maintenancePr], mainFiles: { 'data/library.json': libraryContent + (changed ? '\n' : '') } });
-    const originalGet = metadataApi.get;
-    metadataApi.get = route => {
-      if (route === `/git/ref/heads/${maintenanceBranch}`) return { object: { sha: maintenanceSha } };
-      if (route === `/git/trees/${maintenanceSha}?recursive=1`) return originalGet(`/git/trees/${base}?recursive=1`);
-      if (route === `/compare/${base}...${maintenanceSha}`) return { files: [{ filename: 'data/library.json' }] };
-      return originalGet(route);
-    };
+    const metadataApi = maintenanceApi({ existing: [maintenancePr], contents: { ...maintenanceContents, 'data/library.json': libraryContent + (changed ? '\n' : '') } });
     if (changed) {
       await assert.rejects(publishMaintenance(root, metadataApi, maintenanceBundle), /Frozen metadata branch differs/);
       assert.equal(metadataApi.writes.length, 0);
@@ -373,6 +425,92 @@ await inFixture(async root => {
       assert.ok(metadataApi.writes[0].query.includes('enablePullRequestAutoMerge'));
     }
   }
+  function maintenanceApi({ existing = [], freshPr, createdPr, createBranch = false, contents = maintenanceContents, diff } = {}) {
+    const api = fakeApi({ main: base, existing, freshPr, createdPr, refSha: maintenanceSha });
+    const baseContents = Object.fromEntries(Object.keys(maintenanceContents).map(name => [name, baseBlob(name)?.toString('utf8')]).filter(([, value]) => value !== undefined));
+    const blobContents = new Map([...Object.values(baseContents), ...Object.values(contents)].map(content => [hash(content), content]));
+    const tree = files => ({ truncated: false, tree: Object.entries(files).map(([name, content]) => ({ path: name, mode: '100644', type: 'blob', size: Buffer.byteLength(content), sha: hash(content) })) });
+    const get = api.get;
+    api.get = route => {
+      if (route === `/git/ref/heads/${maintenanceBranch}`) {
+        if (createBranch) { const error = new Error('Not found'); error.status = 404; throw error; }
+        return { object: { sha: maintenanceSha } };
+      }
+      if (route === `/git/trees/${maintenanceSha}?recursive=1`) return tree(contents);
+      if (route === `/git/trees/${base}?recursive=1`) return tree(baseContents);
+      if (route.startsWith('/git/blobs/')) { const content = blobContents.get(route.split('/').at(-1)); return { encoding: 'base64', size: Buffer.byteLength(content), content: Buffer.from(content).toString('base64') }; }
+      if (route === `/compare/${base}...${maintenanceSha}`) return { total_commits: 1, files: diff || Object.entries(contents).filter(([name, content]) => baseContents[name] !== content).map(([filename]) => ({ filename, status: filename in baseContents ? 'modified' : 'added' })) };
+      return get(route);
+    };
+    return api;
+  }
+  for (const createBranch of [false, true]) for (const foreign of [forkPr(maintenanceBranch), forkPr(maintenanceBranch, 'closed'), forkPr('maintenance/metadata-older')]) {
+    const safe = maintenanceApi({ existing: [foreign], createBranch });
+    const url = await publishMaintenance(root, safe, maintenanceBundle);
+    assert.equal(url, 'https://github.com/example/repo/pull/1');
+    assert.equal(safe.writes.filter(w => w.route === '/pulls').length, 1);
+    assert.deepEqual(safe.writes.filter(w => w.query).map(w => w.variables.id), ['PR_node']);
+    assert.equal(safe.writes.some(w => w.route === '/pulls/99'), false);
+  }
+  const localOlder = maintenanceApi({ existing: [{ ...maintenancePr, head: ownedHead('maintenance/metadata-older', maintenanceSha) }] });
+  await assert.rejects(publishMaintenance(root, localOlder, maintenanceBundle), /older metadata PR/);
+  assert.deepEqual(localOlder.writes, []);
+  for (const head of [ownedHead(maintenanceBranch, 'e'.repeat(40)), ownedHead('maintenance/metadata-other', maintenanceSha),
+    { ...ownedHead(maintenanceBranch, maintenanceSha), repo: { full_name: 'outsider/repo' } },
+    { ...ownedHead(maintenanceBranch, maintenanceSha), repo: null }]) {
+    const changed = { ...maintenancePr, head };
+    const changedAfterList = maintenanceApi({ existing: [maintenancePr], freshPr: changed });
+    await assert.rejects(publishMaintenance(root, changedAfterList, maintenanceBundle), /PR head repository, branch or SHA mismatch/);
+    assert.deepEqual(changedAfterList.writes, []);
+    for (const createBranch of [false, true]) {
+      const wrongCreated = maintenanceApi({ createdPr: changed, createBranch });
+      await assert.rejects(publishMaintenance(root, wrongCreated, maintenanceBundle), /PR head repository, branch or SHA mismatch/);
+      assert.equal(wrongCreated.writes.some(w => w.query), false);
+    }
+  }
+  const listedMismatch = maintenanceApi({ existing: [{ ...maintenancePr, head: ownedHead(maintenanceBranch, 'e'.repeat(40)) }] });
+  await assert.rejects(publishMaintenance(root, listedMismatch, maintenanceBundle), /PR head repository, branch or SHA mismatch/);
+  assert.deepEqual(listedMismatch.writes, []);
+  for (const contents of [{ 'data/library.json': libraryContent }, { ...maintenanceContents, 'data/automation-state.json': stateContent + '\n' }]) {
+    const incompleteFrozen = maintenanceApi({ contents });
+    await assert.rejects(publishMaintenance(root, incompleteFrozen, maintenanceBundle), /regular file|Frozen metadata branch differs/);
+    assert.deepEqual(incompleteFrozen.writes, [], 'Incomplete old attempts stay immutable and require review');
+  }
+  const injected = maintenanceApi({ diff: [{ filename: 'scripts/publish-research.mjs', status: 'modified' }] });
+  await assert.rejects(publishMaintenance(root, injected, maintenanceBundle), /Unauthorized metadata branch changes/);
+  assert.deepEqual(injected.writes, []);
+  const oldBundle = { ready: true, base, content: libraryContent, sha256: hash(libraryContent) };
+  await assert.rejects(publishMaintenance(root, maintenanceApi(), oldBundle), /Invalid maintenance output paths/);
+});
+// Metadata resolution updates the exact exclusion state supplied to research;
+// retries with identical inputs do not create another maintenance result.
+await inFixture(async root => {
+  const git = (...args) => execFileSync('git', args, { cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
+  const libraryPath = path.join(root, 'data/library.json');
+  const library = JSON.parse(fs.readFileSync(libraryPath, 'utf8'));
+  const item = { ...library.items[0], imdb_id: null, status: 'watched', title: 'Unresolved metadata fixture', year: 2020 };
+  library.items = [item]; fs.writeFileSync(libraryPath, serialize(library));
+  fs.writeFileSync(path.join(root, 'data/automation-state.json'), serialize(await createAutomationState(root)));
+  const oldState = JSON.parse(fs.readFileSync(path.join(root, 'data/automation-state.json'), 'utf8'));
+  git('init', '-b', 'main'); git('config', 'user.name', 'Fixture'); git('config', 'user.email', 'fixture@example.invalid');
+  git('add', '.'); git('commit', '-m', 'Metadata fixture');
+  let checks = 0;
+  const result = await prepareMaintenance(root, path.join(root, 'metadata-bundle'), {
+    resolve: () => { library.items[0].imdb_id = 'tt999999998'; fs.writeFileSync(libraryPath, serialize(library)); },
+    validate: async current => {
+      checks++;
+      const actual = JSON.parse(fs.readFileSync(path.join(current, 'data/automation-state.json'), 'utf8'));
+      assert.deepEqual(actual, await createAutomationState(current));
+      assert.notEqual(actual.state_token, oldState.state_token);
+      assert(actual.public_identities.some(id => id.includes('tt999999998')));
+      assert(!actual.public_identities.some(id => id.includes('unresolved metadata fixture')));
+    },
+  });
+  assert.equal(checks, 1); assert.equal(result.ready, true);
+  assert.deepEqual(Object.keys(result.files).sort(), ['data/automation-state.json', 'data/library.json']);
+  for (const [name, file] of Object.entries(result.files)) assert.equal(file.content, fs.readFileSync(path.join(root, name), 'utf8'));
+  const retry = await prepareMaintenance(root, path.join(root, 'metadata-retry'), { resolve: () => {}, validate: () => { throw Error('Unchanged metadata must not create work'); } });
+  assert.equal(retry.ready, false);
 });
 // A competing workflow can auto-merge while prepare is running its pre-PR
 // validation. Exercise the actual temporary Git checkout and advance the API's
@@ -404,6 +542,7 @@ await inFixture(async root => {
     const api = {
       async get(route) {
         reads.push(route);
+        if (route === '') return { full_name: repository };
         if (route === '/git/ref/heads/main') {
           if (remoteMain !== base && failure === 'main') throw new Error('Injected main lookup failure');
           return { object: { sha: remoteMain } };

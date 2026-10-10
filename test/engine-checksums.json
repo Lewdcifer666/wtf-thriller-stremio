@@ -1,5 +1,5 @@
 {
-  "template_revision": "81d12bd24a8b1cd3",
+  "template_revision": "a41082e454b53688",
   "generated_from": "wtf-addon-template",
   "note": "Vendored engine files. Edit the template and regenerate; never edit these in place.",
   "files": {
@@ -20,7 +20,8 @@
     "scripts/validate-research-packet.mjs": "6b15606bd7887ac68fef6cfb8fa37d3b34c5d6cee0eaa4fbe8c052fb83cf8ec5",
     "scripts/finalize-research.mjs": "612a14e5ea86e2f0589ef4e804508ead3c1479ef58e7e4beab7ee2a5a2e4495e",
     "scripts/validate-publication.mjs": "528c7f622d3bd0103c7eebbdbcbe4eae0913fedef7989530377257883320f512",
-    "scripts/publish-research.mjs": "370f76e0421bd428262e2924d5a302bd72cb862251a452648cd2e690e84756b5",
+    "scripts/publish-research.mjs": "71c0f8ef2b75338a1eaee1fdd27ab2a3f1dce2a0553b4231e02188dc90a6d703",
+    "scripts/verify-publication-protection.mjs": "dc35e742869b1cce40f013b07aad934730cdb5d6a40ac12dd83bb4f1dc834c5a",
     "scripts/verify-deployment.mjs": "e5b92bfb06b884968a956b2042315483a0593981a36eae966325ca2d6c7d728e",
     "test/safe-fixture.mjs": "26bfb5a531dac11e8e8ac78593ce6349c86e1e5fae60579c9447b22373e9d961",
     "test/run-all.mjs": "55bd65f67840aa376f50675a30d1cb0bca2e758ef611a04f1bcb522ba4e7f350",
@@ -35,7 +36,8 @@
     "test/build-state.test.mjs": "76e1f27756adcc4be95039eb60f69a7161fe7efad2a982dec360d845a5991a33",
     "test/research-packet.test.mjs": "e02a8119c66eea3c49ea23c7cdc7275de99ad7742339aa0e28c0bed67777e795",
     "test/research-finalizer.test.mjs": "39ff5089de60b7f3903c33b38badefde8974bd3c5cb5eac951fe66320144e12a",
-    "test/research-publication.test.mjs": "74a928b3f26e74992e6db0f144165ef70ab43ae9840440d441cca3f9e8cf0dda",
+    "test/research-publication.test.mjs": "2ac0c74f2e950d6de2126ab57a9fdaa58d45e2b3fb9c8668eeee5b2fde22f53e",
+    "test/publication-protection.test.mjs": "4679a03d481bc092fcc06584ba24607b988ea57312b25137f5f00943630d9c4d",
     "test/deployment-verification.test.mjs": "b55070f03d26a390deb1377ce67a4ac2e0b63ae69ea5251f658f2ce6fb043350",
     "test/fixtures/research/helpers.mjs": "d1c2ea07e139cd85d4891f6321f85e124e6261518665340d1b94ec2d0cc5a43f",
     "schemas/research-packet.schema.json": "946e84767121e35d80591444606c79ba65f4f7e3d79d6cae7c8dfdc0570f2344",
