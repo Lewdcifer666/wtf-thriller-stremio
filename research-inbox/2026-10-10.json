@@ -1,0 +1,156 @@
+{
+  "schema_version": 1,
+  "genre": "thriller",
+  "research_date": "2026-10-10",
+  "candidates": [
+    {
+      "imdb_id": "tt4857264",
+      "type": "movie",
+      "title": "The Invisible Guest",
+      "year": 2016,
+      "reason": "A complete 106-minute Spanish locked-room mystery, not simply a police procedural. Adrián is found in a hotel room with his dead lover; the supposed defense attorney's repeated cross-examination exposes a concealed hit-and-run, the victim's father's encounter with the couple, inconsistent accounts of who engineered the cover-up, the crucial admission that the crash victim was still alive when the car was submerged, and finally Adrián's responsibility for Laura's death. The concluding impersonation/recording revelation reframes the interrogation itself. Those changes occur in successive phases of the runtime, supporting separately strong investigation, clue assembly, frequent meaningful revelations and progressive reinterpretation, with psychological deception and suspense dominating action. Cinapse explicitly praises the flow of disclosures, editing, color and tension; Filmdienst praises the Rashomon-like cross-examination and multiple credible reconstructions. Weakness: other reviews criticize the deliberately over-engineered twists, logic stretches and exaggerated character turns; its affair and deaths supply some melodrama but romance does not drive the film. Values describe on-screen content, not desirability.",
+      "sources": [
+        {
+          "url": "https://www.imdb.com/title/tt4857264/",
+          "purpose": "identity"
+        },
+        {
+          "url": "https://www.imdb.com/title/tt4857264/plotsummary/",
+          "purpose": "whole_runtime"
+        },
+        {
+          "url": "https://cinapse.net/2016/10/fantastic-fest-2016-the-invisible-guest-locks-you-in/",
+          "purpose": "review"
+        },
+        {
+          "url": "https://www.filmdienst.de/film/details/549525/der-unsichtbare-gast",
+          "purpose": "structure"
+        },
+        {
+          "url": "https://www.tvtoday.de/filme/der-unsichtbare-gast_8858570.html",
+          "purpose": "review"
+        },
+        {
+          "url": "https://www.moviebreak.de/film/the-invisible-guest",
+          "purpose": "review"
+        }
+      ],
+      "dna": {
+        "mystery": 10,
+        "investigation": 8,
+        "clue_puzzling": 9,
+        "culprit_hunt": 7,
+        "progressive_revelation": 9,
+        "revelation_frequency": 9,
+        "plot_twists": 9,
+        "psychological_strategy": 8,
+        "cat_and_mouse": 7,
+        "deception": 10,
+        "hidden_identity": 8,
+        "unreliable_perspective": 9,
+        "conspiracy": 3,
+        "mole_inside": 0,
+        "corruption": 3,
+        "surveillance": 3,
+        "evidence_manipulation": 8,
+        "technology_threat": 1,
+        "suspense": 9,
+        "action_density": 2,
+        "action_intensity": 4,
+        "brutality": 5,
+        "deadly_game": 0,
+        "weirdness": 2,
+        "military_focus": 0,
+        "romance_focus": 3,
+        "drama_focus": 4,
+        "visual_quality": 8,
+        "retro_visual_style": 1,
+        "pace_speed": 8
+      },
+      "dna_confidence": 0.9,
+      "dna_tags": [
+        "witness"
+      ]
+    },
+    {
+      "imdb_id": "tt7057496",
+      "type": "movie",
+      "title": "Forgotten",
+      "year": 2017,
+      "reason": "A completed 108-minute South Korean psychological mystery with unusually explicit shifts in what the viewer believes. After Jin-seok witnesses his brother's abduction and altered return, small discrepancies in the family's behavior and a forbidden room motivate his own inquiry. A mid-film police-station discovery that it is 2017 rather than 1997 and that Jin-seok is older than he believes overturns the original premise. Later disclosures explain the fabricated family, an unsolved two-decade-old murder, Jin-seok's suppressed memories and the revenge motive; the closing confrontation resolves who engineered the deception and why. This supports high mystery, unreliable perspective, deception and twists, but investigation is a protagonist's search rather than a sustained police procedure. Crucially, revelation_frequency and progressive_revelation are below the twist dimension: ScreenAnarchy finds the setup excellent but describes the second half as exposition-heavy and logically strained, while Ready Steady Cut identifies a dragged-out middle and a somewhat overexplained final act. The violent backstory, tragedy and guilt make drama/brutality real components. Reviews describe capable performances and competent modern presentation; there is some action but no action-dominant or military framing.",
+      "sources": [
+        {
+          "url": "https://www.imdb.com/title/tt7057496/",
+          "purpose": "identity"
+        },
+        {
+          "url": "https://en.wikipedia.org/wiki/Forgotten_(2017_film)",
+          "purpose": "whole_runtime"
+        },
+        {
+          "url": "https://screenanarchy.com/2017/11/review-forgotten-mislays-it-mystery-after-strong-start.html",
+          "purpose": "review"
+        },
+        {
+          "url": "https://readysteadycut.com/2018/02/21/review-forgotten-2017/",
+          "purpose": "review"
+        },
+        {
+          "url": "https://www.moviebreak.de/film/gi-eok-ui-bam",
+          "purpose": "review"
+        },
+        {
+          "url": "https://www.rottentomatoes.com/m/forgotten_2018",
+          "purpose": "structure"
+        }
+      ],
+      "dna": {
+        "mystery": 9,
+        "investigation": 6,
+        "clue_puzzling": 8,
+        "culprit_hunt": 5,
+        "progressive_revelation": 7,
+        "revelation_frequency": 6,
+        "plot_twists": 9,
+        "psychological_strategy": 7,
+        "cat_and_mouse": 5,
+        "deception": 9,
+        "hidden_identity": 8,
+        "unreliable_perspective": 9,
+        "conspiracy": 5,
+        "mole_inside": 0,
+        "corruption": 0,
+        "surveillance": 3,
+        "evidence_manipulation": 6,
+        "technology_threat": 1,
+        "suspense": 8,
+        "action_density": 3,
+        "action_intensity": 5,
+        "brutality": 7,
+        "deadly_game": 0,
+        "weirdness": 7,
+        "military_focus": 0,
+        "romance_focus": 0,
+        "drama_focus": 6,
+        "visual_quality": 7,
+        "retro_visual_style": 2,
+        "pace_speed": 6
+      },
+      "dna_confidence": 0.84,
+      "dna_tags": [
+        "amnesia",
+        "kidnapping",
+        "cold_case"
+      ]
+    }
+  ],
+  "research_rejections": [
+    {
+      "title": "The Trap",
+      "type": "series",
+      "year": 2026,
+      "imdb_id": null,
+      "reason": "Defer, not a quality judgment: Netflix's September 15 official announcement and media listing confirm that all six episodes of this German psychological thriller release on October 13, 2026, after the October 10 research date. Its trailer and cat-and-mouse premise do not establish the complete-season distribution of meaningful revelations, so a supported 30-dimension DNA record is not yet possible. Reassess after the full season becomes available; canonical IMDb ID was not independently confirmed in this pass."
+    }
+  ]
+}
