@@ -1,0 +1,40 @@
+{
+  "run_id": "2026-10-10-t1",
+  "timestamp": "2026-10-10T09:03:33.583Z",
+  "searched": 3,
+  "accepted": 2,
+  "rejected": 1,
+  "duplicates": 0,
+  "accepted_items": [
+    {
+      "imdb_id": "tt4857264",
+      "type": "movie",
+      "title": "The Invisible Guest",
+      "match_score": 86
+    },
+    {
+      "imdb_id": "tt7057496",
+      "type": "movie",
+      "title": "Forgotten",
+      "match_score": 74
+    }
+  ],
+  "rejection_summary": [
+    {
+      "title": "The Trap",
+      "type": "series",
+      "year": 2026,
+      "imdb_id": null,
+      "reason": "Defer, not a quality judgment: Netflix's September 15 official announcement and media listing confirm that all six episodes of this German psychological thriller release on October 13, 2026, after the October 10 research date. Its trailer and cat-and-mouse premise do not establish the complete-season distribution of meaningful revelations, so a supported 30-dimension DNA record is not yet possible. Reassess after the full season becomes available; canonical IMDb ID was not independently confirmed in this pass.",
+      "category": "rejected"
+    }
+  ],
+  "publication": {
+    "schema_version": 1,
+    "daily_key": "thriller:2026-10-10",
+    "packet_hash": "b318b09c91559abeb8c7b2b89feec389e0b04275f39c3000b6421e33e193a5f2",
+    "research_commit": "3a7806d8dfaef437e91a6e78a4b5ee5f4bbb813c",
+    "evaluated_base": "f941bf87ffae2ca9b8f8262c3bfa34fe1c9acf32",
+    "policy_fingerprint": "a13636e8880999cc7a4e52d5ffbae5266bf873f1f3f73e7696f5e3542405a480"
+  }
+}
