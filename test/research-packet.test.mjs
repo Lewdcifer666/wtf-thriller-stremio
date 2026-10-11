@@ -1,9 +1,13 @@
 import assert from 'node:assert/strict';
-import { validateResearchPacket, berlinDate } from '../scripts/validate-research-packet.mjs';
+import { validateResearchPacket, berlinDate, sourceUrl } from '../scripts/validate-research-packet.mjs';
 import { fixture, clone, options } from './fixtures/research/helpers.mjs';
 const { inputs, packet } = fixture();
 const check = (value, context = inputs) => validateResearchPacket(value, { ...context, now: options.now });
 assert.deepEqual(check(packet), []);
+// A comma in a single URL path is ordinary source data, not a URL list.
+assert.equal(sourceUrl('https://www.cinema.de/film/furie,9879664.html'),'https://www.cinema.de/film/furie,9879664.html');
+for(const url of ['https://example.org/a,https://other.org/b','https://example.org,other.org/a','https://example.org/a;https://other.org/b','https://example.org/a https://other.org/b'])assert.throws(()=>sourceUrl(url),/unambiguous/);
+const commaSource=clone(packet);commaSource.candidates[0].sources[0].url='https://www.cinema.de/film/furie,9879664.html';assert.deepEqual(check(commaSource),[]);
 for (const field of ['match_score', 'timestamp', 'added_at', 'run_id', 'searched', 'accepted', 'policy_fingerprint', 'pull_request']) {
   const top = clone(packet); top[field] = 1;
   assert.ok(check(top).length, field);
