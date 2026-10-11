@@ -17,6 +17,29 @@ const PACKET_BLOB = { maxBytes: 1024 * 1024, label: 'Packet' };
 // ceiling, independently of the untrusted research packet's 1 MiB limit.
 const PUBLICATION_BLOB = { maxBytes: 100_000_000, label: 'Publication artifact' };
 
+export function researchHolds(value, genre) {
+  if (!value || value.schema_version !== 1 || Object.keys(value).sort().join() !== 'holds,schema_version' || !Array.isArray(value.holds)) throw new Error('Invalid research hold configuration');
+  const holds = new Map();
+  for (const hold of value.holds) {
+    const date = hold?.daily_key?.slice(genre.length + 1);
+    if (Object.keys(hold || {}).sort().join() !== 'daily_key,reason,research_commit'
+      || !hold.daily_key.startsWith(`${genre}:`) || !/^20\d\d-\d\d-\d\d$/.test(date || '')
+      || !Number.isFinite(Date.parse(date)) || new Date(date).toISOString().slice(0, 10) !== date
+      || !/^[a-f0-9]{40}$/.test(hold.research_commit || '') || hold.reason !== 'safety_denied'
+      || holds.has(hold.daily_key)) throw new Error('Invalid or duplicate research hold');
+    holds.set(hold.daily_key, hold);
+  }
+  return holds;
+}
+export function assertHeldResearch(hold, ref, comparison, tree, packetPath, hasAttempt) {
+  if (ref.object.sha !== hold.research_commit || hasAttempt || comparison.total_commits !== 0
+    || !['behind', 'identical'].includes(comparison.status) || !Array.isArray(comparison.files) || comparison.files.length
+    || tree.truncated !== false || !Array.isArray(tree.tree) || tree.tree.some(e => e.path === packetPath)) {
+    throw new Error('Acknowledged research hold changed; explicit review is required');
+  }
+}
+export const unacknowledgedFailures = bundle => (bundle.errors || []).filter(e => e.acknowledged !== true).length;
+
 export function reconciliationState({ packet, failed, attempt, merged, deployed }) {
   if (deployed && !merged) throw new Error('Deployment without a merged run');
   if (deployed) return 'deployed';
@@ -137,6 +160,8 @@ async function allPulls(api, repository) {
 }
 const run = (command, args, cwd, env = {}) => execFileSync(command, args, { cwd, stdio: 'inherit', env: { ...process.env, ...env } });
 export function fullValidation(root, base) {
+  const holdPath = path.join(root, 'config/research-holds.json');
+  if (fs.existsSync(holdPath)) researchHolds(readJson(holdPath), readJson(path.join(root, 'config/research.json')).genre);
   const env = { PUBLICATION_BASE: base || '' };
   for (const [script, ...args] of [['automation-preflight.mjs', 'self-test'], ['validate.mjs'], ['validate-run-logs.mjs'], ['validate-publication.mjs']]) {
     run(process.execPath, [`scripts/${script}`, ...args], root, env);
@@ -176,6 +201,8 @@ export async function prepare(root, api, outDir, { validate = fullValidation, wi
   const attemptRefs = await api.get('/git/matching-refs/heads/publication/');
   const pulls = await allPulls(api, repository);
   const bundle = { schema_version: 1, base, plans: [], states: [], errors: [] };
+  const holdPath = path.join(root, 'config/research-holds.json');
+  const holds = researchHolds(fs.existsSync(holdPath) ? readJson(holdPath) : { schema_version: 1, holds: [] }, inputs.research.genre);
   const pattern = new RegExp(`^refs/heads/research/(20\\d\\d-\\d\\d-\\d\\d)-${inputs.research.genre}$`);
   for (const ref of researchRefs.sort((a, b) => a.ref.localeCompare(b.ref))) {
     const match = pattern.exec(ref.ref);
@@ -190,6 +217,17 @@ export async function prepare(root, api, outDir, { validate = fullValidation, wi
       }
       const packetPath = `research-inbox/${date}.json`;
       const comparison = await api.get(`/compare/${base}...${ref.object.sha}`);
+      const hold = holds.get(key);
+      if (hold) {
+        const tree = await api.get(`/git/trees/${ref.object.sha}?recursive=1`);
+        const prefix = `publication/${date}-${inputs.research.genre}-`;
+        const hasAttempt = attemptRefs.some(r => r.ref.startsWith(`refs/heads/${prefix}`)) || pulls.some(pr => pr.head?.ref?.startsWith(prefix));
+        assertHeldResearch(hold, ref, comparison, tree, packetPath, hasAttempt);
+        bundle.errors.push({ daily_key: key, error: 'Safety-denied packet staging remains unresolved; no retry through another writer',
+          acknowledged: true, disposition: 'requires_user_action', research_commit: ref.object.sha });
+        bundle.states.push({ daily_key: key, state: 'finalization_failed', acknowledged: true, disposition: 'requires_user_action', research_commit: ref.object.sha });
+        continue;
+      }
       assertResearchDiff(comparison.files || [], packetPath, comparison.total_commits >= 250 || comparison.files?.length >= 300);
       const raw = await getFile(api, ref.object.sha, packetPath);
       const packet = JSON.parse(raw);
@@ -280,6 +318,10 @@ export async function prepare(root, api, outDir, { validate = fullValidation, wi
       bundle.errors.push({ daily_key: key, error: error.message });
       bundle.states.push({ daily_key: key, state: 'finalization_failed' });
     }
+  }
+  for (const [key] of holds) if (!bundle.states.some(s => s.daily_key === key)) {
+    bundle.errors.push({ daily_key: key, error: 'Acknowledged research branch is missing; explicit review is required' });
+    bundle.states.push({ daily_key: key, state: 'finalization_failed' });
   }
   const today = `${inputs.research.genre}:${berlinDate(clock())}`;
   if (!bundle.states.some(s => s.daily_key === today)) {
@@ -509,7 +551,9 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
       const bundle = await prepare(root, api, bundleDir);
       await verifyMerged(root, bundle);
       fs.writeFileSync(path.join(bundleDir, 'bundle.json'), serialize(bundle));
-      if (process.env.GITHUB_OUTPUT) fs.appendFileSync(process.env.GITHUB_OUTPUT, `trusted_sha=${bundle.base}\nready=${bundle.plans.length > 0}\nfailures=${bundle.errors.length}\n`);
+      if (process.env.GITHUB_OUTPUT) fs.appendFileSync(process.env.GITHUB_OUTPUT, `trusted_sha=${bundle.base}\nready=${bundle.plans.length > 0}\nfailures=${unacknowledgedFailures(bundle)}\n`);
+      if (process.env.GITHUB_STEP_SUMMARY) fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY,
+        `### Research reconciliation\n\n${bundle.errors.filter(e => e.acknowledged === true).length} acknowledged safety-denied staging hold(s) remain unresolved. These are not successful research or zero-result runs. See the persisted publication bundle. New failures and changes to held branches still fail this workflow.\n`);
       console.log(JSON.stringify({ states: bundle.states, errors: bundle.errors }));
     } else if (command === 'publish') console.log(JSON.stringify(await publish(readJson(path.join(bundleDir, 'bundle.json')), api)));
     else if (command === 'publish-maintenance') console.log(await publishMaintenance(root, api, readJson(path.join(bundleDir, 'maintenance.json'))));

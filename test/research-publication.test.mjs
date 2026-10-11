@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
-import { reconciliationState, assertResearchDiff, assertBlob, assertBundle, publish, publishMaintenance, prepareMaintenance, prepare, verifyMerged, githubClient } from '../scripts/publish-research.mjs';
+import { researchHolds, assertHeldResearch, unacknowledgedFailures, reconciliationState, assertResearchDiff, assertBlob, assertBundle, publish, publishMaintenance, prepareMaintenance, prepare, verifyMerged, githubClient } from '../scripts/publish-research.mjs';
 import { finalizeResearch, hash, serialize } from '../scripts/finalize-research.mjs';
 import { createAutomationState } from '../scripts/automation-state.mjs';
 import { fixture, options, clone, inFixture } from './fixtures/research/helpers.mjs';
@@ -13,6 +13,14 @@ assert.equal(reconciliationState({ packet: true, attempt: true }), 'PR_open');
 assert.equal(reconciliationState({ merged: true }), 'merged');
 assert.equal(reconciliationState({ merged: true, deployed: true }), 'deployed');
 assert.throws(() => reconciliationState({ deployed: true }));
+const hold = {daily_key:'thriller:2020-01-02',research_commit:'1'.repeat(40),reason:'safety_denied'};
+assert.equal(researchHolds({schema_version:1,holds:[hold]},'thriller').size,1);
+for(const bad of [{...hold,reason:'ignore_errors'},{...hold,daily_key:'anime:2020-01-02'},{...hold,research_commit:'main'},{...hold,extra:true}])assert.throws(()=>researchHolds({schema_version:1,holds:[bad]},'thriller'));
+assert.throws(()=>researchHolds({schema_version:1,holds:[hold,hold]},'thriller'));
+const heldArgs=[hold,{object:{sha:hold.research_commit}},{status:'behind',total_commits:0,files:[]},{truncated:false,tree:[]},'research-inbox/2020-01-02.json',false];
+assertHeldResearch(...heldArgs);
+for(const [index,value] of [[1,{object:{sha:'2'.repeat(40)}}],[2,{status:'ahead',total_commits:1,files:[]}],[3,{truncated:true,tree:[]}],[3,{truncated:false,tree:[{path:heldArgs[4]}]}],[5,true]]){const args=clone(heldArgs);args[index]=value;assert.throws(()=>assertHeldResearch(...args),/changed/);}
+assert.equal(unacknowledgedFailures({errors:[{acknowledged:true},{error:'new failure'}]}),1);
 const packetPath = 'research-inbox/2020-01-02.json';
 assertResearchDiff([{ filename: packetPath, status: 'added' }], packetPath);
 for (const malicious of ['scripts/publish-research.mjs', 'package.json', 'package-lock.json', '.github/workflows/research-intake.yml', '.github/actions/validate/action.yml']) {
@@ -253,6 +261,7 @@ await inFixture(async root => {
   let malicious = false;
   let noPacket = false;
   let comparisonOverride = null;
+  let emptyResearch = false;
   const reads = [];
   const snapshots = new Map();
   const blobs = new Map();
@@ -270,7 +279,7 @@ await inFixture(async root => {
     if (route.startsWith('/pulls?')) return prs;
     if (route.startsWith('/compare/')) {
       const sha = route.split('...')[1];
-      if (sha === researchSha) return { total_commits: 1, files: [packetPath, ...(malicious ? ['scripts/publish-research.mjs'] : [])].map(filename => ({ filename, status: 'added' })) };
+      if (sha === researchSha) return emptyResearch ? {status:'behind',total_commits:0,files:[]} : { total_commits: 1, files: [packetPath, ...(malicious ? ['scripts/publish-research.mjs'] : [])].map(filename => ({ filename, status: 'added' })) };
       // Match GitHub's real diff: a generated file whose bytes equal the base
       // still exists in the tree, but must not appear among changed paths.
       const changes = Object.entries(snapshots.get(sha)).flatMap(([filename, content]) => {
@@ -281,7 +290,7 @@ await inFixture(async root => {
     }
     if (route.startsWith('/git/trees/')) {
       const sha = route.slice('/git/trees/'.length).split('?')[0];
-      const files = sha === researchSha ? { [packetPath]: raw } : snapshots.get(sha);
+      const files = sha === researchSha ? (emptyResearch ? {} : { [packetPath]: raw }) : snapshots.get(sha);
       return { truncated: false, tree: Object.entries(files).map(([file, content]) => {
         const blob = hash(content); blobs.set(blob, content);
         return { path: file, mode: '100644', type: 'blob', size: Buffer.byteLength(content), sha: blob };
@@ -292,6 +301,16 @@ await inFixture(async root => {
   } };
   const check = temp => { validated++; assert.ok(fs.existsSync(path.join(temp, 'data/run-logs', finalized.log.run_id + '.json')) || fs.readdirSync(path.join(temp, 'data/run-logs')).some(n => n.startsWith('2020-01-02-'))); };
   const directory = path.join(root, 'bundle');
+  // Only a reviewed, exact empty branch may be acknowledged. It stays failed
+  // and visible, while an unchanged retry does not generate a fresh alert.
+  fs.writeFileSync(path.join(root,'config/research-holds.json'),serialize({schema_version:1,holds:[{daily_key:`${packet.genre}:2020-01-02`,research_commit:researchSha,reason:'safety_denied'}]}));
+  git('add','config/research-holds.json');git('commit','-m','Acknowledge synthetic denied staging');base=git('rev-parse','HEAD');emptyResearch=true;
+  const held=await prepare(root,mock,directory,{validate:check});assert.equal(held.plans.length,0);assert.equal(unacknowledgedFailures(held),0);assert.equal(held.states[0].state,'finalization_failed');assert.equal(held.errors[0].acknowledged,true);assert.equal(validated,0);
+  assert.deepEqual(await prepare(root,mock,directory,{validate:check}),held);
+  researchSha='2'.repeat(40);assert.equal(unacknowledgedFailures(await prepare(root,mock,directory,{validate:check})),1);researchSha='1'.repeat(40);
+  emptyResearch=false;assert.equal(unacknowledgedFailures(await prepare(root,mock,directory,{validate:check})),1);
+  noPacket=true;assert.equal(unacknowledgedFailures(await prepare(root,mock,directory,{validate:check})),1);noPacket=false;
+  fs.unlinkSync(path.join(root,'config/research-holds.json'));git('add','-u','config/research-holds.json');git('commit','-m','Remove fixture hold after explicit review');base=git('rev-parse','HEAD');
   // A real zero-result first attempt adds only its immutable log. It still
   // carries the regenerated state in its bundle, and retries must verify that
   // inherited state even though the commit diff does not list it.

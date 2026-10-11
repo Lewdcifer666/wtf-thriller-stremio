@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
+import {execFileSync} from 'node:child_process';
 import { finalizeResearch, writeFinalized, loadFinalizerInputs } from '../scripts/finalize-research.mjs';
 import { validatePublication } from '../scripts/validate-publication.mjs';
 import { makePolicy, scoreItem } from '../scripts/dna-score.mjs';
@@ -48,10 +49,13 @@ if (watchedProfile.baseline_evidence?.items?.length) {
 }
 await inFixture(async root => {
   const actualInputs = loadFinalizerInputs(root);
-  const finalized = finalize(packet, actualInputs);
+  const commaPacket=clone(packet);
+  commaPacket.candidates[0].sources.push({url:'https://example.org/review,one',purpose:'review'},{url:'https://example.org/review,two',purpose:'structure'});
+  const finalized = finalize(commaPacket, actualInputs);
   const personalFile = path.join(root, 'data/personalized-scores.json');
   const personal = fs.existsSync(personalFile) ? fs.readFileSync(personalFile) : null;
   await writeFinalized(root, finalized);
+  execFileSync(process.execPath,['--input-type=module','-e',`import assert from 'node:assert/strict';import fs from 'node:fs';import {sourceUrls,distinctSourceUrls} from './scripts/validate.mjs';const d=JSON.parse(fs.readFileSync('data/discoveries/${finalized.log.run_id}.json'));assert(sourceUrls(d.items[0].source).includes('https://example.org/review,one'));assert(sourceUrls(d.items[0].source).includes('https://example.org/review,two'));assert.equal(distinctSourceUrls(d.items[0].source).length,${commaPacket.candidates[0].sources.length});assert.deepEqual(sourceUrls('https://example.org/a,https://example.org/b, https://example.org/c'),['https://example.org/a','https://example.org/b','https://example.org/c']);`],{cwd:root,stdio:'pipe'});
   assert.deepEqual(validatePublication(root, { now: Math.max(options.now, Date.now()) }), []);
   await assert.rejects(writeFinalized(root, finalized), /immutable overwrite/);
   const logFile = path.join(root, 'data/run-logs', finalized.log.run_id + '.json');
