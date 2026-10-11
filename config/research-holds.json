@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "holds": [
+    {
+      "daily_key": "thriller:2026-10-09",
+      "research_commit": "f941bf87ffae2ca9b8f8262c3bfa34fe1c9acf32",
+      "reason": "safety_denied"
+    },
+    {
+      "daily_key": "thriller:2026-10-11",
+      "research_commit": "dfd09393c2ba436dea3e7bc52720a6b1a9947f57",
+      "reason": "safety_denied"
+    }
+  ]
+}

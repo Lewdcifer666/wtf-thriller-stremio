@@ -28,6 +28,9 @@ export async function inFixture(callback) {
   try {
     fs.cpSync(process.cwd(), temp, { recursive: true, filter: source => !['node_modules', '.git', 'site', '.publication-bundle'].includes(path.basename(source)) });
     if (fs.existsSync('node_modules')) fs.cpSync(path.resolve('node_modules'), path.join(temp, 'node_modules'), { recursive: true });
+    // Synthetic GitHub refs must not inherit production-only acknowledged
+    // holds. Tests that exercise holds install their own pinned fixture data.
+    if (fs.existsSync(path.join(temp, 'config/research-holds.json'))) fs.writeFileSync(path.join(temp, 'config/research-holds.json'), JSON.stringify({schema_version:1,holds:[]})+'\n');
     return await callback(temp);
   } finally { fs.rmSync(temp, { recursive: true, force: true }); }
 }
