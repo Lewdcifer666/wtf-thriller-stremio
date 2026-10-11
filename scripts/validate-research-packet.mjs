@@ -15,7 +15,7 @@ export function berlinDate(now = Date.now(), timeZone = 'Europe/Berlin') {
 export function sourceUrl(value) {
   const url = new URL(value);
   if (!['https:', 'http:'].includes(url.protocol) || !url.hostname.includes('.') || url.username || url.password
-      || /[\s;,]/.test(value)) throw new Error('source must be an unambiguous public HTTP(S) URL');
+      || /[\s;]/.test(value) || url.hostname.includes(',') || /,https?:\/\//i.test(value)) throw new Error('source must be an unambiguous public HTTP(S) URL');
   url.hash = '';
   return url.href;
 }

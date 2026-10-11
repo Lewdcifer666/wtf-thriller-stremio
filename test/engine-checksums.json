@@ -1,5 +1,5 @@
 {
-  "template_revision": "a41082e454b53688",
+  "template_revision": "2f2e33536cc645ae",
   "generated_from": "wtf-addon-template",
   "note": "Vendored engine files. Edit the template and regenerate; never edit these in place.",
   "files": {
@@ -17,7 +17,7 @@
     "scripts/export-automation-state.mjs": "5edd56c1e9944dcbef2312e3ffa1cf5d1bebd9877ecac7ccae81a5de381ba3ed",
     "scripts/automation-state.mjs": "b0fa40aead073cca23286085f0086dee551906769319e6b9f7110f81ee3490ab",
     "scripts/validate-run-logs.mjs": "f43cd6e85f22de987aa025f4942920c21fdecc1e6166134395b5118dcf87ed54",
-    "scripts/validate-research-packet.mjs": "6b15606bd7887ac68fef6cfb8fa37d3b34c5d6cee0eaa4fbe8c052fb83cf8ec5",
+    "scripts/validate-research-packet.mjs": "8a13244c6a46b5905c103f82a1439709daba89a8b2f0be6ecc80f699bc2799cd",
     "scripts/finalize-research.mjs": "612a14e5ea86e2f0589ef4e804508ead3c1479ef58e7e4beab7ee2a5a2e4495e",
     "scripts/validate-publication.mjs": "528c7f622d3bd0103c7eebbdbcbe4eae0913fedef7989530377257883320f512",
     "scripts/publish-research.mjs": "71c0f8ef2b75338a1eaee1fdd27ab2a3f1dce2a0553b4231e02188dc90a6d703",
@@ -34,7 +34,7 @@
     "test/personalization-state.test.mjs": "35e5647d337953beec27b8ec96206b3d4405861d34be23ebb753a9055bafb481",
     "test/automation-integrity.test.mjs": "314bd2e7f8d7acf783545328a525ec3e5faee32eeca7da2239e1abfede8936da",
     "test/build-state.test.mjs": "76e1f27756adcc4be95039eb60f69a7161fe7efad2a982dec360d845a5991a33",
-    "test/research-packet.test.mjs": "e02a8119c66eea3c49ea23c7cdc7275de99ad7742339aa0e28c0bed67777e795",
+    "test/research-packet.test.mjs": "9eda046e7305a5ef3a54f36260d71489c119bea498472bca9f7458af3a918492",
     "test/research-finalizer.test.mjs": "39ff5089de60b7f3903c33b38badefde8974bd3c5cb5eac951fe66320144e12a",
     "test/research-publication.test.mjs": "2ac0c74f2e950d6de2126ab57a9fdaa58d45e2b3fb9c8668eeee5b2fde22f53e",
     "test/publication-protection.test.mjs": "4679a03d481bc092fcc06584ba24607b988ea57312b25137f5f00943630d9c4d",
