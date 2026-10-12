@@ -211,6 +211,7 @@ export async function prepare(root, api, outDir, { validate = fullValidation, wi
     const key = `${inputs.research.genre}:${date}`;
     try {
       const merged = inputs.logs.find(log => log.publication?.daily_key === key || new RegExp(`^${date}-${inputs.research.run_prefix}[0-9]+$`).test(log.run_id));
+      if (merged && holds.has(key)) throw new Error('Acknowledged research hold conflicts with a merged run; explicit review and hold removal are required');
       if (merged) {
         bundle.states.push({ daily_key: key, state: 'merged', run_id: merged.run_id });
         continue;
