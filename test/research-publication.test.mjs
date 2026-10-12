@@ -421,6 +421,14 @@ await inFixture(async root => {
   } });
   assert.equal(deploymentsVerified, 1);
   assert.ok(merged.states.some(s => s.state === 'deployed'));
+  fs.writeFileSync(path.join(root,'config/research-holds.json'),serialize({schema_version:1,holds:[{daily_key:`${packet.genre}:2020-01-02`,research_commit:researchSha,reason:'safety_denied'}]}));
+  git('add','config/research-holds.json');git('commit','-m','Conflicting hold requires explicit review');base=git('rev-parse','HEAD');
+  const conflictingHold=await prepare(root,mock,directory,{validate:check});
+  assert.equal(unacknowledgedFailures(conflictingHold),1);assert.match(conflictingHold.errors[0].error,/conflicts with a merged run/);
+  assert.equal(conflictingHold.states[0].state,'finalization_failed');assert.equal(conflictingHold.plans.length,0);
+  await verifyMerged(root,conflictingHold,{verify:async()=>{throw new Error('Conflicting held state must not verify deployment');}});
+  assert.equal(conflictingHold.states[0].state,'finalization_failed');
+  fs.unlinkSync(path.join(root,'config/research-holds.json'));git('add','-u','config/research-holds.json');git('commit','-m','Explicit fixture hold removal');base=git('rev-parse','HEAD');
   noPacket = true;
   const absent = await prepare(root, mock, directory, { validate: check, clock: () => Date.parse('2021-01-02T12:00:00Z') });
   assert.equal(absent.plans.length, 0); assert.ok(absent.states.some(s => s.state === 'not_started'));

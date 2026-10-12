@@ -57,9 +57,9 @@ export function sourceUrls(value) {
   if (typeof value !== "string") return [];
   // Split on separators only. Prose words simply fail to parse as URLs and are
   // dropped, so "some prose https://example.com/x" still yields one real URL.
-  // A comma may be part of a URL path. Legacy comma-separated citations are
-  // separated only where another explicit HTTP(S) URL begins.
-  return value.split(/;|\s+|,(?=\s*https?:\/\/)/i).flatMap(token => {
+  // Preserve URL-internal commas. A comma before whitespace/prose or another
+  // explicit HTTP(S) URL remains a legacy citation separator.
+  return value.split(/;|\s+|,(?=\s|https?:\/\/)/i).flatMap(token => {
     let url;
     try { url = new URL(token.trim()); } catch { return []; }
     if (!HTTP_PROTOCOLS.has(url.protocol)) return [];
