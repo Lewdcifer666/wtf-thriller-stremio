@@ -10,6 +10,11 @@
       "daily_key": "thriller:2026-10-11",
       "research_commit": "dfd09393c2ba436dea3e7bc52720a6b1a9947f57",
       "reason": "safety_denied"
+    },
+    {
+      "daily_key": "thriller:2026-10-12",
+      "research_commit": "165f68c9d77f8f33af7412c071da4955242a68c9",
+      "reason": "safety_denied"
     }
   ]
 }
