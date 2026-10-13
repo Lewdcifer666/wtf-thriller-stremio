@@ -322,6 +322,9 @@ await inFixture(async root => {
   assert.equal(waiting.state,'not_started');assert.equal(waiting.incomplete,true);assert.equal(waiting.disposition,'awaiting_research_packet');assert.equal(waiting.research_commit,researchSha);
   assert.equal(validated,0);assert.equal(snapshots.size,0);assert(!fs.existsSync(path.join(root,'data/run-logs',finalized.log.run_id+'.json')));
   assert.deepEqual(await prepare(root,mock,directory,{validate:check}),pending);
+  const futurePending=await prepare(root,mock,directory,{validate:check,clock:()=>Date.parse('2020-01-01T12:00:00Z')});
+  assert.equal(unacknowledgedFailures(futurePending),1);assert.match(futurePending.errors[0].error,/future unstaged/);
+  assert.equal(futurePending.plans.length,0);assert.equal(futurePending.states.find(s=>s.daily_key===`${packet.genre}:2020-01-02`).state,'finalization_failed');
   refs=[{ref:`refs/heads/publication/2020-01-02-${packet.genre}-1`,object:{sha:'8'.repeat(40)}}];
   assert.equal(unacknowledgedFailures(await prepare(root,mock,directory,{validate:check})),1,'Unresolved attempt must not become pending packet work');refs=[];
   emptyResearch=false;

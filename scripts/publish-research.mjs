@@ -239,7 +239,8 @@ export async function prepare(root, api, outDir, { validate = fullValidation, wi
       if (comparison.total_commits === 0 && comparison.files?.length === 0) {
         const tree = await api.get(`/git/trees/${ref.object.sha}?recursive=1`);
         if (isUnstagedResearch(ref, comparison, tree, packetPath, hasAttempt)) {
-          if (!Number.isFinite(Date.parse(date)) || new Date(date).toISOString().slice(0, 10) !== date) throw new Error('Invalid unstaged research date');
+          if (!Number.isFinite(Date.parse(date)) || new Date(date).toISOString().slice(0, 10) !== date
+            || date > berlinDate(clock(), inputs.research.timezone)) throw new Error('Invalid or future unstaged research date');
           // Branch creation precedes packet staging. Persist the incomplete ref
           // in every bundle; never fabricate a zero-result finalized run, mint
           // an App token, or silently forget work that may still be staged.
