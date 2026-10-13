@@ -1,0 +1,40 @@
+{
+  "run_id": "2026-10-13-t1",
+  "timestamp": "2026-10-13T09:06:28.651Z",
+  "searched": 3,
+  "accepted": 2,
+  "rejected": 1,
+  "duplicates": 0,
+  "accepted_items": [
+    {
+      "imdb_id": "tt6079516",
+      "type": "movie",
+      "title": "I See You",
+      "match_score": 74
+    },
+    {
+      "imdb_id": "tt6742252",
+      "type": "movie",
+      "title": "The Guilty",
+      "match_score": 63
+    }
+  ],
+  "rejection_summary": [
+    {
+      "title": "The Trap (Die Falle)",
+      "type": "series",
+      "year": 2026,
+      "imdb_id": null,
+      "reason": "Netflix's six-episode German psychological thriller releases on October 13, 2026. The trailer, premise and episode descriptions indicate a potentially relevant murderer-identification and cat-and-mouse story, but at this research time there is not enough independent whole-season review or episode-resolution evidence to establish revelation_frequency, progressive_revelation and the complete 30-dimension DNA without guessing. Reconsider when credible full-season coverage exists. Sources consulted: https://about.netflix.com/en/news/the-trap-no-one-escapes-their-past-netflix-releases-the-official-trailer-and-press-kit-for-the-new-psychological-thriller-series-highlight and https://www.netflix.com/title/81720671.",
+      "category": "rejected"
+    }
+  ],
+  "publication": {
+    "schema_version": 1,
+    "daily_key": "thriller:2026-10-13",
+    "packet_hash": "d5dac23a27352efc302734517be840e259cdd9715e933ea7886918fb595fffb4",
+    "research_commit": "097a5fec089c6d9c549cfd669ae78ed0f4834c13",
+    "evaluated_base": "371a4a1b34b50f0a5b19c8e76aee50d42b5ea371",
+    "policy_fingerprint": "0d4f575d3a8c6a2eeb7567148bff008052890fdca46e53f24af125aba1ea4cff"
+  }
+}
