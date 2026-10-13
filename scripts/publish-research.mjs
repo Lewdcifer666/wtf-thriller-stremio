@@ -39,6 +39,13 @@ export function assertHeldResearch(hold, ref, comparison, tree, packetPath, hasA
   }
 }
 export const unacknowledgedFailures = bundle => (bundle.errors || []).filter(e => e.acknowledged !== true).length;
+export function isUnstagedResearch(ref, comparison, tree, packetPath, hasAttempt) {
+  return !hasAttempt && /^[a-f0-9]{40}$/.test(ref?.object?.sha || '')
+    && comparison?.total_commits === 0 && ['behind', 'identical'].includes(comparison.status)
+    && comparison.merge_base_commit?.sha === ref.object.sha
+    && Array.isArray(comparison.files) && comparison.files.length === 0
+    && tree?.truncated === false && Array.isArray(tree.tree) && !tree.tree.some(e => e.path === packetPath);
+}
 
 export function reconciliationState({ packet, failed, attempt, merged, deployed }) {
   if (deployed && !merged) throw new Error('Deployment without a merged run');
@@ -218,16 +225,29 @@ export async function prepare(root, api, outDir, { validate = fullValidation, wi
       }
       const packetPath = `research-inbox/${date}.json`;
       const comparison = await api.get(`/compare/${base}...${ref.object.sha}`);
+      const prefix = `publication/${date}-${inputs.research.genre}-`;
+      const hasAttempt = attemptRefs.some(r => r.ref.startsWith(`refs/heads/${prefix}`)) || pulls.some(pr => pr.head?.ref?.startsWith(prefix));
       const hold = holds.get(key);
       if (hold) {
         const tree = await api.get(`/git/trees/${ref.object.sha}?recursive=1`);
-        const prefix = `publication/${date}-${inputs.research.genre}-`;
-        const hasAttempt = attemptRefs.some(r => r.ref.startsWith(`refs/heads/${prefix}`)) || pulls.some(pr => pr.head?.ref?.startsWith(prefix));
         assertHeldResearch(hold, ref, comparison, tree, packetPath, hasAttempt);
         bundle.errors.push({ daily_key: key, error: 'Safety-denied packet staging remains unresolved; no retry through another writer',
           acknowledged: true, disposition: 'requires_user_action', research_commit: ref.object.sha });
         bundle.states.push({ daily_key: key, state: 'finalization_failed', acknowledged: true, disposition: 'requires_user_action', research_commit: ref.object.sha });
         continue;
+      }
+      if (comparison.total_commits === 0 && comparison.files?.length === 0) {
+        const tree = await api.get(`/git/trees/${ref.object.sha}?recursive=1`);
+        if (isUnstagedResearch(ref, comparison, tree, packetPath, hasAttempt)) {
+          if (!Number.isFinite(Date.parse(date)) || new Date(date).toISOString().slice(0, 10) !== date) throw new Error('Invalid unstaged research date');
+          // Branch creation precedes packet staging. Persist the incomplete ref
+          // in every bundle; never fabricate a zero-result finalized run, mint
+          // an App token, or silently forget work that may still be staged.
+          bundle.states.push({ daily_key: key, state: 'not_started', incomplete: true,
+            disposition: 'awaiting_research_packet', research_commit: ref.object.sha,
+            research_branch: ref.ref.slice(11), expected_packet: packetPath });
+          continue;
+        }
       }
       assertResearchDiff(comparison.files || [], packetPath, comparison.total_commits >= 250 || comparison.files?.length >= 300);
       const raw = await getFile(api, ref.object.sha, packetPath);
