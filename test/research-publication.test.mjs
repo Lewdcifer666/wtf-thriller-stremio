@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
-import { researchHolds, assertHeldResearch, unacknowledgedFailures, reconciliationState, assertResearchDiff, assertBlob, assertBundle, publish, publishMaintenance, prepareMaintenance, prepare, verifyMerged, githubClient } from '../scripts/publish-research.mjs';
+import { researchHolds, assertHeldResearch, isUnstagedResearch, unacknowledgedFailures, reconciliationState, assertResearchDiff, assertBlob, assertBundle, publish, publishMaintenance, prepareMaintenance, prepare, verifyMerged, githubClient } from '../scripts/publish-research.mjs';
 import { finalizeResearch, hash, serialize } from '../scripts/finalize-research.mjs';
 import { createAutomationState } from '../scripts/automation-state.mjs';
 import { fixture, options, clone, inFixture } from './fixtures/research/helpers.mjs';
@@ -21,6 +21,11 @@ const heldArgs=[hold,{object:{sha:hold.research_commit}},{status:'behind',total_
 assertHeldResearch(...heldArgs);
 for(const [index,value] of [[1,{object:{sha:'2'.repeat(40)}}],[2,{status:'ahead',total_commits:1,files:[]}],[3,{truncated:true,tree:[]}],[3,{truncated:false,tree:[{path:heldArgs[4]}]}],[5,true]]){const args=clone(heldArgs);args[index]=value;assert.throws(()=>assertHeldResearch(...args),/changed/);}
 assert.equal(unacknowledgedFailures({errors:[{acknowledged:true},{error:'new failure'}]}),1);
+const unstagedRef={object:{sha:'1'.repeat(40)}},unstagedComparison={status:'behind',total_commits:0,merge_base_commit:{sha:unstagedRef.object.sha},files:[]},unstagedTree={truncated:false,tree:[]};
+assert(isUnstagedResearch(unstagedRef,unstagedComparison,unstagedTree,'research-inbox/2020-01-02.json',false));
+for(const mutate of [a=>{a[1].status='ahead';},a=>{a[1].total_commits=1;},a=>{a[1].merge_base_commit.sha='2'.repeat(40);},a=>{a[1].files.push({filename:'scripts/evil.mjs',status:'added'});},a=>{a[2].truncated=true;},a=>{a[2].tree.push({path:'research-inbox/2020-01-02.json'});},a=>{a[4]=true;}]){
+ const args=clone([unstagedRef,unstagedComparison,unstagedTree,'research-inbox/2020-01-02.json',false]);mutate(args);assert.equal(isUnstagedResearch(...args),false);
+}
 const packetPath = 'research-inbox/2020-01-02.json';
 assertResearchDiff([{ filename: packetPath, status: 'added' }], packetPath);
 for (const malicious of ['scripts/publish-research.mjs', 'package.json', 'package-lock.json', '.github/workflows/research-intake.yml', '.github/actions/validate/action.yml']) {
@@ -279,7 +284,7 @@ await inFixture(async root => {
     if (route.startsWith('/pulls?')) return prs;
     if (route.startsWith('/compare/')) {
       const sha = route.split('...')[1];
-      if (sha === researchSha) return emptyResearch ? {status:'behind',total_commits:0,files:[]} : { total_commits: 1, files: [packetPath, ...(malicious ? ['scripts/publish-research.mjs'] : [])].map(filename => ({ filename, status: 'added' })) };
+      if (sha === researchSha) return emptyResearch ? {status:'behind',total_commits:0,merge_base_commit:{sha:researchSha},files:[]} : { total_commits: 1, files: [packetPath, ...(malicious ? ['scripts/publish-research.mjs'] : [])].map(filename => ({ filename, status: 'added' })) };
       // Match GitHub's real diff: a generated file whose bytes equal the base
       // still exists in the tree, but must not appear among changed paths.
       const changes = Object.entries(snapshots.get(sha)).flatMap(([filename, content]) => {
@@ -311,6 +316,15 @@ await inFixture(async root => {
   emptyResearch=false;assert.equal(unacknowledgedFailures(await prepare(root,mock,directory,{validate:check})),1);
   noPacket=true;assert.equal(unacknowledgedFailures(await prepare(root,mock,directory,{validate:check})),1);noPacket=false;
   fs.unlinkSync(path.join(root,'config/research-holds.json'));git('add','-u','config/research-holds.json');git('commit','-m','Remove fixture hold after explicit review');base=git('rev-parse','HEAD');
+  emptyResearch=true;
+  const pending=await prepare(root,mock,directory,{validate:check});assert.equal(pending.plans.length,0);assert.equal(unacknowledgedFailures(pending),0);
+  const waiting=pending.states.find(s=>s.daily_key===`${packet.genre}:2020-01-02`);
+  assert.equal(waiting.state,'not_started');assert.equal(waiting.incomplete,true);assert.equal(waiting.disposition,'awaiting_research_packet');assert.equal(waiting.research_commit,researchSha);
+  assert.equal(validated,0);assert.equal(snapshots.size,0);assert(!fs.existsSync(path.join(root,'data/run-logs',finalized.log.run_id+'.json')));
+  assert.deepEqual(await prepare(root,mock,directory,{validate:check}),pending);
+  refs=[{ref:`refs/heads/publication/2020-01-02-${packet.genre}-1`,object:{sha:'8'.repeat(40)}}];
+  assert.equal(unacknowledgedFailures(await prepare(root,mock,directory,{validate:check})),1,'Unresolved attempt must not become pending packet work');refs=[];
+  emptyResearch=false;
   // A real zero-result first attempt adds only its immutable log. It still
   // carries the regenerated state in its bundle, and retries must verify that
   // inherited state even though the commit diff does not list it.
