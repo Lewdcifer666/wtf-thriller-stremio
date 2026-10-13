@@ -1,0 +1,149 @@
+{
+  "schema_version": 1,
+  "genre": "thriller",
+  "research_date": "2026-10-13",
+  "candidates": [
+    {
+      "imdb_id": "tt6079516",
+      "type": "movie",
+      "title": "I See You",
+      "year": 2019,
+      "reason": "The disappearance of a boy, the green-pocketknife link to an older abduction case, and inexplicable disturbances in detective Greg Harper's home initially create two apparently separate mysteries. The mid-film change of viewpoint explains the house events through secret occupants; subsequent witnessed violence and discovered evidence reframe who the real threat is, and the last flashback connects the intruder's identity to the older case. This gives strong mystery, deception, evidence manipulation and major reversals. Revelation frequency is deliberately only moderate: the opening is slow and the replay of earlier events consumes significant runtime, so twists are not continuous new answers. Reviews disagree sharply on whether the structure earns its payoff; some find the re-run deflates momentum, and the domestic infidelity conflict takes substantial screen time. The film's stylized eeriness is a staged impression, not an actual supernatural premise.",
+      "sources": [
+        {
+          "url": "https://www.imdb.com/title/tt6079516/plotsummary/",
+          "purpose": "identity"
+        },
+        {
+          "url": "https://www.slantmagazine.com/film/review-i-see-you-is-a-twisty-atmospheric-look-at-the-ties-that-bind/",
+          "purpose": "structure"
+        },
+        {
+          "url": "https://www.rogerebert.com/reviews/i-see-you-movie-review-2019",
+          "purpose": "review"
+        },
+        {
+          "url": "https://bloody-disgusting.com/reviews/3550821/sxsw-review-see-unravels-paranoia-danger-suburbia/",
+          "purpose": "review"
+        },
+        {
+          "url": "https://thecinemaholic.com/i-see-you-2019-ending-explained-who-kidnapped-justin/",
+          "purpose": "whole_runtime"
+        }
+      ],
+      "dna": {
+        "mystery": 9,
+        "investigation": 6,
+        "clue_puzzling": 7,
+        "culprit_hunt": 6,
+        "progressive_revelation": 7,
+        "revelation_frequency": 5,
+        "plot_twists": 8,
+        "psychological_strategy": 6,
+        "cat_and_mouse": 6,
+        "deception": 9,
+        "hidden_identity": 8,
+        "unreliable_perspective": 8,
+        "conspiracy": 1,
+        "mole_inside": 2,
+        "corruption": 3,
+        "surveillance": 6,
+        "evidence_manipulation": 8,
+        "technology_threat": 1,
+        "suspense": 8,
+        "action_density": 3,
+        "action_intensity": 7,
+        "brutality": 7,
+        "deadly_game": 0,
+        "weirdness": 6,
+        "military_focus": 0,
+        "romance_focus": 2,
+        "drama_focus": 6,
+        "visual_quality": 7,
+        "retro_visual_style": 1,
+        "pace_speed": 5
+      },
+      "dna_confidence": 0.84,
+      "dna_tags": [
+        "kidnapping",
+        "home_invasion",
+        "small_town",
+        "cold_case"
+      ]
+    },
+    {
+      "imdb_id": "tt6742252",
+      "type": "movie",
+      "title": "The Guilty",
+      "year": 2018,
+      "reason": "Gustav Möller's Danish original is an 85-minute emergency-call mystery in which dispatcher Asger Holm investigates an apparent abduction through discreet questions, phone tracing, police coordination and calls to family members. New fragments arrive across the runtime, but the crucial later discovery about the children and Iben's situation overturns his assumption that the ex-husband is simply the villain; Asger's own concealed police-shooting history then completes the moral recontextualization. The limited audio-only viewpoint makes suspense and unreliable interpretation stronger than conventional clue visuals. The important distinction is that there is a steady flow of investigative information but the largest truth reversal is late, so progressive revelation and revelation frequency are moderate rather than maximal. There is almost no on-screen physical action or two-sided cat-and-mouse, and the personal-guilt drama is significant. Reviews praise its tightly controlled sound, camerawork and performance rather than action spectacle.",
+      "sources": [
+        {
+          "url": "https://www.imdb.com/title/tt6742252/",
+          "purpose": "identity"
+        },
+        {
+          "url": "https://www.rogerebert.com/reviews/the-guilty-2018",
+          "purpose": "review"
+        },
+        {
+          "url": "https://www.theguardian.com/film/2018/oct/28/the-guilty-review-gustav-moller-telephone-thriller",
+          "purpose": "review"
+        },
+        {
+          "url": "https://www.thewrap.com/guilty-film-review-denmarks-oscar-entry-spins-breathless-suspense/",
+          "purpose": "structure"
+        },
+        {
+          "url": "https://en.wikipedia.org/wiki/The_Guilty_(2018_film)",
+          "purpose": "whole_runtime"
+        }
+      ],
+      "dna": {
+        "mystery": 8,
+        "investigation": 8,
+        "clue_puzzling": 7,
+        "culprit_hunt": 5,
+        "progressive_revelation": 6,
+        "revelation_frequency": 6,
+        "plot_twists": 7,
+        "psychological_strategy": 5,
+        "cat_and_mouse": 3,
+        "deception": 5,
+        "hidden_identity": 2,
+        "unreliable_perspective": 7,
+        "conspiracy": 1,
+        "mole_inside": 0,
+        "corruption": 3,
+        "surveillance": 3,
+        "evidence_manipulation": 3,
+        "technology_threat": 0,
+        "suspense": 9,
+        "action_density": 1,
+        "action_intensity": 3,
+        "brutality": 6,
+        "deadly_game": 0,
+        "weirdness": 2,
+        "military_focus": 0,
+        "romance_focus": 0,
+        "drama_focus": 5,
+        "visual_quality": 9,
+        "retro_visual_style": 0,
+        "pace_speed": 7
+      },
+      "dna_confidence": 0.85,
+      "dna_tags": [
+        "police_procedural"
+      ]
+    }
+  ],
+  "research_rejections": [
+    {
+      "title": "The Trap (Die Falle)",
+      "type": "series",
+      "year": 2026,
+      "imdb_id": null,
+      "reason": "Netflix's six-episode German psychological thriller releases on October 13, 2026. The trailer, premise and episode descriptions indicate a potentially relevant murderer-identification and cat-and-mouse story, but at this research time there is not enough independent whole-season review or episode-resolution evidence to establish revelation_frequency, progressive_revelation and the complete 30-dimension DNA without guessing. Reconsider when credible full-season coverage exists. Sources consulted: https://about.netflix.com/en/news/the-trap-no-one-escapes-their-past-netflix-releases-the-official-trailer-and-press-kit-for-the-new-psychological-thriller-series-highlight and https://www.netflix.com/title/81720671."
+    }
+  ]
+}
