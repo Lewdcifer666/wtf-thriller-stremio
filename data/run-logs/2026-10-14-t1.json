@@ -1,0 +1,40 @@
+{
+  "run_id": "2026-10-14-t1",
+  "timestamp": "2026-10-14T09:02:36.002Z",
+  "searched": 3,
+  "accepted": 2,
+  "rejected": 1,
+  "duplicates": 0,
+  "accepted_items": [
+    {
+      "imdb_id": "tt1937149",
+      "type": "movie",
+      "title": "The Body",
+      "match_score": 78
+    },
+    {
+      "imdb_id": "tt10530176",
+      "type": "movie",
+      "title": "The Call",
+      "match_score": 77
+    }
+  ],
+  "rejection_summary": [
+    {
+      "title": "The Trap",
+      "type": "series",
+      "year": 2026,
+      "imdb_id": null,
+      "reason": "The complete six-episode German Netflix miniseries was released October 13, 2026 and is an initially plausible murder-investigation/psychological cat-and-mouse candidate. However, newly available full-season criticism consistently identifies a stretched middle, repetitive rehearsals or exposition, uneven suspense, and a weak or underwhelming resolution despite some intriguing manipulation and a final ambiguity. The episode descriptions show a late confession and final answers, but do not by themselves establish frequent meaningful reframing across the whole season. With this evidence, treating the premise or the finale as proof of high revelation cadence would overstate the fit; retain as a qualitative rejection rather than inventing complete 30-dimension measurements. Sources consulted: https://www.netflix.com/fk/title/81720671 ; https://readysteadycut.com/2026/10/13/the-trap-season-1-review/ ; https://www.moviepilot.de/news/die-falle-bei-netflix-liebes-kind-kritik-1164397 ; https://www.heavenofhorror.com/reviews/the-trap-2026-netflix-series/ .",
+      "category": "rejected"
+    }
+  ],
+  "publication": {
+    "schema_version": 1,
+    "daily_key": "thriller:2026-10-14",
+    "packet_hash": "a0b1d19fc7bdbf7f2d6599aefddbfc25a693418924601da28575db746dbaa4a5",
+    "research_commit": "6892d5f38eeb01b758df39a1b5185930d6dc2f34",
+    "evaluated_base": "84b790fedfe07be7dfaf18fc3defac370513900e",
+    "policy_fingerprint": "6c69b7ac724cd1de2b154f8e2a3ae958b7b85a18a15ca07b5d2326b7aaeaa2d8"
+  }
+}
