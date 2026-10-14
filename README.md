@@ -55,7 +55,7 @@ tests run in a temporary copy of the checkout. Existing data, scoring policy,
 
 See [publication cutover and recovery](docs/publication-cutover.md) for the App,
 main-only environment, branch protection, task change and live acceptance
-gates. Publication remains disabled until the explicit cutover. Automatic
+gates. Publication is deployed and enabled. Automatic
 private feedback learning is still a required later phase of this migration.
 
 Unstaged research branches remain explicitly incomplete / awaiting_research_packet
