@@ -1,0 +1,31 @@
+{
+  "run_id": "2026-10-16-t1",
+  "timestamp": "2026-10-16T09:01:04.308Z",
+  "searched": 2,
+  "accepted": 2,
+  "rejected": 0,
+  "duplicates": 0,
+  "accepted_items": [
+    {
+      "imdb_id": "tt1614989",
+      "type": "movie",
+      "title": "Headhunters",
+      "match_score": 81
+    },
+    {
+      "imdb_id": "tt0309698",
+      "type": "movie",
+      "title": "Identity",
+      "match_score": 73
+    }
+  ],
+  "rejection_summary": [],
+  "publication": {
+    "schema_version": 1,
+    "daily_key": "thriller:2026-10-16",
+    "packet_hash": "dc2c6f357b68832d728b1425dda8b9cc3d00f9bc863243734141c559db08efe9",
+    "research_commit": "3a860b822bffa7daab93c4f0abe20d0c4b4906d6",
+    "evaluated_base": "309dc4faa048a4018a1bc7a25d6289e34cc62c8c",
+    "policy_fingerprint": "6c69b7ac724cd1de2b154f8e2a3ae958b7b85a18a15ca07b5d2326b7aaeaa2d8"
+  }
+}
