@@ -1,0 +1,40 @@
+{
+  "run_id": "2026-10-17-t1",
+  "timestamp": "2026-10-17T09:04:58.108Z",
+  "searched": 3,
+  "accepted": 2,
+  "rejected": 1,
+  "duplicates": 0,
+  "accepted_items": [
+    {
+      "imdb_id": "tt0362225",
+      "type": "movie",
+      "title": "Tell No One",
+      "match_score": 83
+    },
+    {
+      "imdb_id": "tt7550014",
+      "type": "movie",
+      "title": "No Exit",
+      "match_score": 68
+    }
+  ],
+  "rejection_summary": [
+    {
+      "title": "The Hidden Face",
+      "type": "movie",
+      "year": 2011,
+      "imdb_id": "tt1772250",
+      "reason": "Its central missing-person puzzle turns on a concealed room and a major mid-film perspective change, after which the narrative chiefly follows captivity, jealousy and a final role reversal. The complete IMDb plot and Variety review represented on Rotten Tomatoes do not establish that meaningful answers repeatedly accumulate across the entire runtime; the critic calls the thrills consecutive rather than cumulative. The film has suspense and strong isolated twists, but the evidence for sustained progressive revelation is weaker than for the staged candidates.",
+      "category": "rejected"
+    }
+  ],
+  "publication": {
+    "schema_version": 1,
+    "daily_key": "thriller:2026-10-17",
+    "packet_hash": "e4789b516ae1d2da8f9b535fb89d674c87bf11e5e11970f27887c582e7c7bff2",
+    "research_commit": "5ac15d3dfab22df55d54cf855befc17442f135a0",
+    "evaluated_base": "11610a596195e3282f7e25788050195aef441927",
+    "policy_fingerprint": "6c69b7ac724cd1de2b154f8e2a3ae958b7b85a18a15ca07b5d2326b7aaeaa2d8"
+  }
+}
