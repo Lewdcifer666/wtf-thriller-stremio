@@ -1,0 +1,31 @@
+{
+  "run_id": "2026-10-20-t1",
+  "timestamp": "2026-10-20T09:03:28.400Z",
+  "searched": 2,
+  "accepted": 2,
+  "rejected": 0,
+  "duplicates": 0,
+  "accepted_items": [
+    {
+      "imdb_id": "tt6904272",
+      "type": "movie",
+      "title": "The Negotiation",
+      "match_score": 79
+    },
+    {
+      "imdb_id": "tt5144174",
+      "type": "movie",
+      "title": "The Dry",
+      "match_score": 65
+    }
+  ],
+  "rejection_summary": [],
+  "publication": {
+    "schema_version": 1,
+    "daily_key": "thriller:2026-10-20",
+    "packet_hash": "a1034b78d8eca845a85fe61cb38bf0cb29e03f5dfbda94e0984f6304215ec27e",
+    "research_commit": "a17485826baa0850795cf29754d617b06e229491",
+    "evaluated_base": "3a9f969fb77049ed4064c44b4b098959837a515d",
+    "policy_fingerprint": "6c69b7ac724cd1de2b154f8e2a3ae958b7b85a18a15ca07b5d2326b7aaeaa2d8"
+  }
+}
