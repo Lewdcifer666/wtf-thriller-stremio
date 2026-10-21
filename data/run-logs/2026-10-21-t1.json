@@ -1,0 +1,31 @@
+{
+  "run_id": "2026-10-21-t1",
+  "timestamp": "2026-10-21T09:05:50.968Z",
+  "searched": 2,
+  "accepted": 2,
+  "rejected": 0,
+  "duplicates": 0,
+  "accepted_items": [
+    {
+      "imdb_id": "tt14114802",
+      "type": "movie",
+      "title": "The Outfit",
+      "match_score": 84
+    },
+    {
+      "imdb_id": "tt2990738",
+      "type": "movie",
+      "title": "The Terror Live",
+      "match_score": 78
+    }
+  ],
+  "rejection_summary": [],
+  "publication": {
+    "schema_version": 1,
+    "daily_key": "thriller:2026-10-21",
+    "packet_hash": "34812b1606c29167bf6d58e64010e1c8643db22eab6809aa2ab55689dd7f053f",
+    "research_commit": "daca305b3a2d9687ee1be235a837fe21d5c8efb9",
+    "evaluated_base": "cfe214d14d837f778c603a2d317c7dcbc17c253b",
+    "policy_fingerprint": "6c69b7ac724cd1de2b154f8e2a3ae958b7b85a18a15ca07b5d2326b7aaeaa2d8"
+  }
+}
