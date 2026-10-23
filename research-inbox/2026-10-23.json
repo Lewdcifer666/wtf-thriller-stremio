@@ -1,0 +1,135 @@
+{
+  "schema_version": 1,
+  "genre": "thriller",
+  "research_date": "2026-10-23",
+  "candidates": [
+    {
+      "imdb_id": "tt0119174",
+      "type": "movie",
+      "title": "The Game",
+      "year": 1997,
+      "reason": "Over its 128-129-minute story, Nicholas Van Orton's enrollment in a mysterious personalized experience moves from apparently minor disruptions to surveillance through a clown-camera and television, a dangerous submerged taxi, an emptied company office, Christine's staged apartment, her apparent betrayal, a cemetery awakening in Mexico and a counter-infiltration of CRS. These discoveries change Nicholas's working theories about whether the experience is a prank, organized fraud or an actual threat. Yet many mid-film shocks are new hazards rather than verified answers, and the decisive explanation of the orchestrated scenario is withheld until the rooftop and staged-fall finale: sustained suspense and reality manipulation are stronger than revelation frequency or progressively resolved clues. Roger Ebert praises the escalating nightmare and controlled atmosphere while acknowledging physically implausible events; Rotten Tomatoes' critical consensus and individual reviews also note a disputable ending despite accomplished visual direction. The film is an adversarial psychological maze, with tracking and staged evidence central, rather than a conventional culprit-hunt procedural. Its coordinated scheme is real but not an institutional corruption plot; the apparent lethal danger is not a genuine rule-bound survival game.",
+      "sources": [
+        {
+          "url": "https://www.imdb.com/title/tt0119174/",
+          "purpose": "identity"
+        },
+        {
+          "url": "https://www.imdb.com/title/tt0119174/plotsummary/",
+          "purpose": "whole_runtime"
+        },
+        {
+          "url": "https://www.rogerebert.com/reviews/the-game-1997",
+          "purpose": "review"
+        },
+        {
+          "url": "https://www.rottentomatoes.com/m/the_game",
+          "purpose": "review"
+        }
+      ],
+      "dna": {
+        "mystery": 9,
+        "investigation": 5,
+        "clue_puzzling": 7,
+        "culprit_hunt": 3,
+        "progressive_revelation": 6,
+        "revelation_frequency": 6,
+        "plot_twists": 8,
+        "psychological_strategy": 9,
+        "cat_and_mouse": 9,
+        "deception": 9,
+        "hidden_identity": 6,
+        "unreliable_perspective": 9,
+        "conspiracy": 8,
+        "mole_inside": 6,
+        "corruption": 0,
+        "surveillance": 8,
+        "evidence_manipulation": 9,
+        "technology_threat": 5,
+        "suspense": 9,
+        "action_density": 4,
+        "action_intensity": 8,
+        "brutality": 5,
+        "deadly_game": 1,
+        "weirdness": 8,
+        "military_focus": 0,
+        "romance_focus": 1,
+        "drama_focus": 4,
+        "visual_quality": 9,
+        "retro_visual_style": 5,
+        "pace_speed": 8
+      },
+      "dna_confidence": 0.87,
+      "dna_tags": [
+        "survival_game"
+      ]
+    },
+    {
+      "imdb_id": "tt1305806",
+      "type": "movie",
+      "title": "The Secret in Their Eyes",
+      "year": 2009,
+      "reason": "In a narrative moving between a 1974 murder investigation and its decades-later reconsideration, investigator Benjamín Espósito rejects coerced confessions, identifies a recurring watcher in the victim's photographs, traces the suspect through letters and football loyalties, pursues him through a stadium and helps force a confession. Political protection subsequently frees the killer and the case is violently derailed; much later, the victim's widower's account of revenge is contradicted by the final discovery of a hidden lifelong imprisonment. These are consequential discoveries in multiple portions of the 129-minute film, but the central last reframe arrives near the end, and long passages concern grief, memory and Espósito's unspoken love for Irene rather than continuous new evidence. The Guardian's two reviews document both the ingenious clue trail and institutional corruption, while also questioning the final revelation and stressing the film's substantial romance and personal drama. Roger Ebert describes its absorbing intercut investigation and emotional history. It offers strong crime mystery, corruption and polished filmmaking, but less continuous revelation and physical action than its murder premise might imply; period settings and an old-fashioned aesthetic should not be confused with poor craft.",
+      "sources": [
+        {
+          "url": "https://www.imdb.com/title/tt1305806/",
+          "purpose": "identity"
+        },
+        {
+          "url": "https://www.imdb.com/title/tt1305806/plotsummary/",
+          "purpose": "whole_runtime"
+        },
+        {
+          "url": "https://www.rogerebert.com/reviews/the-secret-in-their-eyes-2010",
+          "purpose": "review"
+        },
+        {
+          "url": "https://www.theguardian.com/film/2010/aug/15/secret-in-their-eyes-review",
+          "purpose": "review"
+        },
+        {
+          "url": "https://www.theguardian.com/film/2010/aug/12/the-secret-in-their-eyes-review",
+          "purpose": "review"
+        }
+      ],
+      "dna": {
+        "mystery": 9,
+        "investigation": 9,
+        "clue_puzzling": 8,
+        "culprit_hunt": 8,
+        "progressive_revelation": 7,
+        "revelation_frequency": 6,
+        "plot_twists": 8,
+        "psychological_strategy": 6,
+        "cat_and_mouse": 4,
+        "deception": 7,
+        "hidden_identity": 3,
+        "unreliable_perspective": 4,
+        "conspiracy": 6,
+        "mole_inside": 4,
+        "corruption": 9,
+        "surveillance": 2,
+        "evidence_manipulation": 7,
+        "technology_threat": 0,
+        "suspense": 8,
+        "action_density": 2,
+        "action_intensity": 7,
+        "brutality": 8,
+        "deadly_game": 0,
+        "weirdness": 3,
+        "military_focus": 1,
+        "romance_focus": 7,
+        "drama_focus": 7,
+        "visual_quality": 9,
+        "retro_visual_style": 6,
+        "pace_speed": 6
+      },
+      "dna_confidence": 0.87,
+      "dna_tags": [
+        "cold_case",
+        "police_procedural"
+      ]
+    }
+  ],
+  "research_rejections": []
+}
