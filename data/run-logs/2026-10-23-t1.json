@@ -1,0 +1,31 @@
+{
+  "run_id": "2026-10-23-t1",
+  "timestamp": "2026-10-23T09:03:00.388Z",
+  "searched": 2,
+  "accepted": 2,
+  "rejected": 0,
+  "duplicates": 0,
+  "accepted_items": [
+    {
+      "imdb_id": "tt0119174",
+      "type": "movie",
+      "title": "The Game",
+      "match_score": 85
+    },
+    {
+      "imdb_id": "tt1305806",
+      "type": "movie",
+      "title": "The Secret in Their Eyes",
+      "match_score": 73
+    }
+  ],
+  "rejection_summary": [],
+  "publication": {
+    "schema_version": 1,
+    "daily_key": "thriller:2026-10-23",
+    "packet_hash": "4ded187891c19194188b4f5d993da433724a80fdd31c0233a37baf589259f9e1",
+    "research_commit": "9de5e28bc18bb81eaaefa278c27952605b543484",
+    "evaluated_base": "33a64852b698f2cd0e1d887d9f632d9d923c5b03",
+    "policy_fingerprint": "6c69b7ac724cd1de2b154f8e2a3ae958b7b85a18a15ca07b5d2326b7aaeaa2d8"
+  }
+}
