@@ -1,0 +1,31 @@
+{
+  "run_id": "2026-10-24-t1",
+  "timestamp": "2026-10-24T08:56:40.954Z",
+  "searched": 2,
+  "accepted": 2,
+  "rejected": 0,
+  "duplicates": 0,
+  "accepted_items": [
+    {
+      "imdb_id": "tt2969522",
+      "type": "movie",
+      "title": "Montage",
+      "match_score": 73
+    },
+    {
+      "imdb_id": "tt22375054",
+      "type": "movie",
+      "title": "Strange Darling",
+      "match_score": 71
+    }
+  ],
+  "rejection_summary": [],
+  "publication": {
+    "schema_version": 1,
+    "daily_key": "thriller:2026-10-24",
+    "packet_hash": "723af1a38f6129eb5ab3d0fbbb20d64dc2622b9020a5d35e3441f9ad55b75ff6",
+    "research_commit": "41a74626731ce0865a8fff02c9725edf8749b1a3",
+    "evaluated_base": "5c96cff90e896419b0eef815fecc1ab9b08e4603",
+    "policy_fingerprint": "6c69b7ac724cd1de2b154f8e2a3ae958b7b85a18a15ca07b5d2326b7aaeaa2d8"
+  }
+}
