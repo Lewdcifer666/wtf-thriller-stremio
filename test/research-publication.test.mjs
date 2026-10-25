@@ -192,6 +192,82 @@ const retry = fakeApi({ existing });
 await publish(retryBundle, retry);
 assert.equal(retry.writes.some(w => w.route === '/pulls' || w.route === '/git/refs'), false);
 assert.equal(retry.writes.filter(w => w.query?.includes('enablePullRequestAutoMerge')).length, 1);
+// A second workflow wake can reuse an open attempt while its original
+// auto-merge completes between the PR list and the fresh auto-merge read.
+const completedPull = { ...existing[0], state: 'closed', merged: true,
+  base: { ref: 'main', repo: { full_name: repository } } };
+function mergeRaceApi({ pull = completedPull, contents = mergedFiles, mutationRace = false, ...fault } = {}) {
+  const race = fakeApi({ main: mergedMain, existing, freshPr: pull, mainFiles: contents, ...fault });
+  const originalGet = race.get, originalGraphql = race.graphql;
+  let mainReads = 0, pullReads = 0;
+  race.get = async route => {
+    if (route === '/git/ref/heads/main' && mainReads++ === 0) {
+      race.reads.push(route); return { object: { sha: bundle.base } };
+    }
+    if (mutationRace && route === '/pulls/1' && pullReads++ === 0) {
+      race.reads.push(route); return existing[0];
+    }
+    return originalGet(route);
+  };
+  if (mutationRace) race.graphql = async (query, variables) => {
+    await originalGraphql(query, variables);
+    throw new Error('Simulated merge completed before mutation response');
+  };
+  return race;
+}
+const mergedDuringFreshRead = mergeRaceApi();
+assert.deepEqual(await publish(retryBundle, mergedDuringFreshRead), [{ daily_key: bundle.plans[0].daily_key,
+  state: 'merged', run_id: finalized.log.run_id, revision: mergedMain }]);
+assert.deepEqual(mergedDuringFreshRead.writes, [], 'An already merged PR must not receive another mutation');
+const mergedDuringMutation = mergeRaceApi({ mutationRace: true });
+assert.equal((await publish(retryBundle, mergedDuringMutation))[0].state, 'merged');
+assert.equal(mergedDuringMutation.writes.length, 1, 'An ambiguous auto-merge response must be resolved by reads, never retried');
+assert(mergedDuringMutation.writes[0].query.includes('enablePullRequestAutoMerge'));
+const frozenZero = clone(zeroBundle); frozenZero.plans[0].reuse_sha = 'd'.repeat(40);
+const zeroMergeRace = mergeRaceApi({ contents: zeroFiles });
+assert.equal((await publish(frozenZero, zeroMergeRace))[0].state, 'merged');
+assert.deepEqual(zeroMergeRace.writes, []);
+for (const pull of [
+  { ...completedPull, merged: false },
+  { ...completedPull, head: ownedHead(branch, 'f'.repeat(40)) },
+  { ...completedPull, head: ownedHead(branch + '-other') },
+  { ...completedPull, head: { ...ownedHead(branch), repo: { full_name: 'outsider/repo' } } },
+  { ...completedPull, head: { ...ownedHead(branch), repo: null } },
+  { ...completedPull, base: { ref: 'other', repo: { full_name: repository } } },
+  { ...completedPull, base: { ref: 'main', repo: { full_name: 'outsider/repo' } } },
+]) {
+  const rejectedRace = mergeRaceApi({ pull });
+  await assert.rejects(publish(retryBundle, rejectedRace));
+  assert.deepEqual(rejectedRace.writes, [], 'A closed PR is not proof of a trusted merged attempt');
+}
+for (const fault of [
+  { contents: {} },
+  { contents: { ...mergedFiles, [Object.keys(files).find(name => name.startsWith('data/run-logs/'))]: 'altered' } },
+  { truncated: true }, { failRead: 'tree' }, { failRead: 'blob' },
+]) {
+  const rejectedRace = mergeRaceApi(fault);
+  await assert.rejects(publish(retryBundle, rejectedRace));
+  assert.deepEqual(rejectedRace.writes, [], 'Merged state requires complete exact immutable artifacts on pinned main');
+}
+const zeroWithDiscovery = mergeRaceApi({ contents: { ...zeroFiles,
+  [Object.keys(files).find(name => name.startsWith('data/discoveries/'))]: serialize({ items: [] }) } });
+await assert.rejects(publish(frozenZero, zeroWithDiscovery));
+assert.deepEqual(zeroWithDiscovery.writes, []);
+const unadvancedMain = mergeRaceApi({ main: bundle.base });
+await assert.rejects(publish(retryBundle, unadvancedMain), /Merged publication/);
+assert.deepEqual(unadvancedMain.writes, []);
+for (const fault of [
+  { pull: { ...completedPull, head: ownedHead(branch, 'f'.repeat(40)) } },
+  { failRead: 'tree' },
+]) {
+  const unresolved = mergeRaceApi({ mutationRace: true, ...fault });
+  await assert.rejects(publish(retryBundle, unresolved));
+  assert.equal(unresolved.writes.length, 1, 'Failed recovery must not repeat the mutation or claim completion');
+}
+const unresolvedMutation = mergeRaceApi({ pull: existing[0], mutationRace: true });
+await assert.rejects(publish(retryBundle, unresolvedMutation), /Simulated merge completed/);
+assert.equal(unresolvedMutation.writes.length, 1);
+
 const interrupted = fakeApi({ failAt: '/pulls' });
 await assert.rejects(publish(bundle, interrupted), /interruption/);
 const recovered = fakeApi(); await publish(retryBundle, recovered);
@@ -532,7 +608,7 @@ await inFixture(async root => {
   const git = (...args) => execFileSync('git', args, { cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
   const libraryPath = path.join(root, 'data/library.json');
   const library = JSON.parse(fs.readFileSync(libraryPath, 'utf8'));
-  const item = { ...library.items[0], imdb_id: null, status: 'watched', title: 'Unresolved metadata fixture', year: 2020 };
+  const item = { type: 'movie', imdb_id: null, status: 'watched', title: 'Unresolved metadata fixture', year: 2020 };
   library.items = [item]; fs.writeFileSync(libraryPath, serialize(library));
   fs.writeFileSync(path.join(root, 'data/automation-state.json'), serialize(await createAutomationState(root)));
   const oldState = JSON.parse(fs.readFileSync(path.join(root, 'data/automation-state.json'), 'utf8'));
