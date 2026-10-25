@@ -1,0 +1,31 @@
+{
+  "run_id": "2026-10-25-t1",
+  "timestamp": "2026-10-25T10:00:21.348Z",
+  "searched": 2,
+  "accepted": 2,
+  "rejected": 0,
+  "duplicates": 0,
+  "accepted_items": [
+    {
+      "imdb_id": "tt5768474",
+      "type": "movie",
+      "title": "The Truth Beneath",
+      "match_score": 84
+    },
+    {
+      "imdb_id": "tt0120714",
+      "type": "movie",
+      "title": "The Interview",
+      "match_score": 78
+    }
+  ],
+  "rejection_summary": [],
+  "publication": {
+    "schema_version": 1,
+    "daily_key": "thriller:2026-10-25",
+    "packet_hash": "1d15852cd53eb674164b6093556dec05a11430a6fd2c9023138c3f9697c4b293",
+    "research_commit": "18521fe29d7b111fa460cb41e4ee74f83e314b68",
+    "evaluated_base": "b6da444e5295a5507b9a7456b9e001d757867178",
+    "policy_fingerprint": "6c69b7ac724cd1de2b154f8e2a3ae958b7b85a18a15ca07b5d2326b7aaeaa2d8"
+  }
+}
