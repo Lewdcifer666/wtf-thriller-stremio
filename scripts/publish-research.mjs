@@ -142,19 +142,44 @@ async function repositoryName(api) {
   if (!/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(repository || '')) throw new Error('Cannot verify publication repository identity');
   return repository;
 }
-function assertPullHead(pr, repository, branch, sha) {
-  if (pr?.state !== 'open' || pr.head?.repo?.full_name !== repository || pr.head.ref !== branch || pr.head.sha !== sha) {
+function assertPullIdentity(pr, repository, branch, sha) {
+  if (pr?.head?.repo?.full_name !== repository || pr.head.ref !== branch || pr.head.sha !== sha) {
     throw new Error('Publication PR head repository, branch or SHA mismatch');
   }
 }
-async function enableValidatedAutoMerge(api, pr, repository, branch, sha) {
+function assertPullHead(pr, repository, branch, sha) {
+  assertPullIdentity(pr, repository, branch, sha);
+  if (pr.state !== 'open') throw new Error('Publication PR head repository, branch or SHA mismatch');
+}
+async function enableValidatedAutoMerge(api, pr, repository, branch, sha, onMerged) {
   assertPullHead(pr, repository, branch, sha);
   await assertPublicationEnabled(api);
+  const completed = async observed => {
+    if (!onMerged || observed?.state !== 'closed' || observed.merged !== true) return null;
+    assertPullIdentity(observed, repository, branch, sha);
+    if (observed.base?.ref !== 'main' || observed.base.repo?.full_name !== repository) {
+      throw new Error('Merged publication PR does not target this repository main');
+    }
+    return onMerged();
+  };
   // Listing and creating PRs are not a lock: re-read the selected PR before
   // granting auto-merge, and never act on a same-named branch from a fork.
   const current = await api.get(`/pulls/${pr.number}`);
+  const merged = await completed(current);
+  if (merged) return merged;
   assertPullHead(current, repository, branch, sha);
-  await api.graphql('mutation($id:ID!,$head:GitObjectID!){enablePullRequestAutoMerge(input:{pullRequestId:$id,expectedHeadOid:$head,mergeMethod:SQUASH}){pullRequest{id}}}', { id: current.node_id, head: sha });
+  try {
+    await api.graphql('mutation($id:ID!,$head:GitObjectID!){enablePullRequestAutoMerge(input:{pullRequestId:$id,expectedHeadOid:$head,mergeMethod:SQUASH}){pullRequest{id}}}', { id: current.node_id, head: sha });
+  } catch (error) {
+    // Another already authorized auto-merge can finish after the fresh read,
+    // or the mutation response can be lost. Resolve with reads, never replay.
+    if (onMerged) {
+      const recovered = await completed(await api.get(`/pulls/${pr.number}`));
+      if (recovered) return recovered;
+    }
+    throw error;
+  }
+  return null;
 }
 async function allPulls(api, repository) {
   const result = [];
@@ -442,8 +467,14 @@ export async function publish(bundle, api) {
   }
   const pr = ownPr || await api.post('/pulls', { base: 'main', head: plan.branch, title: `Publish ${plan.run_id}`,
     body: `Deterministically finalized ${plan.daily_key}. Full source, run-log, publication, test and build checks passed before this PR.\n\nResearch commit: ${plan.research_commit}\nEvaluated main: ${bundle.base}\nImmutable attempt: ${plan.run_id}\n\nAuto-merge remains subject to required validate checks and branch protection.` });
-  await enableValidatedAutoMerge(api, pr, repository, plan.branch, commitSha);
-  results.push({ daily_key: plan.daily_key, state: 'PR_open', pull_request: pr.html_url });
+  const completed = await enableValidatedAutoMerge(api, pr, repository, plan.branch, commitSha, async () => {
+    const revision = (await api.get('/git/ref/heads/main')).object.sha;
+    if (!/^[a-f0-9]{40}$/.test(revision) || revision === bundle.base || !await matchesMergedPlan(api, revision, plan)) {
+      throw new Error('Merged publication does not match the validated immutable artifacts on current main');
+    }
+    return { daily_key: plan.daily_key, state: 'merged', run_id: plan.run_id, revision };
+  });
+  results.push(completed || { daily_key: plan.daily_key, state: 'PR_open', pull_request: pr.html_url });
   return results;
 }
 
