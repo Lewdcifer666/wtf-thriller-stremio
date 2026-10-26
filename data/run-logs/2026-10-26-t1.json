@@ -1,0 +1,31 @@
+{
+  "run_id": "2026-10-26-t1",
+  "timestamp": "2026-10-26T10:05:52.839Z",
+  "searched": 2,
+  "accepted": 2,
+  "rejected": 0,
+  "duplicates": 0,
+  "accepted_items": [
+    {
+      "imdb_id": "tt5729348",
+      "type": "movie",
+      "title": "Memoir of a Murderer",
+      "match_score": 74
+    },
+    {
+      "imdb_id": "tt6908274",
+      "type": "movie",
+      "title": "Mirage",
+      "match_score": 70
+    }
+  ],
+  "rejection_summary": [],
+  "publication": {
+    "schema_version": 1,
+    "daily_key": "thriller:2026-10-26",
+    "packet_hash": "7169b8cbb41ab62fd944250a35abb11936dd78b1ad1b11ce475a92dec573ac86",
+    "research_commit": "3676744f4a38f9de1ec314acf78f65b5e54a3e9b",
+    "evaluated_base": "ff3429732c252de79cb5c364b9402794ab095922",
+    "policy_fingerprint": "2af3e530fc665d3771a821617dfb684cbf2d7082dff27be7f300e66318300602"
+  }
+}
