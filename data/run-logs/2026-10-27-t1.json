@@ -1,0 +1,47 @@
+{
+  "run_id": "2026-10-27-t1",
+  "timestamp": "2026-10-27T10:03:39.168Z",
+  "searched": 4,
+  "accepted": 2,
+  "rejected": 2,
+  "duplicates": 0,
+  "accepted_items": [
+    {
+      "imdb_id": "tt14527836",
+      "type": "movie",
+      "title": "Recalled",
+      "match_score": 79
+    },
+    {
+      "imdb_id": "tt3140100",
+      "type": "movie",
+      "title": "The Absent One",
+      "match_score": 79
+    }
+  ],
+  "rejection_summary": [
+    {
+      "title": "Intruder",
+      "type": "movie",
+      "year": 2020,
+      "reason": "The initial home-infiltration mystery is tense, but Yonhap's contemporary review says the explanation of the intruder's plan is delivered in one concentrated stretch and the final act fails to sustain tension. Insufficient distributed meaningful revelations for this research packet.",
+      "category": "rejected"
+    },
+    {
+      "title": "The Collini Case",
+      "type": "movie",
+      "year": 2019,
+      "imdb_id": "tt8739752",
+      "reason": "The courtroom motive inquiry and historical investigation are substantial, but multiple critical reviews identify the decisive explanation as concentrated in the last act, with considerable legal and personal drama before it. Not selected over stronger evidence of distributed revelations.",
+      "category": "rejected"
+    }
+  ],
+  "publication": {
+    "schema_version": 1,
+    "daily_key": "thriller:2026-10-27",
+    "packet_hash": "656f427261682af25c89868df3f2b75e9e049fe7f20571384f997a7ea453a37c",
+    "research_commit": "fe9721230a75fa4688a674b7f9fe95c9a98aef0b",
+    "evaluated_base": "f42f249b7f4847f4ddcba1a781737cf5c5f376af",
+    "policy_fingerprint": "2af3e530fc665d3771a821617dfb684cbf2d7082dff27be7f300e66318300602"
+  }
+}
