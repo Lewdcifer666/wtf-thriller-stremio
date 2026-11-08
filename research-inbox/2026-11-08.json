@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "genre": "thriller",
+  "research_date": "2026-11-08",
+  "candidates": [],
+  "research_rejections": [
+    {
+      "title": "Lost Highway",
+      "type": "movie",
+      "year": 1997,
+      "imdb_id": "tt0116922",
+      "reason": "Qualitative rejection: BFI's Sight and Sound analysis describes a circular, unresolved puzzle whose parallel narratives never join; Roger Ebert's full-film review finds isolated incidents without a coherent resolution, and Screen Slate notes persistent unanswered questions. Although identity instability and mysterious surveillance create suspense, the available whole-runtime evidence does not justify known integer measurements for all 30 Thriller DNA dimensions or the required meaningful-revelation cadence. Public evidence: https://www.bfi.org.uk/sight-and-sound/features/voodoo-road-marina-warner-david-lynchs-lost-highway ; https://www.rogerebert.com/reviews/lost-highway-1997 ; https://www.screenslate.com/articles/lost-highway"
+    },
+    {
+      "title": "Mulholland Drive",
+      "type": "movie",
+      "year": 2001,
+      "imdb_id": "tt0166924",
+      "reason": "Qualitative rejection, not a negative assessment of film quality: BFI's Sight and Sound analysis emphasizes dream logic and a major late structural recontextualization, while Roger Ebert's whole-film review describes deliberately unresolved dream sequences and no conventional explanation; Rotten Tomatoes identifies the amnesia investigation and unconventional structure. A large late turn does not establish frequent progressive revelations throughout the runtime, and the consulted evidence is insufficient for reliable measurements of every required Thriller DNA dimension. Public evidence: https://www.bfi.org.uk/sight-and-sound/features/lethally-perfumed-neo-noir-david-lynchs-mulholland-dr ; https://www.rogerebert.com/reviews/mulholland-drive-2001 ; https://www.rottentomatoes.com/m/mulholland_dr"
+    }
+  ]
+}
