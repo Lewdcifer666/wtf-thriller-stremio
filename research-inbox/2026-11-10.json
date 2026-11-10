@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "genre": "thriller",
+  "research_date": "2026-11-10",
+  "candidates": [],
+  "research_rejections": [
+    {
+      "title": "Inland Empire",
+      "type": "movie",
+      "year": 2006,
+      "reason": "Public reviews describe an extended, disorienting reality/film-within-film experience rather than a traceable cadence of meaningful mystery answers. The Guardian's reviews document the three-hour, intentionally ambiguous structure but do not establish supported values for revelation_frequency, progressive_revelation, and all other required DNA dimensions across the runtime. Qualitative rejection rather than inventing measurements. Sources: https://www.theguardian.com/film/2007/mar/09/thriller ; https://www.theguardian.com/film/2007/mar/11/davidlynch.drama ; https://en.wikipedia.org/wiki/Inland_Empire_(film)"
+    },
+    {
+      "title": "Perfect Blue",
+      "type": "movie",
+      "year": 1997,
+      "reason": "BFI and Deep Focus Review corroborate an identity mystery, intercutting of hallucination/performance/reality and an explanatory final revelation, but the available reviews do not reliably quantify the cadence of meaningful answers throughout the complete runtime or every required 30-dimensional DNA measurement. Promising psychological thriller, held out rather than assign unsupported known integer values. Sources: https://www.bfi.org.uk/sight-and-sound/reviews/perfect-blue-kon-satoshis-twisted-pop-dream ; https://www.deepfocusreview.com/reviews/perfect-blue/ ; https://www.highonfilms.com/perfect-blue-1997-movie-ending-explained-themes-analysed/"
+    }
+  ]
+}
