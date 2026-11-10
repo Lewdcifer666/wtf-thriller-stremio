@@ -1,0 +1,33 @@
+{
+  "run_id": "2026-11-10-t1",
+  "timestamp": "2026-11-10T10:17:14.840Z",
+  "searched": 2,
+  "accepted": 0,
+  "rejected": 2,
+  "duplicates": 0,
+  "accepted_items": [],
+  "rejection_summary": [
+    {
+      "title": "Inland Empire",
+      "type": "movie",
+      "year": 2006,
+      "reason": "Public reviews describe an extended, disorienting reality/film-within-film experience rather than a traceable cadence of meaningful mystery answers. The Guardian's reviews document the three-hour, intentionally ambiguous structure but do not establish supported values for revelation_frequency, progressive_revelation, and all other required DNA dimensions across the runtime. Qualitative rejection rather than inventing measurements. Sources: https://www.theguardian.com/film/2007/mar/09/thriller ; https://www.theguardian.com/film/2007/mar/11/davidlynch.drama ; https://en.wikipedia.org/wiki/Inland_Empire_(film)",
+      "category": "rejected"
+    },
+    {
+      "title": "Perfect Blue",
+      "type": "movie",
+      "year": 1997,
+      "reason": "BFI and Deep Focus Review corroborate an identity mystery, intercutting of hallucination/performance/reality and an explanatory final revelation, but the available reviews do not reliably quantify the cadence of meaningful answers throughout the complete runtime or every required 30-dimensional DNA measurement. Promising psychological thriller, held out rather than assign unsupported known integer values. Sources: https://www.bfi.org.uk/sight-and-sound/reviews/perfect-blue-kon-satoshis-twisted-pop-dream ; https://www.deepfocusreview.com/reviews/perfect-blue/ ; https://www.highonfilms.com/perfect-blue-1997-movie-ending-explained-themes-analysed/",
+      "category": "rejected"
+    }
+  ],
+  "publication": {
+    "schema_version": 1,
+    "daily_key": "thriller:2026-11-10",
+    "packet_hash": "6a6795d3fa198368243c7d84ff2872a57f07bcbcf25ebde3bb31493e01dac530",
+    "research_commit": "888df8a0255031863c77a662e0fad1240881546f",
+    "evaluated_base": "4548285b4ea1f4d3513c44032b6bb59f1fb7f91d",
+    "policy_fingerprint": "0b3445032c94ff61f2d8d8cc3d3c5822c4b73926ce3994a7e02767bf5fc9fec2"
+  }
+}
