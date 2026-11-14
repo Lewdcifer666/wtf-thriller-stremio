@@ -1,0 +1,33 @@
+{
+  "run_id": "2026-11-14-t1",
+  "timestamp": "2026-11-14T10:13:15.742Z",
+  "searched": 2,
+  "accepted": 0,
+  "rejected": 2,
+  "duplicates": 0,
+  "accepted_items": [],
+  "rejection_summary": [
+    {
+      "title": "Blue Velvet",
+      "type": "movie",
+      "year": 1986,
+      "reason": "The severed-ear investigation and dangerous uncovering of a kidnapping/criminal network make this a plausible mystery-thriller lead (BFI https://www.bfi.org.uk/film/d05f9a29-ea02-5f5f-9336-bce54204b923/blue-velvet; Roger Ebert https://www.rogerebert.com/reviews/blue-velvet-1986). However, the sources emphasize surreal psychosexual drama and shifts into small-town satire rather than documenting a consistent cadence of meaningful, picture-changing revelations throughout its 120-minute runtime. Cannot substantiate all 30 required DNA measurements, especially revelation_frequency and progressive_revelation; qualitative rejection, not a negative quality judgment.",
+      "category": "rejected"
+    },
+    {
+      "title": "The Singing Detective",
+      "type": "series",
+      "year": 1986,
+      "reason": "The BBC series blends a hospitalized writer's memories, hallucinations and a fictional noir mystery, rather than following one sustained real-world investigation (https://en.wikipedia.org/wiki/The_Singing_Detective; https://www.theguardian.com/theguardian/1984/jun/08/singing-detective-not-fade-away; https://manyangles.news/screen/the-singing-detective). Sources describe a fragmented multi-layered structure and important final-episode synthesis, but do not establish frequent meaningful revelations across all episodes or enough evidence for all 30 DNA dimensions. Qualitative rejection due to unverified revelation cadence, not a claim of poor craftsmanship.",
+      "category": "rejected"
+    }
+  ],
+  "publication": {
+    "schema_version": 1,
+    "daily_key": "thriller:2026-11-14",
+    "packet_hash": "83cba4e616c66ec633c2286effa24e49d505ff95f90c1529c09033c71a12a9cc",
+    "research_commit": "7d5fe36d648112b54fee49bf5ea68368cfb2de18",
+    "evaluated_base": "d0839218b77b528521cd7463e8348d56e0a354ea",
+    "policy_fingerprint": "0b3445032c94ff61f2d8d8cc3d3c5822c4b73926ce3994a7e02767bf5fc9fec2"
+  }
+}
