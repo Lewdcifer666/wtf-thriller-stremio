@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "genre": "thriller",
+  "research_date": "2026-11-14",
+  "candidates": [],
+  "research_rejections": [
+    {
+      "title": "Blue Velvet",
+      "type": "movie",
+      "year": 1986,
+      "reason": "The severed-ear investigation and dangerous uncovering of a kidnapping/criminal network make this a plausible mystery-thriller lead (BFI https://www.bfi.org.uk/film/d05f9a29-ea02-5f5f-9336-bce54204b923/blue-velvet; Roger Ebert https://www.rogerebert.com/reviews/blue-velvet-1986). However, the sources emphasize surreal psychosexual drama and shifts into small-town satire rather than documenting a consistent cadence of meaningful, picture-changing revelations throughout its 120-minute runtime. Cannot substantiate all 30 required DNA measurements, especially revelation_frequency and progressive_revelation; qualitative rejection, not a negative quality judgment."
+    },
+    {
+      "title": "The Singing Detective",
+      "type": "series",
+      "year": 1986,
+      "reason": "The BBC series blends a hospitalized writer's memories, hallucinations and a fictional noir mystery, rather than following one sustained real-world investigation (https://en.wikipedia.org/wiki/The_Singing_Detective; https://www.theguardian.com/theguardian/1984/jun/08/singing-detective-not-fade-away; https://manyangles.news/screen/the-singing-detective). Sources describe a fragmented multi-layered structure and important final-episode synthesis, but do not establish frequent meaningful revelations across all episodes or enough evidence for all 30 DNA dimensions. Qualitative rejection due to unverified revelation cadence, not a claim of poor craftsmanship."
+    }
+  ]
+}
