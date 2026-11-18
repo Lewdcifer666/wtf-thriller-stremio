@@ -1,0 +1,41 @@
+{
+  "run_id": "2026-11-18-t1",
+  "timestamp": "2026-11-18T10:07:46.356Z",
+  "searched": 3,
+  "accepted": 0,
+  "rejected": 3,
+  "duplicates": 0,
+  "accepted_items": [],
+  "rejection_summary": [
+    {
+      "title": "The Chair Company",
+      "type": "series",
+      "year": 2025,
+      "reason": "Public season-wide reporting describes an investigation into an escalating corporate conspiracy and some episode-level discoveries, but the eight-episode season leaves central conspiracy mechanisms unresolved and operates substantially as surreal comedy. The available corroboration does not establish reliably sustained meaningful answers and progressive reframing across the complete season, so a defensible full 30-dimension Thriller DNA profile cannot be assigned. Sources consulted: https://www.metacritic.com/tv/the-chair-company/season-1/ (identity and genre); https://www.forbes.com/sites/erikkain/2025/11/24/the-chair-company-episode-7-theories-recap-review/ (late-season investigation and contested revelation); https://ew.com/the-chair-company-season-1-ending-explained-11859779 (whole-season payoff and unresolved mysteries).",
+      "category": "rejected"
+    },
+    {
+      "title": "November",
+      "type": "movie",
+      "year": 2004,
+      "reason": "The 73-minute psychological thriller uses alternate subjective versions of a traumatic incident and an unsettling photograph to question what happened, but the consulted plot and synopsis evidence supports a small number of structural reinterpretations rather than independently establishing frequent, meaningful revelations throughout the runtime. Its grief-driven psychological focus and uncertain reality make a complete, reliable 30-dimension DNA assessment unsupported. Sources consulted: https://en.wikipedia.org/wiki/November_(2004_film) (identity, structure and runtime); https://www.cinema.com/film/9234/november/synopsis.phtml (official-style narrative synopsis and reality ambiguity).",
+      "category": "rejected"
+    },
+    {
+      "title": "Curtains",
+      "type": "movie",
+      "year": 1983,
+      "imdb_id": "tt0085385",
+      "reason": "The 89-minute masked-killer slasher builds suspense around a mansion audition and culminates in culprit confessions, but its detailed plot and contemporary critical response do not support a regular cadence of meaningful answers or progressively rebuilt understanding across the film. A late whodunit reveal alone is insufficient for a complete evidence-backed 30-dimension Thriller DNA assessment. Sources consulted: https://www.imdb.com/title/tt0085385/plotsummary/ (identity and full plot); https://en.wikipedia.org/wiki/Curtains_(1983_film) (runtime, structure and critical reception).",
+      "category": "rejected"
+    }
+  ],
+  "publication": {
+    "schema_version": 1,
+    "daily_key": "thriller:2026-11-18",
+    "packet_hash": "f97bf309480f3e2bae774b4145910c8f93be0e7c4c96ef15c350a3cd80d7207e",
+    "research_commit": "b9e6ce3435ca1432ac1848072834d07fa657b13d",
+    "evaluated_base": "7bb9d231337df7a0927514fcc5b111205e24de19",
+    "policy_fingerprint": "0b3445032c94ff61f2d8d8cc3d3c5822c4b73926ce3994a7e02767bf5fc9fec2"
+  }
+}
