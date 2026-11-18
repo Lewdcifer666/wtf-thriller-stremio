@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "genre": "thriller",
+  "research_date": "2026-11-18",
+  "candidates": [],
+  "research_rejections": [
+    {
+      "title": "The Chair Company",
+      "type": "series",
+      "year": 2025,
+      "reason": "Public season-wide reporting describes an investigation into an escalating corporate conspiracy and some episode-level discoveries, but the eight-episode season leaves central conspiracy mechanisms unresolved and operates substantially as surreal comedy. The available corroboration does not establish reliably sustained meaningful answers and progressive reframing across the complete season, so a defensible full 30-dimension Thriller DNA profile cannot be assigned. Sources consulted: https://www.metacritic.com/tv/the-chair-company/season-1/ (identity and genre); https://www.forbes.com/sites/erikkain/2025/11/24/the-chair-company-episode-7-theories-recap-review/ (late-season investigation and contested revelation); https://ew.com/the-chair-company-season-1-ending-explained-11859779 (whole-season payoff and unresolved mysteries)."
+    },
+    {
+      "title": "November",
+      "type": "movie",
+      "year": 2004,
+      "reason": "The 73-minute psychological thriller uses alternate subjective versions of a traumatic incident and an unsettling photograph to question what happened, but the consulted plot and synopsis evidence supports a small number of structural reinterpretations rather than independently establishing frequent, meaningful revelations throughout the runtime. Its grief-driven psychological focus and uncertain reality make a complete, reliable 30-dimension DNA assessment unsupported. Sources consulted: https://en.wikipedia.org/wiki/November_(2004_film) (identity, structure and runtime); https://www.cinema.com/film/9234/november/synopsis.phtml (official-style narrative synopsis and reality ambiguity)."
+    },
+    {
+      "title": "Curtains",
+      "type": "movie",
+      "year": 1983,
+      "imdb_id": "tt0085385",
+      "reason": "The 89-minute masked-killer slasher builds suspense around a mansion audition and culminates in culprit confessions, but its detailed plot and contemporary critical response do not support a regular cadence of meaningful answers or progressively rebuilt understanding across the film. A late whodunit reveal alone is insufficient for a complete evidence-backed 30-dimension Thriller DNA assessment. Sources consulted: https://www.imdb.com/title/tt0085385/plotsummary/ (identity and full plot); https://en.wikipedia.org/wiki/Curtains_(1983_film) (runtime, structure and critical reception)."
+    }
+  ]
+}
