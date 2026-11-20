@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "genre": "thriller",
+  "research_date": "2026-11-20",
+  "candidates": [],
+  "research_rejections": [
+    {
+      "title": "Lost Highway",
+      "type": "movie",
+      "year": 1997,
+      "imdb_id": "tt0116922",
+      "reason": "The anonymous recordings, identity transformation and recurring doubles establish a strong surreal mystery, but critical analysis emphasizes a circular, ambiguous narrative rather than reliably spaced meaningful answers. Available whole-film discussion does not justify all 30 independent DNA measurements or sustained revelation-frequency estimates. Public evidence: https://www.newyorker.com/magazine/1997/03/10/1997-03-10-098-tny-cards-000151841 ; https://sightlines.media/film/638/lost-highway-1997/theory ; https://www.mediarevelations.com/lost-highway ."
+    },
+    {
+      "title": "Mulholland Drive",
+      "type": "movie",
+      "year": 2001,
+      "imdb_id": "tt0166924",
+      "reason": "The mystery and fractured identities are well supported, but the major structural reinterpretation is concentrated in the later section and many threads deliberately remain unresolved. Reviews cannot substantiate frequent meaningful revelations throughout the complete runtime or all 30 independent DNA dimensions. Public evidence: https://www.bfi.org.uk/sight-and-sound/features/lethally-perfumed-neo-noir-david-lynchs-mulholland-dr ; https://www.theguardian.com/film/2021/oct/12/mulholland-drive-at-20-david-lynch-audacious-puzzle-remains-a-mystery ; https://www.rogerebert.com/reviews/great-movie-mulholland-dr-2001 ."
+    },
+    {
+      "title": "The Red House",
+      "type": "movie",
+      "year": 1947,
+      "imdb_id": "tt0039757",
+      "reason": "A woodland secret and investigative excursions create a mystery, but the central explanation is withheld until the climax, and contemporary audience commentary notes sluggish pacing and limited twists. The evidence does not support strong sustained revelation cadence or all 30 DNA values without speculation. Public evidence: https://www.rottentomatoes.com/m/red_house ; https://www.imdb.com/title/tt0039757/plotsummary/ ."
+    }
+  ]
+}
